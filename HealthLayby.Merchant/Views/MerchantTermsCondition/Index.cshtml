@@ -1,0 +1,115 @@
+﻿@model MerchantTermsConditionModel
+
+@{
+    ViewData["Title"] = "Terms of Use";
+}
+
+@section HeaderTitle
+    {
+    <h1 class="head-type1">Terms of Use</h1>
+
+    <!--- Bootstrap CSS --->
+    <link rel="stylesheet" href="@Url.Content("~/assets/css/bootstrap-float-label.min.css")" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="@Url.Content("~/assets/css/bootstrap.min.css")" asp-append-version="true" />
+    <!--- bootstrap-select --->
+    <link rel="stylesheet" href="@Url.Content("~/assets/css/style.css")" asp-append-version="true" />
+    <!--- toastr css --->
+    <link rel="stylesheet" href="@Url.Content("~/plugins/toastr/toastr.min.css")" asp-append-version="true" />
+    }
+
+<div class="customtabOuter" id="cmccontent">
+    <div class="customtab-list">
+        <div class="customtab-list-inner content_1" dataid="panel_1" style="display: block;">
+            <div class="head-type2" id="termsCondition_Title" value="@Model.Title">@Model.Title</div>
+            <div class="cms-text1 mb-4">
+                <textarea id="txtDescription">@Html.Raw(Model.Description)</textarea>
+            </div>
+            <div class="row grid-sp15 justify-content-end">
+                <div class="col-lg-3 col-md-4">
+                    <div class="form-group input-group">
+                        <div class="filterdropdown w100">
+                            <div class="dropdown bootstrap-select filterdropdown w100 dropup">
+                                <select class="filterdropdown selectpicker w100" id="terms-use-status">
+                                    <option>Active</option>
+                                    <option>Inactive</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-lg-2">
+                    <div class="text-right">
+                        <a href="Javascript:;" data-dismiss="modal" class="btn-type1 loginSubmit" id="submitTerms">Update</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section Styles
+    {
+    <style>
+        .ck-editor__editable {
+            height: 290px !important;
+        }
+    </style>
+}
+
+@section Scripts{
+    <!-- jQuery Js -->
+    <script src="@Url.Content("~/plugins/ckeditor/js/ckeditor.js")" asp-append-version="true"></script>
+    <script type="text/javascript">
+        let privacyPolicyEditor;
+        $(document).ready(function ($) {
+            activeSubMenu("merchant-setting-terms");
+
+            $('#@Html.IdFor(x=>x.IsActive)').selectpicker();
+
+            ClassicEditor.create(document.getElementById('txtDescription'))
+                .then(editor => {
+                    privacyPolicyEditor = editor;
+
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+        });
+
+        $("#submitTerms").click(function () {
+            var description = privacyPolicyEditor.getData();
+            if (description == '') {
+                showErrorMessage('@MessageConstant.TermsInValid');
+                return false;
+            };
+            showLoader();
+            $.ajax({
+                url: '@Url.Action("EditTermsCondition", "MerchantTermsCondition")',
+                type: 'POST',
+                data: {
+                    description: privacyPolicyEditor.getData(),
+                    pageCode: @((int)ContentManagementEnum.Termsconditions),
+                    isActive: $("#terms-use-status").val(),
+                    title: $('#termsCondition_Title').text()
+                },
+                dataType: "JSON",
+                success: function (data) {
+                    hideLoader();
+                    if (data.success) {
+                        showSuccessMessage(data.message);
+                    }
+                    else {
+                        showErrorMessage(data.message);
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    hideLoader();
+                    showErrorMessage("@MessageConstant.CommonErrorMessage");
+                }
+            });
+        });
+    </script>
+}

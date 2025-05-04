@@ -1,0 +1,675 @@
+﻿@model DashboardModel
+
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+@section HeaderTitle
+    {
+    <h1 class="head-type1">Dashboard</h1>
+}
+
+<div class="row grid-sp15 align-items-center walletheader">
+    <div class="col-xl-3 col-lg-6">
+        <div class="walletheaderbox mb-2">
+            <span class="editformlabel">Total number of<br><strong>Customer</strong></span>
+            <span class="editformval">
+                <span>
+                    @Model.CustomerCount
+                </span>
+            </span>
+        </div>
+    </div>
+    <div class="col-xl-3 col-lg-6">
+        <div class="walletheaderbox mb-2">
+            <span class="editformlabel">Total number of<br><strong>Merchant</strong></span>
+            <span class="editformval">
+                <span>
+                    @Model.MerchantCount
+                </span>
+            </span>
+        </div>
+    </div>
+    <div class="col-xl-3 col-lg-6">
+        <div class="walletheaderbox mb-2">
+            <span class="editformlabel">Total number of<br><strong>Services</strong></span>
+            <span class="editformval">
+                <span>
+                    @Model.ServiceCount
+                </span>
+            </span>
+        </div>
+    </div>
+    <div class="col-xl-3 col-lg-6">
+        <div class="walletheaderbox mb-2">
+            <span class="editformlabel">Wallet<br><strong>Balance</strong>(AUD)</span>
+            <span class="editformval"><span>480</span><span class="floatval">.00</span></span>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-xl-6">
+        <div class="innerContent mb-4">
+            <div class="customtabOuter">
+                <div class="customtab-head text-center" id="dashboardTab1">
+                    <a href="Javascript:;" class="customtabH-link chart-group-1-tab active" dataid="1" cid="dashboardTab1">Customers</a>
+                    <a href="Javascript:;" class="customtabH-link chart-group-1-tab" dataid="2" cid="dashboardTab1">Merchants</a>
+                </div>
+                <div class="customtab-list" id="dashboardTab1">
+                    <div class="customtab-list-inner content_1" dataid="panel_1" style="display: block;">
+                        <canvas id="myChart" style="width:100%;max-width:700px"></canvas>
+                    </div>
+                    <div class="customtab-list-inner content_2" dataid="panel_2" style="display: none;">
+                        <canvas id="merchantChart" style="width:100%;max-width:700px"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-6">
+        <div class="innerContent mb-4">
+            <div class="customtabOuter">
+                <div class="customtab-head text-center" id="dashboardTab2">
+                    <a href="Javascript:;" class="customtabH-link active" dataid="1" cid="dashboardTab2">Service Posted</a>
+                    <a href="Javascript:;" class="customtabH-link" dataid="2" cid="dashboardTab2">Total Income</a>
+                </div>
+                <div class="customtab-list" id="dashboardTab2">
+                    <div class="customtab-list-inner content_1" dataid="panel_1" style="display: block;">
+                        <img class="w-100" src="assets/images/chart-img.png" alt="Service Posted" />
+                    </div>
+                    <div class="customtab-list-inner content_2" dataid="panel_2" style="display: none;">
+                        <img class="w-100" src="assets/images/chart-img.png" alt="Total Income" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="innerContent">
+    <div class="row">
+        <div class="col-xl-4">
+            <h2 id="common-list-title" class="head-type2">Top Customer List </h2>
+        </div>
+        <div class="col-xl-8">
+            <div class="customtabOuter">
+                <div class="customtab-head" id="listTab">
+                    <a href="Javascript:;" dataid="1" class="customtabH-link active list-tab" cid="listTab">Customers</a>
+                    <a href="Javascript:;" dataid="2" class="customtabH-link list-tab" cid="listTab">Merchants</a>
+                    <a href="Javascript:;" dataid="3" class="customtabH-link list-tab" cid="listTab">Transactions</a>
+                    <a href="Javascript:;" dataid="4" class="customtabH-link list-tab" cid="listTab">Plans History</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="customtabOuter" id="listTab">
+        <div class="customtab-list">
+            <div class="customtab-list-inner content_1" dataid="panel_1" style="display: block;">
+                <div class="listtableOuter">
+                    <table id="customer-dashboard-grid" class="display responsive nowrap" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>Customer</th>
+                                <th class="text-center">Phone</th>
+                                <th class="text-center">Registered on</th>
+                                <th class="text-right">Plans(#)</th>
+                                <th class="text-right">Wallet Amount(AUD)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="customtab-list-inner content_2" dataid="panel_2" style="display: none;">
+                <div class="listtableOuter">
+                    <table id="merchant-dashboard-grid" class="display responsive nowrap" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>Logo</th>
+                                <th>Merchant</th>
+                                <th>Phone/Email</th>
+                                <th>Registered on</th>
+                                <th>Service Name</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="customtab-list-inner content_3" dataid="panel_3" style="display: none;">
+                <div class="listtableOuter">
+                    <table id="transaction-dashboard-grid" class="display responsive nowrap" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th style="width:175px">Transaction Code</th>
+                                <th class="text-right">Date</th>
+                                <th class="text-left">Customer</th>
+                                <th style="width:100px">Paid Amount(AUD)</th>
+                                <th>Layby Plan</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="customtab-list-inner content_4" dataid="panel_4" style="display: none;">
+                <div class="listtableOuter">
+                    <table id="planhistory-dashboard-grid" class="display responsive nowrap" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>Customer</th>
+                                <th>Phone</th>
+                                <th>Merchant</th>
+                                <th>Amount(AUD)</th>
+                                <th>Duration/Frequency</th>
+                                <th>Plan</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts
+    {
+    @*<script src="@Url.Content("~/plugins/chart-js/chart.min.js")" asp-append-version="true"></script>*@
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        $(document).ready(function ($) {
+            activeMenu("dashboard-menu");
+
+            //customer chart
+            let xCustomerChartValues = JSON.parse(`@Html.Raw(JsonConvert.SerializeObject(Model.CustomerChartData?.Select(x => x.Key).ToArray()))`);
+            let yCustomerChartValues = JSON.parse(`@Html.Raw(JsonConvert.SerializeObject(Model.CustomerChartData?.Select(x => x.Value).ToArray()))`);
+            new Chart("myChart", {
+                backgroundColor: "red",
+                type: "bar",
+                data: {
+                    labels: xCustomerChartValues,
+                    datasets: [{
+                        data: yCustomerChartValues,
+                        borderColor: "#84cfc5",
+                        backgroundColor: '#84cfc5',
+                        strokeColor: 'red',
+                        borderRadius: Number.MAX_VALUE,
+                        borderSkipped: 'start',
+                        borderWidth: 2,
+                        barThickness: "6"
+                    }]
+                },
+                options: {
+                    //legend: { display: false },
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    title: {
+                        display: false,
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                font: {
+                                    weight: 'bold',
+                                    family: 'Poppins'
+                                }
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            min: 0,
+                            max: 10,
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+
+                                font: {
+                                    weight: 'bold',
+                                    family: 'Poppins'
+                                }
+                            }
+                        },
+                        //xAxes: [{
+                        //    gridLines: {
+                        //        display: false
+                        //    },
+                        //    ticks: {
+                        //        fontFamily: "Poppins"
+                        //    }
+                        //}],
+                        //yAxes: [{
+                        //    gridLines: {
+                        //        display: false
+                        //    },
+                        //    ticks: {
+                        //        fontFamily: "Poppins",
+                        //        beginAtZero: true,
+                        //        suggestedMin: 0,
+                        //        suggestedMax: 10
+                        //    }
+                        //}]
+                    }
+                }
+            });
+
+            //merchant chart
+            let xMerchantChartValues = JSON.parse(`@Html.Raw(JsonConvert.SerializeObject(Model.MerchantChartData?.Select(x => x.Key).ToArray()))`);
+            let yMerchantChartValues = JSON.parse(`@Html.Raw(JsonConvert.SerializeObject(Model.MerchantChartData?.Select(x => x.Value).ToArray()))`);
+            new Chart("merchantChart", {
+                backgroundColor: "red",
+                type: "bar",
+                data: {
+                    labels: xMerchantChartValues,
+                    datasets: [{
+                        data: yMerchantChartValues,
+                        borderColor: "#84cfc5",
+                        backgroundColor: '#84cfc5',
+                        borderRadius: Number.MAX_VALUE,
+                        borderSkipped: 'start',
+                        borderWidth: 2,
+                        barThickness: "6"
+                    }]
+                },
+                options: {
+                    //legend: { display: false },
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    title: {
+                        display: true,
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                font: {
+                                    weight: 'bold',
+                                    family: 'Poppins'
+                                }
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            min: 0,
+                            max: 30,
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+
+                                font: {
+                                    weight: 'bold',
+                                    family: 'Poppins'
+                                }
+                            }
+                        },
+                        //xAxes: [{
+                        //    gridLines: {
+                        //        display: false,
+                        //    },
+                        //    ticks: {
+                        //        fontFamily: "Poppins",
+                        //    }
+                        //}],
+                        //yAxes: [{
+
+                        //    gridLines: {
+                        //        display: false
+                        //    },
+                        //    ticks: {
+                        //        fontFamily: "Poppins",
+                        //        beginAtZero: true,
+                        //        suggestedMin: 0,
+                        //        suggestedMax: 10
+                        //    }
+                        //}]
+                    }
+                }
+            });
+
+            $('.customtabH-link').click(function (j) {
+                var section_id = $(this).attr("cid");
+                var data_id = $(this).attr("dataid");
+
+                if (section_id == "listTab") {
+                    if (data_id == "1") {
+                        $("#common-list-title").text("Top Customer List");
+                    }
+                    else if (data_id == "2") {
+                        $("#common-list-title").text("Top Merchant List");
+                    }
+                    else if (data_id == "3") {
+                        $("#common-list-title").text("Top Transactions List");
+                    }
+                    else if (data_id == "4") {
+                        $("#common-list-title").text("Top Plans History List");
+                    }
+                }
+
+                if (!$(this).hasClass('active')) {
+                    $('#' + section_id + ' .customtabH-link').removeClass('active');
+                    $('#' + section_id + ' .customtab-list-inner').attr("style", "display:none;");
+                    $(this).addClass('active');
+                    $('#' + section_id + ' .content_' + data_id).attr("style", "display:block;");
+                }
+            });
+
+            initAllDatatables();
+        });
+
+        function initAllDatatables() {
+            $('#customer-dashboard-grid').DataTable({
+                "paging": false,
+                "ordering": false,
+                "filter": false,
+                "destroy": true,
+                "orderMulti": false,
+                "serverSide": true,
+                "processing": true,
+                "bLengthChange": false,
+                "language": {
+                    "zeroRecords": "No data available!",
+                },
+                "ajax": {
+                    "url": "@Url.Action("GetCustomerList", "Dashboard")",
+                    "type": "POST",
+                    "dataType": "JSON",
+                    "data": function (d) {
+                        return d;
+                    }
+                },
+                "aoColumns": [
+                    { "mDataProp": "fullName" },
+                    { "mDataProp": "phoneNumber" },
+                    { "mDataProp": "registeredon" },
+                    { "mDataProp": "totalPlans" },
+                    { "mDataProp": "walletAmount" }
+                ],
+                "columnDefs": [
+                    {
+                        "render": function (a, aa, row) {
+                            return row.fullName;
+                        },
+                        "targets": 0
+                    },
+                    {
+                        "render": function (_, __, row) {
+                            return row.phoneNumber;
+                        },
+                        "targets": 1,
+                        "class": "text-center"
+                    },
+                    {
+                        "render": function (_, __, row) {
+                            return row.registeredon;
+                        },
+                        "targets": 2,
+                        "class": "text-center"
+                    },
+                    {
+                        "render": function (_, __, row) {
+                            return row.totalPlans;
+                        },
+                        "targets": 3,
+                        "class": "text-right"
+                    },
+                    {
+                        "render": function (_, __, row) {
+                            return row.walletAmount.toFixed(2);
+                        },
+                        "targets": 4,
+                        "class": "text-right"
+                    }
+                ],
+
+            });
+
+            $('#merchant-dashboard-grid').DataTable({
+                "paging": false,
+                "ordering": false,
+                "filter": false,
+                "destroy": true,
+                "orderMulti": false,
+                "serverSide": true,
+                "processing": true,
+                "bLengthChange": false,
+                "language": {
+                    "zeroRecords": "No data available!",
+                },
+                "ajax": {
+                    "url": "@Url.Action("GetMerchantList", "Dashboard")",
+                    "type": "POST",
+                    "dataType": "JSON",
+                    "data": function (d) {
+                        return d;
+                    }
+                },
+                "aoColumns": [
+                    { "mDataProp": "logo" },
+                    { "mDataProp": "fullName" },
+                    { "mDataProp": "emailAddress" },
+                    { "mDataProp": "registeredon" },
+                    { "mDataProp": "serviceName" }
+                ],
+                "columnDefs": [
+                    {
+                        "render": function (a, aa, row) {
+                            return `<img src="@Url.Content($"{DirectoryConstant.MerchantLogoDirectory}")/${row.logo}" class="merchantlogo"  onError="nofindLogo(this)" />`;
+                        },
+                        "orderable": false,
+                        "targets": 0
+                    },
+                    {
+                        "render": function (a, aa, row) {
+                            return `<div class="merchantlistOuter"><img src="@DirectoryConstant.MerchantProfilePicDirectory/${row.profilePic}" class="merchantphoto" onError="nofindMerchant(this)" />` + `<span>` + row.fullName + `</span></div>`;
+
+                        },
+                        "targets": 1,
+                        "class": "text-left"
+                    },
+                    {
+                        "render": function (_, __, row) {
+                            return row.phoneNumber + "</br>" + row.emailAddress;
+                        },
+                        "targets": 2,
+                        "class": "text-left"
+                    },
+                    {
+                        "render": function (_, __, row) {
+                            return row.registeredon;
+                        },
+                        "targets": 3,
+                        "class": "text-center"
+                    },
+                    {
+                        "render": function (a, aa, row) {
+                            if (row.servicesNames.length > 0) {
+                                var html = '<td>'
+                                var services = row.servicesNames.split(',')
+                                let lengthdata = services.length > 4 ? 4 : services.length;
+                                for (let i = 0; i < lengthdata; i++) {
+                                    html += '<label><span class="servicecat">' + services[i] + '</span></label>'
+                                };
+                                if(services.length > 4)
+                                {
+                                    let remained = services.length-4;
+                                    html += '<label><span class="servicecatCnt">+' + remained + '</span></label>'
+                                }
+                                html += '</td>'
+                                return html;
+                            }
+                            return '';
+                            //return row.servicesNames;
+                        },
+                        "targets": 4,
+                        "class": "text-right servicecat-data"
+                    }
+                ]
+            });
+
+            $('#transaction-dashboard-grid').DataTable({
+                "paging": false,
+                "ordering": false,
+                "filter": false,
+                "destroy": true,
+                "orderMulti": false,
+                "serverSide": true,
+                "processing": true,
+                "bLengthChange": false,
+                "language": {
+                    "zeroRecords": "No data available!",
+                },
+                "ajax": {
+                    "url": "@Url.Action("GetTransactionList", "Dashboard")",
+                    "type": "POST",
+                    "dataType": "JSON",
+                    "data": function (d) {
+                        return d;
+                    }
+                },
+                "aoColumns": [
+                    { "mDataProp": "transactionCode" },
+                    { "mDataProp": "date" },
+                    { "mDataProp": "customer" },
+                    { "mDataProp": "paidAmount" },
+                    { "mDataProp": "layByPlan" }
+                ],
+                "columnDefs": [
+                    {
+                        "render": function (a, aa, row) {
+
+                            return row.transactionCode;
+                        },
+                        "targets": 0
+                    },
+                    {
+                        "render": function (data, type, row) {
+
+                            return row.date;
+                        },
+                        "targets": 1,
+                        "class": "text-center"
+                    },
+                    {
+                        "render": function (_, __, row) {
+                            return row.customer;
+                        },
+                        "targets": 2,
+                        "class": "text-left"
+                    },
+                    {
+                        "render": function (_, __, row) {
+                            return row.paidAmount.toFixed(2);;
+                        },
+                        "targets": 3,
+                        "class": "text-right"
+                    },
+                    {
+                        "render": function (_, __, row) {
+                            return row.layByPlan;
+                        },
+                        "targets": 4,
+                        "class": "text-right"
+                    }
+                ]
+            });
+
+            $('#planhistory-dashboard-grid').DataTable({
+                "paging": false,
+                "ordering": false,
+                "filter": false,
+                "destroy": true,
+                "orderMulti": false,
+                "serverSide": true,
+                "processing": true,
+                "bLengthChange": false,
+                "language": {
+                    "zeroRecords": "No data available!",
+                },
+                "ajax": {
+                    "url": "@Url.Action("GetPlanHistoryList", "Dashboard")",
+                    "type": "POST",
+                    "dataType": "JSON",
+                    "data": function (d) {
+                        return d;
+                    }
+                },
+                "aoColumns": [
+                    { "mDataProp": "customer" },
+                    { "mDataProp": "phoneNumber" },
+                    { "mDataProp": "merchant" },
+                    { "mDataProp": "amount" },
+                    { "mDataProp": "planName" },
+                    { "mDataProp": "duration" },
+                ],
+                "columnDefs": [
+                    {
+                        "render": function (a, aa, row) {
+                            return row.customer;
+                        },
+                        "targets": 0
+                    },
+                    {
+                        "render": function (a, aa, row) {
+                            return row.phoneNumber;
+                        },
+                        "targets": 1
+                    },
+                    {
+                        "render": function (a, aa, row) {
+                            return row.merchant;
+                        },
+                        "targets": 2
+                    },
+                    {
+                        "render": function (a, aa, row) {
+                            return row.amount;
+                        },
+                        "targets": 3
+                    },
+                    {
+                        "render": function (a, aa, row) {
+                            return row.duration + " / " + row.paymentFrequency;
+                        },
+                        "targets": 4
+                    },
+                    {
+                        "render": function (_, __, row) {
+                            return row.planName
+                        },
+                        "targets": 5,
+                        "class": "text-right"
+                    },
+                    
+                ]
+            });
+        }
+
+        function nofindLogo(ex) {
+            ex.src = '@DirectoryConstant.ThumbnailsImageNotfound';
+            ex.onerror = null;
+        }
+
+        function nofindMerchant(ex) {
+            ex.src = '@DirectoryConstant.UserImageNotFound';
+            ex.onerror = null;
+        }
+    </script>
+}
+
+
+
+

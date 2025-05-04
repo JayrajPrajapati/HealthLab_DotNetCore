@@ -1,0 +1,280 @@
+﻿@inject IGeneralRepository _generalServiceRepository
+
+@model ServiceModel
+
+@{
+    Layout = null;
+    var imageSrc = string.Empty;
+    if (!string.IsNullOrEmpty(Model.Image))
+    {
+        imageSrc = DirectoryConstant.ServiceThumbnailDirectory + "/" + Model.Image;
+    }
+}
+
+<!-- edit Service Modal -->
+<div class="modal fade" id="service-add-edit" data-backdrop="static" data-keyboard="false" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered w-640">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="head-type2">@(Model.ServiceId > 0 ? "Edit" : "Add") Service</h5>
+                <button type="button" class="close" data-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form class="editservice" id="addEditServiceForm" enctype="multipart/form-data">
+                    @Html.AntiForgeryToken()
+                    @Html.HiddenFor(model => model.ServiceId)
+                    @Html.HiddenFor(model => model.ImageBase64)
+                    @Html.HiddenFor(model => model.ImageFileExtension)
+                    <div class="row grid-sp15">
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <div class="servicefileupload">
+                                    <input type="file" class=" serfileupload " accept="image/*" id="imageCropFileInput">
+                                    <div class="editfileup" id="edit-image">&nbsp;</div>
+                                    <div class="serfileup">
+                                        
+                                        <img src="" class="uploadimg " alt="File Upload" id="selectedImage">
+                                        <div class="sertextupload defaultImage">Service Thumbnail</div>
+                                        <span class="imageinfo defaultImage">Upload Image : 280 X 145 pixels</span>
+                                    </div>
+                                    <a class="closefileimg" id="close-image"><img src="/assets/images/closewhite.png" alt="close"></a>
+                                </div>
+
+                            </div>
+                            <div class="form-group input-group">
+                                <span class="has-float-label">
+                                    <textarea asp-for="Description" class="form-control" maxlength="2000"></textarea>
+                                    <label asp-for="Description">Description<span class="text-danger">*</span></label>
+                                </span>
+                                <span asp-validation-for="Description"></span>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group input-group">
+                                <select asp-for="CategoryId" class="filterdropdown selectpicker w100" title="Select Categroy" asp-items="await _generalServiceRepository.GetActiveCategoryDropdownListAsync()">
+                                </select>
+                                <span asp-validation-for="CategoryId"></span>
+                            </div>
+                            <div class="form-group input-group">
+                                <span class="has-float-label">
+                                    <input asp-for="ServiceName" class="form-control" type="text" />
+                                    <label asp-for="ServiceName">Service Name<span class="text-danger">*</span></label>
+                                </span>
+                                <span asp-validation-for="ServiceName"></span>
+                            </div>
+                            <div class="form-group input-group">
+                                <span class="has-float-label">
+                                    <input class="form-control" type="number" asp-for="Price" />
+                                    <label asp-for="Price">Price(AUD)<span class="text-danger">*</span></label>
+                                </span>
+                                <span asp-validation-for="Price"></span>
+                            </div>
+                            <div class="form-group input-group">
+                                <select class="filterdropdown w100" asp-for="IsActive">
+                                    <option value="@true.ToString()">Active</option>
+                                    <option value="@false.ToString()">Inactive</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row grid-sp15">
+                        @if (Model.ServiceId > 0)
+                        {
+                            <div class="col-lg-7">
+                                <a class="btn-type4" title="Delete" data-dismiss="modal" data-toggle="modal" data-target="#delete" onclick="confirmDeleteService(@Model.ServiceId)">Delete</a>
+                            </div>
+                        }
+
+                        <div class="col-lg-5 ml-auto">
+                            <div class="text-right">
+                                <button type="submit" class="btn-type5">@(Model.ServiceId > 0 ? "Update" : "Add")</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+    @if (Model.ServiceId <= 0)
+    {
+        <text>
+                $("#addEditServiceForm #@Html.IdFor(x => x.Price)").val('0.00');
+        </text>
+    }
+
+            $("#MerchantId").selectpicker();
+        $("#CategoryId").selectpicker();
+        $("#IsActive").selectpicker();
+        $("@Html.IdFor(q => q.CategoryId)").selectpicker();
+        $('#addEditServiceForm').unbind();
+        $.validator.unobtrusive.parse("#addEditServiceForm");
+
+        if ('@imageSrc' != '') {
+            $("#selectedImage").attr('src', '@imageSrc');
+            $("#selectedImage").on('error', function handleError() {
+                this.src = '@DirectoryConstant.ThumbnailsImageNotfound';
+            });
+            $(".defaultImage").css("display", "none");
+        }
+        else {
+            $("#edit-image,#close-image").css("display", "none");
+            $("#selectedImage").attr('src', '@DirectoryConstant.ThumbnailsImageNotfound');
+            $(".defaultImage").css("display", "block");
+        }
+
+        $("#@Html.IdFor(q => q.CategoryId)").on("change", function () {
+            if ($.trim($("#@Html.IdFor(q => q.ServiceName)").val()) != "") {
+                $("#@Html.IdFor(q => q.ServiceName)").valid();
+            }
+
+            $(this).valid();
+        });
+
+        $("#addEditServiceForm #@Html.IdFor(x => x.Price)").on("focusout", function () {
+            if (!isNaN(this.value) && $.trim(this.value) != "")
+                $(this).val(parseFloat(this.value).toFixed(2));
+            else
+                $(this).val("0.00");
+        });
+
+        $('#addEditServiceForm').unbind('submit');
+        $('#addEditServiceForm').on('submit', function () {
+            event.preventDefault();
+
+            if (!$('#addEditServiceForm').valid())
+                return false;
+
+            showLoader();
+
+            var formData = new FormData($("#addEditServiceForm")[0])
+
+            $.ajax({
+                url: "@Url.Action("Save", "Service")",
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (data) {
+                    hideLoader();
+                    if (data.success) {
+                        $("#service-add-edit").modal("hide");
+                        $('#addEditServiceForm')[0].reset();
+                        drawServiceGrid();
+                        showSuccessMessage(data.message);
+                    }
+                    else {
+                        showErrorMessage(data.message);
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    hideLoader();
+                    showErrorMessage("@MessageConstant.CommonErrorMessage");
+                }
+            });
+        });
+
+        $("#imageCropFileInput").unbind();
+        $("#imageCropFileInput").on("change", function (event) {
+            const validExtensions = ['png', 'jpg', 'jpeg'];
+            let fileName, fileNameExt, fileSize;
+
+            if (event.target.files) {
+                fileName = event.target.files[0].name;
+                fileNameExt = fileName.substr(fileName.lastIndexOf('.') + 1);
+                fileSize = event.target.files[0].size / 1024;
+            }
+
+            $("#@Html.IdFor(x => x.ImageFileExtension)").val(fileNameExt);
+
+            if ($.inArray(fileNameExt, validExtensions) == -1) {
+                showErrorMessage("@MessageConstant.InValidFileType");
+                $("#imageCropFileInput").val("");
+                return false;
+            }
+
+            if (fileSize > 2048) {
+                showErrorMessage("@MessageConstant.InValidFileSize");
+                $("#imageCropFileInput").val("");
+                return false;
+            }
+
+            let imageCropFileInput = this;
+            var reader = new FileReader();
+            reader.onload = function (event) {
+                var base64Url = event.target.result;
+                $("#profile-crop-img").attr("src", event.target.result);
+                $('#img-preview').modal('show');
+                $("#service-add-edit").addClass("d-none");
+                imageCropFileInput.value = null;
+            };
+            reader.readAsDataURL(imageCropFileInput.files[0]);
+        });
+
+        $("#img-preview .close").unbind();
+        $("#img-preview .close").on('click', function () {
+            $("#service-add-edit").removeClass("d-none");
+            $("#imageCropFileInput").val("");
+        });
+
+        var createProfileCropper;
+        $("#img-preview").unbind();
+        $('#img-preview').on('shown.bs.modal', function () {
+            let options = {
+                aspectRatio: 1.85 / 1,
+                preview: '.img-preview'
+            };
+
+            createProfileCropper = new Cropper($("#profile-crop-img")[0], options);
+        }).on('hidden.bs.modal', function () {
+            if (createProfileCropper) {
+                createProfileCropper.destroy();
+            }
+            $("#profile-crop-img").addClass("cropper-hidden");
+            $("#profile-crop-img").data('cropper', null);
+        });
+
+        $("#btn-crop-profile").unbind();
+        $("#btn-crop-profile").on("click", function () {
+            const base64URL = createProfileCropper["getCroppedCanvas"]({ maxWidth: 4096, maxHeigth: 4096, fillColor: "#fff" }, undefined).toDataURL("image/jpeg");
+            $('#@Html.IdFor(x => x.ImageBase64)').val(base64URL.split(",")[1]);
+            $(".defaultImage").css("display", "none");
+            $('#selectedImage').attr('src', base64URL);
+            $("#selectedImage").css("display", "inline-block");
+            $('#img-preview').modal('hide');
+            $("#service-add-edit").removeClass("d-none");
+            $("#edit-image,#close-image").show();
+            if (createProfileCropper) {
+
+                createProfileCropper.destroy();
+            }
+            $("#profile-crop-img").data('cropper', null);
+        });
+
+        $('#img-preview').on('hidden.bs.modal', function (e) {
+            $("body").addClass("modal-open");
+        });
+
+        $('#service-add-edit').on('shown.bs.modal', function (e) {
+            $("body").addClass("modal-open");
+        });
+    });
+
+
+    $("#close-image").click(function () {
+        $("#selectedImage").attr("src", '@DirectoryConstant.ThumbnailsImageNotfound');
+        $("#selectedImage").attr("alt", 'default');
+        $("#close-image,#edit-image").css("display", "none");
+        $("#@Html.IdFor(x => x.ImageBase64)").val('');
+        $("#@Html.IdFor(x => x.ImageFileExtension)").val('');
+        $("#@Html.IdFor(x => x.Image)").val('');
+        $(".defaultImage").css("display", "block");
+    });
+
+
+
+
+</script>

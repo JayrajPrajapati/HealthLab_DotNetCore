@@ -1,0 +1,63 @@
+﻿@model FAQMerchantModel
+<div class="modal fade" id="add-edit-faq" data-backdrop="static" data-keyboard="false" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered w-640">
+        <div class="modal-content">
+            <div class="modal-body">
+                <form id="FAQform">
+                    <input type="hidden" asp-for="FAQId" />
+                    <div class="form-group input-group">
+                        <label asp-for="Question" class="control-label">Question<i class="text-danger">*</i></label>
+                        <textarea asp-for="Question" class="form-control"></textarea>
+                        <span asp-validation-for="Question" class="text-danger"></span>                        
+                    </div>
+                    <div class="form-group input-group">
+                        <label asp-for="Answer" class="control-label">Answer<i class="text-danger">*</i></label>
+                        <textarea asp-for="Answer" class="form-control"></textarea>
+                        <span asp-validation-for="Answer" class="text-danger"></span>
+                    </div>
+                    <div class="text-center">
+                        <button type="submit" class="btn-type1 loginSubmit">@(Model.FAQId > 0 ? "Update" : "Add")</button>                        
+                        <button class="btn-type3 loginSubmit" title="Cancel" data-dismiss="modal">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $("#add-edit-faq").modal("show");
+
+        $("#FAQform").submit(function () {
+            event.preventDefault();
+
+            showLoader();
+            var formData = new FormData($("#FAQform")[0])
+            $.ajax({
+                url: '@Url.Action("SaveMerchantFAQ", "MerchantFAQ")',
+                type: 'post',
+                data: formData,
+                async: false,
+                processData: false,
+                contentType: false,
+                success: function (data) {
+                    hideLoader();
+                    if (data.success) {
+                        $("#add-edit-faq").modal("hide");
+                        setTimeout(function () {
+                           location.reload();
+                        }, 800);
+                    }
+                    else {
+                        showErrorMessage(data.message);
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    hideLoader();
+                    showErrorMessage("@MessageConstant.CommonErrorMessage");
+                }
+            });
+        });
+    });
+</script>

@@ -1,0 +1,146 @@
+﻿@{
+    var title = ViewBag.Title ?? "Health Layby";
+    var firstName = Context?.User.FindFirst("FirstName")?.Value.ToString() ?? string.Empty;
+    var lastName = Context?.User.FindFirst("LastName")?.Value.ToString() ?? string.Empty;
+    var fullName = $"{firstName} {lastName}";
+    var shortName = firstName == "" ? "" : $"{firstName.ToUpper().First()}{lastName.ToUpper().First()}";
+    var isInnerContentDivRemove = ViewBag.IsInnerContentDivRemove ?? false;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!--- title tag --->
+    <title>@title</title>
+    <meta charset="UTF-8" />
+    <!--- responsive tag --->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="@Url.Content("~/assets/images/favicon.ico")" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+    <!--- bootstrap css --->
+    <link rel="stylesheet" href="@Url.Content("~/assets/css/bootstrap.min.css")" asp-append-version="true" />
+    <!--- bootstrap-flot label --->
+    <link rel="stylesheet" href="@Url.Content("~/assets/css/bootstrap-float-label.min.css")" asp-append-version="true" />
+    <link rel="stylesheet" href="@Url.Content("~/assets/css/jquery.dataTables.min.css")" asp-append-version="true" />
+    <!--- bootstrap-select --->
+    <link rel="stylesheet" href="@Url.Content("~/assets/css/bootstrap-select.min.css")" asp-append-version="true" />
+    <link rel="stylesheet" href="@Url.Content("~/assets/css/style.css")" asp-append-version="true" />    
+    <!--- daterange css --->
+    <link href="@Url.Content("~/assets/css/daterangepicker.css")" rel="stylesheet" asp-append-version="true" />
+    <!--- custom css --->
+    @*<link rel="stylesheet" href="@Url.Content("~/css/site.css")" asp-append-version="true" />*@
+    @RenderSection("Styles", required: false)
+</head>
+<body class="innerpage">
+    <div class="pageloader"></div>
+    <div class="menuview">
+        <div class="sidemenuouter">
+            <div class="sidebarlogo">
+                <a class="sidebarlogolink" asp-controller="Dashboard" asp-action="Index">
+                    <img src="@Url.Content("~/assets/images/logo.svg")" alt="Health LAYBY" />
+                </a>
+            </div>
+            <ul class="sidemenuinner">
+                <li><a id="merchant-dashboard" class="sidebarlink dashboard-icon active" title="Dashboard" asp-controller="MerchantDashboard" asp-action="Index">Dashboard</a></li>
+                <li><a id="merchant-customer" class="sidebarlink customers-icon" title="Customers" asp-controller="MerchantCustomer" asp-action="Index">Layby Customer</a></li>
+                <li><a id="merchant-services" class="sidebarlink services-icon" title="Services" asp-controller="MerchantServices" asp-action="Index">Services</a></li>
+                <li><a id="merchant-transaction" class="sidebarlink transaction-icon" title="Transaction" asp-controller="MerchantTransaction" asp-action="Index">Payment / Transaction</a></li>
+                <li><a id="merchant-wallet" class="sidebarlink wallet-icon" title="Wallet" asp-controller="MerchantEarnings" asp-action="Index">Earnings</a></li>
+                <li class="sublist">
+                    <a class="sidebarlink configmanagement-icon" title="LayByPlans" id="merchant-plans">LayBy Plans<span class="menuarrow"></span></a>
+                    <ul class="submenu">
+                        <li><a id="merchant-plans-list" class="submenulink" title="Merchant List" asp-controller="MerchantLayByPlans" asp-action="Index">All</a></li>
+                        <li><a id="merchant-plans-active" class="submenulink" title="Merchant Request" asp-controller="MerchantLayByPlans" asp-action="ActiveIndex">Active</a></li>
+                        <li><a id="merchant-plans-completed" class="submenulink" title="Merchant Request" asp-controller="MerchantLayByPlans" asp-action="CompletedIndex">Completed</a></li>
+                        <li><a id="merchant-plans-pause" class="submenulink" title="Merchant Request" asp-controller="MerchantLayByPlans" asp-action="PauseIndex">Pause</a></li>
+                        <li><a id="merchant-plans-cancel" class="submenulink" title="Merchant Request" asp-controller="MerchantLayByPlans" asp-action="CancelIndex">Cancel</a></li>
+                    </ul>
+                </li>
+
+                <li class="sublist">
+                    <a class="sidebarlink configmanagement-icon" title="Settings" id="merchant-settings">Settings<span class="menuarrow"></span></a>
+                    <ul class="submenu">
+                        <li><a id="merchant-setting-profile" class="submenulink" title="Merchant Profile" asp-controller="MerchantProfile" asp-action="Index">My Profile</a></li>
+                        <li><a id="merchant-setting-change-password" class="submenulink" title="Merchant Change Password" asp-controller="MerchantChangePassword" asp-action="Index">Change Password</a></li>
+                        <li><a id="merchant-setting-terms" class="submenulink" title="Merchant Terms"asp-controller="MerchantTermsCondition" asp-action="Index" >Terms of Use</a></li>
+                        <li><a id="merchant-setting-faq" class="submenulink" title="Merchant FAQ" asp-controller="MerchantFAQ" asp-action="Index">FAQs</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+        <div class="contentSection">
+            <div class="row align-items-center mainHead">
+                <div class="col-xl-6">
+                    @RenderSection("HeaderTitle", required: false)
+                </div>
+                <div class="col-xl-6">
+                    <div class="searchOuter">
+                        <div class="searchtextbox">
+                            <input type="text" class="searchbox" placeholder="Search">
+                            <a href="#" class="searchicon"></a>
+                        </div>
+                        <div class="userdropdown">
+                            <button class="dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>@shortName</span>@fullName</button>
+                            <div class="dropdown-menu dropdown-menu-right">
+                                <span class="userdroplink"><a class="userdropdownlink" asp-controller="MerchantProfile" asp-action="Index">Profile</a></span>
+                                <span class="userdroplink"><a asp-controller="MerchantChangePassword" asp-action="Index" class="userdropdownlink">Change Password</a></span>
+                                <span class="userdroplink"><a asp-controller="Login" asp-action="Logout" class="userdropdownlink logout">Logout</a></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @RenderSection("WalletHeader", required: false)
+
+            @if (isInnerContentDivRemove)
+            {
+                <text>
+                    @RenderBody()
+                </text>
+            }
+            else
+            {
+                @RenderBody()
+            }
+        </div>
+    </div>
+
+    <!-- jQuery js -->
+    <script src="@Url.Content("~/assets/js/jquery.min.js")" asp-append-version="true"></script>
+    <script src="@Url.Content("~/plugins/jquery-validation/dist/jquery.validate.min.js")" asp-append-version="true"></script>
+    <script src="@Url.Content("~/plugins/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js")" asp-append-version="true"></script>
+    <script src="@Url.Content("~/assets/js/popper.min.js")" asp-append-version="true"></script>
+    <!-- bootstrap js -->
+    <script src="@Url.Content("~/assets/js/bootstrap.min.js")" asp-append-version="true"></script>
+    <!-- bootstrap-select js -->
+    <script src="@Url.Content("~/assets/js/bootstrap-select.min.js")" asp-append-version="true"></script>
+    <script src="@Url.Content("~/assets/js/jquery.dataTables.min.js")"></script>
+    <script src="@Url.Content("~/assets/js/script.js")"></script>
+    <!-- daterangepicker js -->
+    <script src="@Url.Content("~/assets/js/daterangepicker.min.js")" asp-append-version="true"></script>
+    <!-- custom js -->
+    <script src="@Url.Content("~/js/site.js")" asp-append-version="true"></script>
+    <script>
+        showLoader();
+        $(document).ready(function () {
+            setTimeout(() => { hideLoader(); }, 1500);
+
+            let success = '@TempData["SuccessMessage"]';
+            let error = '@TempData["Error"]';
+            let info = '@TempData["Info"]';
+            if (success != undefined && success != null && success.trim() != "") {
+                showSuccessMessage(success);
+            }
+            if (error != undefined && error != null && error.trim() != "") {
+                showErrorMessage(error);
+            }
+            if (info != undefined && info != null && info.trim() != "") {
+                showInfoMessage(info);
+            }
+        });
+    </script>
+    @RenderSection("Scripts", required:false)
+    @RenderSection("Partials", required:false)
+</body>
+</html>

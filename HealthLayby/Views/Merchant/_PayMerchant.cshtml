@@ -1,0 +1,40 @@
+﻿@model MerchantModel
+@{
+    Layout = null;
+}
+<div class="modal fade" id="paymerchant">
+    <div class="modal-dialog modal-dialog-centered w-410">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="head-type2"></h5>
+                <button type="button" class="close" data-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="merchantlogoOuter mb-4">
+                    <img class="merchantlogo" src="@DirectoryConstant.MerchantLogoDirectory/@Model.Logo" alt="Merchant Logo" /><span class="seprator">|</span><img src="@DirectoryConstant.MerchantProfilePicDirectory/@Model.ProfilePic" alt="Aaron Willmott">
+                </div>
+                <div class="row grid-sp15">
+                    <div class="col-lg-12">
+                        @Model.FullName
+                    </div>
+                </div>
+                <br />
+                <div class="row grid-sp15">
+                    <div class="col-lg-7">
+                        <div class="form-group input-group">
+                            <span class="has-float-label">
+                                <input class="form-control" id="enteramount" asp-for="Amount" type="text" value="52" />
+                                <label for="enteramount">Enter Amount</label>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-lg-5">
+                        <div class="form-group input-group">
+                            <a href="javascript:void(0);" class="btn-type1 loginSubmit">Pay Now</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

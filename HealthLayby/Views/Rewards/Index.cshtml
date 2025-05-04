@@ -1,0 +1,254 @@
+﻿@{
+    ViewData["Title"] = "Rewards";
+}
+
+@section HeaderTitle
+{
+    <h1 class="head-type1">Reward Management</h1>
+}
+
+@section Partials
+{
+    @await Html.PartialAsync("_Create", new RewardModel())
+
+    <div id="div-edit-reward"></div>
+
+    <div class="modal fade" id="reward-delete" data-backdrop="static" data-keyboard="false" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered w-410">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="head-type2">Are you sure you want to delete?</h5>
+                    <button type="button" class="close" data-dismiss="modal"></button>
+                </div>
+                <div class="modal-footer">
+                    <button id="btn-delete-customer" class="btn-type1" title="Confirm">Confirm</button>
+                    <button class="btn-type3" title="Cancel" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<div class="innerContent">
+    <div class="row align-items-center innersubHead">
+        <div class="col-xl-5">
+            <h2 class="head-type2">Reward Points List <span id="reward-count">-</span></h2>
+        </div>
+        <div class="col-xl-7">
+            <div class="inneraction">
+                <div class="searchtextbox">
+                    <input id="grid-search" type="text" class="searchbox" placeholder="Search">
+                    <a href="javascript: void(0)" class="searchicon"></a>
+                </div>
+                <a class="btn-type1" title="Add Reward" data-toggle="modal" data-target="#addreward" href="Javascript:;">Add Reward</a>
+            </div>
+        </div>
+    </div>
+    <div class="listtableOuter">
+        <table id="reward-grid" class="display responsive nowrap" style="width:100%">
+            <thead>
+                <tr>
+                    <th>Tier</th>
+                    <th class="text-center">Month</th>
+                    <th class="text-center">Price /<br /> Discount(%)</th>
+                    <th class="text-left">Category</th>
+                    <th class="text-left">Merchant</th>
+                    <th class="text-center">Status</th>
+                    <th class="nosort text-right">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@{
+    Func<string, IHtmlContent> actionContent =
+    @<div>
+        <button class="btn-type4 smallbtn" title="Delete" data-toggle="modal" data-target="#delete" onclick="confirmDeleteCustomer(--reward-id--)">Delete</button>
+        <button class="btn-type5 smallbtn" title="Edit" onclick="editReward(--reward-id--)">Edit</button>
+    </div>;
+}
+
+@section Scripts
+{
+    <script>
+
+        $(document).ready(function () {
+            activeMenu("reward-menu");
+            datatable = $('#reward-grid').DataTable({
+                "paging": true,
+                "ordering": true,
+                "filter": false,
+                "destroy": true,
+                "orderMulti": false,
+                "serverSide": true,
+                "processing": true,
+                "bLengthChange": false,
+                "order": [],
+                "pageLength": 10,
+                "info": false,
+                "dom": 'rtip',
+                "columns": [
+                    { "width": "2%" },
+                    { "width": "2%" },
+                    { "width": "5%" },
+                    { "width": "24%" },
+                    { "width": "24%" },
+                    { "width": "10%" },
+                    { "width": "33%" }
+                ],
+                "language": {
+                    "zeroRecords": "No data available!",
+                },
+                "ajax": {
+                    "url": "@Url.Action("GetRewardList", "Rewards")",
+                    "type": "POST",
+                    "dataType": "JSON",
+                    "data": function (d) {
+                        return $.extend({}, d, {
+                            "search": {
+                                "regex": false,
+                                "value": $.trim($("#grid-search").val())
+                            }
+                        });
+                    }
+                },
+                "aoColumns": [
+                    { "mDataProp": "rewardId" },
+                    { "mDataProp": "month" },
+                    { "mDataProp": "discount" },
+                    { "mDataProp": "categoryName" },
+                    { "mDataProp": "fullName" },
+                    { "mDataProp": "isActive" },
+                    { "mDataProp": "rewardId" }
+
+                ],
+                "columnDefs": [
+                    {
+                        "render": function (a, aa, row) {
+                            return "-";
+                        },
+                        "targets": 0
+                    },
+                    {
+                        "render": function (_, __, row) {
+
+                            return getMontName(row.month);
+                        },
+                        "targets": 1,
+                        "class": "text-center"
+                    },
+                    {
+                        "render": function (_, __, row) {
+                            return row.discount;
+                        },
+                        "targets": 2,
+                        "class": "text-center"
+                    },
+                    {
+                        "render": function (_, __, row) {
+                            return row.categoryName;
+                        },
+                        "targets": 3,
+                        "class": "text-left"
+                    },
+                    {
+                        "render": function (_, __, row) {
+                            return `<div class="merchantlistOuter"><img src="@DirectoryConstant.MerchantProfilePicDirectory/${row.profilePic}" class="merchantphoto" />` + `<span>` + row.fullName + `</span></div>`;
+                        },
+                        "targets": 4,
+                        "class": "text-left"
+                    },
+                    {
+                        "render": function (_, __, row) {
+                            if (row.isActive)
+                                return `<span class="badge badge-success">Active</span>`;
+                            else
+                                return `<span class="badge badge-light">Inactive</span>`;
+                        },
+                        "targets": 5,
+                        "class": "text-center"
+                    },
+                    {
+                        "orderable": false,
+                        "render": function (_, __, row) {
+                            var html = `@actionContent(string.Empty)`;
+                            html = html.split("--reward-id--").join(row.rewardId);
+                            return html;
+                        },
+                        "targets": 6,
+                        "class": "text-center"
+                    }
+                ],
+                "drawCallback": function (resultData) {
+                    $("#reward-count").text(resultData.json.customerCount);
+                }
+            });
+
+            datatable.on('draw.dt', function () {
+                if ($('#customer-grid tbody .dataTables_empty').length && datatable.page.info().pages)
+                    datatable.page('previous').draw('page');
+            });
+
+            $("#grid-search").keyup(function () {
+                drawRewardGrid();
+            });
+        });
+
+        function drawRewardGrid() {
+            datatable.draw('page');
+        };
+
+        function editReward(rewardId) {
+            showLoader();
+            $.ajax({
+                url: "@Url.Action("Edit", "Rewards")",
+                type: 'GET',
+                data: { id: rewardId },
+                dataType: "Html",
+                async: false,
+                success: function (html) {
+                    hideLoader();
+                    $("#div-edit-reward").html("").html(html);
+                    $("#editreward").modal("show");
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    hideLoader();
+                    showErrorMessage("@MessageConstant.CommonErrorMessage");
+                }
+            })
+        };
+
+        function confirmDeleteCustomer(rewardId) {
+            $("#btn-delete-customer").attr("onclick", `deleteReward(${rewardId});`);
+            $("#reward-delete").modal("show");
+        }
+
+        function deleteReward(rewardId) {
+            showLoader();
+            $.ajax({
+                url: "@Url.Action("Delete", "Rewards")",
+                type: 'DELETE',
+                data: { id: rewardId },
+                dataType: "JSON",
+                async: false,
+                success: function (data) {
+                    hideLoader();
+                    $("#reward-delete").modal("hide");
+                    if (data.success) {
+                        drawRewardGrid();
+                        showSuccessMessage(data.message);
+                    }
+                    else
+                        showErrorMessage(data.message);
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    hideLoader();
+                    showErrorMessage("@MessageConstant.CommonErrorMessage");
+                }
+            })
+        };        
+    </script>
+}

@@ -1,0 +1,90 @@
+﻿@model UpdateAdminProfileModel
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+
+    <!--- responsive tag --->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!--- Title Tag --->
+    <link rel="icon" href="@Url.Content("~/assets/images/favicon.ico")" />
+    <title>Profile</title>
+
+    <!--- Bootstrap CSS --->
+    <link rel="stylesheet" href="@Url.Content("~/assets/css/bootstrap.min.css")" />
+    <!--- bootstrap-flot label --->
+    <link rel="stylesheet" href="@Url.Content("~/assets/css/bootstrap-float-label.min.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/assets/css/jquery.dataTables.min.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/assets/css/responsive.dataTables.min.css")" />
+    <!--- bootstrap-select --->
+    <link rel="stylesheet" href="@Url.Content("/~assets/css/bootstrap-select.min.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/assets/css/style.css")" />
+</head>
+
+<body class="innerpage">
+    <div class="pageloader"></div>
+    <div class="row align-items-center innersubHead">
+        <div class="col-xl-5">
+            <h2 class="head-type2">Update Profile</h2>
+        </div>
+    </div>
+    <div class="reportOuter">
+        <div class="row grid-sp15">
+            <div class="col-lg-4 col-sm-6">
+                <div class="form-group input-group">
+                    <span class="has-float-label">
+                        <input asp-for="FirstName" class="form-control" type="text" />
+                        <label asp-for="FirstName">First Name</label>
+                    </span>
+                </div>
+            </div>
+            <div class="col-lg-4 col-sm-6">
+                <div class="form-group input-group">
+                    <span class="has-float-label">
+                        <input asp-for="LastName" class="form-control" type="text" />
+                        <label asp-for="LastName">Last Name</label>
+                    </span>
+                </div>
+            </div>
+            <div class="col-lg-4 col-sm-6">
+                <div class="form-group input-group">
+                    <span class="has-float-label">
+                        <input asp-for="EmailAddress" class="form-control" type="text" readonly />
+                        <label asp-for="EmailAddress">Email</label>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="text-right">
+            <a href="Javascript:;" class="btn-type1">Update</a>
+        </div>
+    </div>
+    <!-- jQuery Js -->
+    <script src="@Url.Content("~/assets/js/jquery.min.js")"></script>
+    <!-- Bootstrap JS -->
+    <script src="@Url.Content("~/assets/js/popper.min.js")"></script>
+    <script src="@Url.Content("~/assets/js/bootstrap.min.js")"></script>
+    <!-- bootstrap-select JS -->
+    <script src="@Url.Content("~/assets/js/bootstrap-select.min.js")"></script>
+    <script src="@Url.Content("~/assets/js/jquery.dataTables.min.js")"></script>
+    <script src="@Url.Content("~/assets/js/dataTables.responsive.min.js")"></script>
+    <script src="@Url.Content("~/assets/js/script.js")"></script>
+    <!-- Custom JS -->
+    <script>
+        $(document).ready(function () {
+            $('#listtable').DataTable({
+                responsive: true,
+                "ordering": true,
+                "info": false,
+                "dom": 'rtip'
+                //scrollX: true,
+                //scrollY: 500,
+                //"paging":   false,
+            });
+        });
+    </script>
+</body>
+</html>

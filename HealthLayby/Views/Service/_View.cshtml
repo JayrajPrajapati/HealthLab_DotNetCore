@@ -1,0 +1,123 @@
+﻿@model ServiceModel
+
+<style>
+    #more {
+        display: none;
+    }
+</style>
+
+<!-- View Service Modal -->
+<div class="modal fade" id="viewservice" data-backdrop="static" data-keyboard="false" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered w-640">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="head-type2">Service Details</h5>
+                <button type="button" class="close" data-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row grid-sp15">
+                    <div class="col-lg-6">
+                        <div class="form-group">
+                            <div class="viewformBg">
+                                <span class="viewformlabel">Status:</span>
+                                @if (Model.IsActive)
+                                {
+                                    <span class="viewformval">
+                                        Active
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="viewformval">
+                                        Inactive
+                                    </span>
+                                }
+                            </div>
+                            <div class="viewformBg">
+                                <span class="viewformlabel">Service Price:</span>
+                                <span class="viewformval">@Model.Price AUD</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="servicebox servicebox-new">
+                            <div class="serviceimg-right-part">
+                                <div class="serviceimg-top-text">
+                                    <h6>@Model.CategoryName</h6>
+                                    <h5 class="head-type2">@Model.ServiceName</h5>
+                                </div>
+                                <div class="serviceimg">
+                                    @if (!string.IsNullOrWhiteSpace(Model.Image))
+                                    {
+                                        <img src="@Url.Content($"{DirectoryConstant.ServiceThumbnailDirectory}/{Model.Image}")" alt="Service Image" onError="nofindLogo(this)" />
+                                    }
+                                    else
+                                    {
+                                        <img src="@DirectoryConstant.ImageNotFound" alt="Service Image" />
+                                    }
+                                </div>
+                            </div>
+                            <div class="serviceinfo">
+                                <div class="serviceinfoDesc more">@Model.Description</div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="row grid-sp15">
+                    <div class="col-lg-7">
+                        <a class="btn-type4" title="Delete" data-dismiss="modal" data-toggle="modal" data-target="#delete" onclick="confirmDeleteService(@Model.ServiceId)">Delete</a>
+                    </div>
+                    <div class="col-lg-5">
+                        <div class="text-right">
+                            <a data-dismiss="modal" class="btn-type1 loginSubmit" onclick="ServiceAddEdit(@Model.ServiceId)">Edit Service</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+
+        var showChar = 100;
+        var ellipsestext = "...";
+        var moretext = "Read more";
+        var lesstext = "Read less";
+
+        $('.more').each(function () {
+            var content = $(this).html();
+
+            if (content.length > showChar) {
+
+                var c = content.substr(0, showChar);
+                var h = content.substr(showChar, content.length - showChar);
+                var html = c + '<span class="readmore">' + ellipsestext + '&nbsp;</span><span class="morecontent"><span id="more">' + h + '</span>&nbsp;&nbsp;<a href="" class="morelink readmore">' + moretext + '</a></span>';
+
+                $(this).html(html);
+            }
+        });
+
+        $(".morelink").click(function () {
+            if ($(this).hasClass("less")) {
+                $(this).removeClass("less");
+                $(this).html(moretext);
+            } else {
+                $(this).addClass("less");
+                $(this).html(lesstext);
+            }
+            $(this).parent().prev().toggle();
+            $(this).prev().toggle();
+            return false;
+        });
+    });
+
+    function nofindLogo(ex) {
+        ex.src = '@DirectoryConstant.ImageNotFound';
+        ex.onerror = null;
+    }
+
+</script>
+

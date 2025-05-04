@@ -1,0 +1,132 @@
+﻿@model MerchantPlansModel
+@{
+    Layout = null;
+}
+<div class="modal fade" id="viewlaybyplan" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered w-640">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="head-type2">Plan Details</h5>
+                <button type="button" class="close" data-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row grid-sp15">
+                    <div class="col-lg-6">
+                        <h2 class="head-type3">Merchant Details:</h2>
+                        <div class="form-group">
+                            <img src="/assets/images/merchantlist-logo.svg" alt="Merchant Logo">
+                        </div>
+                        <div class="form-group">
+                            <div class="viewformBg">
+                                <span class="viewformlabel">Merchant Name:</span>
+                                <span class="viewformval">@Model.MerchantName</span>
+                            </div>
+                        </div>
+                        <hr class="hrrow">
+                        <h2 class="head-type3">Customer Details:</h2>
+                        <div class="form-group">
+                            <div class="viewformBg">
+                                <span class="viewformlabel">Name:</span>
+                                <span class="viewformval">@Model.CustomerName</span>
+                            </div>
+                            <div class="viewformBg">
+                                <span class="viewformlabel">Email:</span>
+                                <span class="viewformval">@Model.CustomerEmail</span>
+                            </div>
+                            <div class="viewformBg">
+                                <span class="viewformlabel">Phone:</span>
+                                <span class="viewformval">@Model.CustomerPhoneNumber</span>
+                            </div>
+                            <div class="viewformBg">
+                                <span class="viewformlabel">Status:</span>
+                                <span class="viewformval">@Model.CustomerStatus</span>
+                            </div>
+                            <div class="viewformBg" style="align-items: center;">
+                                <span class="viewformlabel">Signature:</span>
+                                <span class="viewformval"> <img src="/assets/images/signature-img.png" alt="Merchant signature"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="servicebox servicebox-new">
+                            <div class="serviceimg-right-part">
+                                <div class="serviceimg-top-text">
+                                    <h6>@Model.ServiceCategoryName</h6>
+                                    <h5 class="head-type2">@Model.ServiceName</h5>
+                                </div>
+                                <div class="serviceimg">
+                                    <img src="/assets/images/service-detail-img.png" alt="Service Image" />
+                                </div>
+                            </div>
+                            <div class="serviceinfo plan-info-new">
+                                <div class="form-group">
+                                    <div class="viewformBg">
+                                        <span class="viewformlabel">Paid Amount:</span>
+                                        <span class="viewformval text-right" id="">AUD @Model.ServiceAmount</span>
+                                    </div>
+                                    <div class="viewformBg">
+                                        <span class="viewformlabel">Duration:</span>
+                                        <span class="viewformval text-right">@Model.ServiceDuration Months</span>
+                                    </div>
+                                    <div class="viewformBg">
+                                        <span class="viewformlabel">Frequency:</span>
+                                        <span class="viewformval text-right">@Model.ServiceFrequency</span>
+                                    </div>
+                                    <div class="viewformBg">
+                                        <span class="viewformlabel">Total Amount Received:</span>
+                                        @if (Model.CustomerTotalAmtPaid > 0)
+                                        {
+                                            <span class="viewformval text-right">AUD @Model.CustomerTotalAmtPaid</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="viewformval text-right">AUD 0.00 </span>
+                                        }
+                                        
+                                    </div>
+                                    <div class="viewformBg">
+                                        <span class="viewformlabel">Next Deduction Date:</span>
+                                        @if (Model.CustomerNextDeductionDate != null)
+                                        {
+                                            <span class="viewformval text-right">@Model.CustomerNextDeductionDate</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="viewformval text-right"> - </span>
+                                        }
+                                    </div>
+                                    <div class="viewformBg">
+                                        <span class="viewformlabel">Next Amount Deduction:</span>
+                                        @if (Model.CustomerNextAmt > 0)
+                                        {
+                                            <span class="viewformval text-right">AUD @Model.CustomerNextAmt</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="viewformval text-right">AUD 0.00 </span>
+                                        }
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row grid-sp15">
+                    <div class="col-lg-7">
+                        @if (Model.PlanStatus == "Active")
+                        {
+                            <a class="btn-type4" title="Delete" data-dismiss="modal" data-toggle="modal" data-target="#Otpmodal" onclick="SendOtp('@Model.MerchantName','@Model.CustomerName',@Model.CustomerPlanId)">Archive</a>
+                        }
+                    </div>
+                    <div class="col-lg-5">
+                        <div class="text-right">
+                            <a class="btn-type5" data-dismiss="modal" title="Back" href="Javascript:;">Back</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

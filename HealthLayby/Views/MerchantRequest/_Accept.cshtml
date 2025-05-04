@@ -1,0 +1,134 @@
+﻿@model MerchantRequestModel
+@{
+
+    long data = Model.MerchantId;
+}
+
+<div class="modal fade" id="accept">
+    <div class="modal-dialog modal-dialog-centered w-410">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="head-type2">Please Reconform Following Detail</h5>
+                <button type="button" class="close" data-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    @Html.HiddenFor(m=>m.ServiceIds)
+                    @Html.HiddenFor(m=>m.MerchantId)
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label for="category">Category</label>
+                                <select asp-for="CategoryId" class="filterdropdown selectpicker w100" title="Select Category" onchange="GetServices()">
+                                    @foreach (var category in Model.CategoryList)
+                                    {
+                                        <option value="@category.Value">@category.Text</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-group serviceboxdiv" style="display:none">
+                                <label for="category">Services</label>
+                                <select asp-for="ServiceId" class="filterdropdown selectpicker w100" title="Select Service" multiple>
+                                </select>
+                                <span asp-validation-for="ServiceId" class="text-danger"></span>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <a href="Javascript:;" data-dismiss="modal" class="btn-type5 cancel-btn">Cancel</a>
+                        </div>
+                        <div class="col-md-6 text-right">
+                            <a href="Javascript:;" class="btn-type1 loginSubmit" onclick="acceptRequest(@Model.MerchantId)">Submit</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        if ($("#@Html.IdFor(x => x.CategoryId)").val() > 0 && $("#@Html.IdFor(x => x.MerchantId)").val() > 0) {
+            GetServices();
+        }
+        $("#@Html.IdFor(x => x.CategoryId)").selectpicker();
+        $("#@Html.IdFor(x => x.ServiceId)").selectpicker();
+    });
+
+    function GetServices() {
+        var categoryId = $('#CategoryId option:selected').val();
+        var servicesIdss = $("#ServiceIds").val().split(',');
+        if (categoryId != null && categoryId > 0 && categoryId != undefined) {
+            $.ajax({
+                url: '@Url.Action("GetServiceDropdownList","Merchant")',
+                type: "GET",
+                data: { categoryId: categoryId },
+                async: false,
+                success: function (services) {
+                    if (services.length > 0 && services != null && services != undefined) {
+                        $("#ServiceId").html("");
+                        $(".serviceboxdiv").show();
+                        $.each(services, function (i, service) {
+                            $("#ServiceId").append(
+                                $('<option></option>').val(service.value).html(service.text));
+                        });
+                        if (servicesIdss.length > 0) {
+                            $("#ServiceId").selectpicker();
+                            $("#ServiceId").selectpicker('refresh')
+                            $('#ServiceId').selectpicker('val', servicesIdss);
+                        }
+                        $("#ServiceId").selectpicker('refresh')
+
+
+                    }
+                    else {
+                        $("#ServiceId").html("");
+                        $(".serviceboxdiv").hide();
+                    }
+                }
+            });
+        }
+    }
+
+    function acceptRequest(merchantId) {
+        showLoader();
+        var serviceIds = $("#ServiceId").val().toString();
+        var categoryId = $("#@Html.IdFor(x => x.CategoryId) option:selected").val();
+        if (categoryId == '') {
+            showErrorMessage("@MessageConstant.InvalidModalState");
+            hideLoader();
+        }
+        else if (serviceIds == '') {
+            showErrorMessage("@MessageConstant.InvalidModalState");
+            hideLoader();
+        }
+        else {
+            $.ajax({
+                url: "@Url.Action("MerchantAcceptRejectRequest", "MerchantRequest")",
+                type: 'POST',
+                dataType: "JSON",
+                data: { id: merchantId, rejectedReason: "-", merchantRequestenum: @Convert.ToInt32(MerchantRequestEnum.Accepted), categoryId: $("#@Html.IdFor(x => x.CategoryId) option:selected").val(), serviceIds: serviceIds },
+                success: function (data) {
+                    hideLoader();
+                    if (data.success) {
+                        $("#accept").modal("hide");
+                        drawMerchantGrid();
+                        showSuccessMessage(data.message);
+                    }
+                    else {
+                        hideLoader();
+                        showErrorMessage(data.message);
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    hideLoader();
+                    showErrorMessage("@MessageConstant.CommonErrorMessage");
+                }
+            });
+        }
+    }
+</script>

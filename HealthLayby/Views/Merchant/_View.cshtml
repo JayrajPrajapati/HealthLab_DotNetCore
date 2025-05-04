@@ -1,0 +1,125 @@
+﻿@model MerchantModel
+
+@{
+    Layout = null;
+    string AcceptedDate = string.Empty, CreateOnDate = string.Empty;
+    AcceptedDate =Model.Accepted != null ? Model.Accepted.Value.ToString("MMMM dd, yyyy") : "-";
+    CreateOnDate = Model.CreatedOn != null ? Model.CreatedOn.Value.ToString("MMMM dd, yyyy") : "-";
+}
+
+<div class="modal fade" id="viewmerchant" data-backdrop="static" data-keyboard="false" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered w-640">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="head-type2">Merchant Details</h5>
+                <button type="button" class="close" data-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form class="addcustomer">
+                    <div class="row grid-sp15">
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <img class="merchantviewimg" src="@DirectoryConstant.MerchantProfilePicDirectory/@Model.ProfilePic" alt="Aaron Willmott" onError="nofindMerchant(this)" />
+                            </div>
+                            <div class="form-group">
+                                <div class="viewformBg">
+                                    <span class="viewformlabel">Name:</span>
+                                    <span class="viewformval">@Model.FullName</span>
+                                </div>
+                                <div class="viewformBg">
+                                    <span class="viewformlabel">Email:</span>
+                                    <span class="viewformval">@Model.EmailAddress</span>
+                                </div>
+                                <div class="viewformBg">
+                                    <span class="viewformlabel">Phone:</span>
+                                    <span class="viewformval">@Model.PhoneNumber</span>
+                                </div>
+                                <div class="viewformBg">
+                                    <span class="viewformlabel">Registered:</span>
+                                    <span class="viewformval">@CreateOnDate</span>
+                                </div>
+                                <div class="viewformBg">
+                                    <span class="viewformlabel">Category:</span>
+                                    <span class="viewformval">@Model.CategoryName</span>
+                                </div>
+                                <div class="viewformBg">
+                                    <span class="viewformlabel">Service:</span>
+                                    <span class="viewformval">@Model.ServicesNames</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <img class="merchantviewlogo" src="@DirectoryConstant.MerchantLogoDirectory/@Model.Logo" alt="Logo ipsum" onError="nofindLogo(this)" />
+                            </div>
+                            <div class="form-group">
+                                <div class="viewformBg">
+                                    <span class="viewformlabel">Clinic/Lab:</span>
+                                    <span class="viewformval">@Model.ClinicName</span>
+                                </div>
+                                <div class="viewformBg">
+                                    <span class="viewformlabel">Location:</span>
+                                    <span class="viewformval">@Model.ClinicLocation</span>
+                                </div>
+                                <div class="viewformBg">
+                                    <span class="viewformlabel">Status:</span>
+                                    @if (@Model.IsActive == true)
+                                    {
+                                        <span class="viewformval">Active</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="viewformval">InActive</span>
+                                    }
+
+                                </div>
+                                <div class="viewformBg">
+                                    <span class="viewformlabel">Accepted:</span>
+                                    <span class="viewformval">@AcceptedDate</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row grid-sp15">
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <div class="editformBg singleview">
+                                    <span class="editformlabel">
+                                        Bank:<br /><br />
+                                        @Model.BankName, &nbsp; @Model.BranchName<br /><br />
+                                    </span>
+                                    <span class="editformval">SWIFT-code @Model.BSBNo</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <div class="editformBg">
+                                    <span class="editformlabel">Total Amount <br> transferred:</span>
+                                    <span class="editformval">310.00</span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="editformBg" style="min-height: 51px;">
+                                    <span class="editformlabel">Total Earnings:</span>
+                                    <span class="editformval">580.00</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row grid-sp15">
+                        <div class="col-lg-6">
+                            <a  href="Javascript:;" class="btn-type4" title="Delete" onclick="confirmDeleteMerchant(@Model.MerchantId,2)">Delete</a>
+                            <a class="btn-type5" data-dismiss="modal" title="Edit" onclick="merchantAddEdit(@Model.MerchantId)">Edit</a>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="text-right">
+                                <a href="Javascript:;" data-dismiss="modal" data-toggle="modal" data-target="#paymerchant" class="btn-type1 loginSubmit" onclick="viewPayMerchant(@Model.MerchantId)">Pay</a>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

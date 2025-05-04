@@ -1,0 +1,152 @@
+﻿@{
+    var title = ViewBag.Title ?? "Health Layby";
+    var firstName = Context?.User.FindFirst("FirstName")?.Value.ToString() ?? string.Empty;
+    var lastName = Context?.User.FindFirst("LastName")?.Value.ToString() ?? string.Empty;
+    var fullName = $"{firstName} {lastName}";
+    var shortName = $"{firstName.ToUpper().First()}{lastName.ToUpper().First()}";
+    var isInnerContentDivRemove = ViewBag.IsInnerContentDivRemove ?? false;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!--- title tag --->
+    <title>@title</title>
+    <meta charset="UTF-8" />
+    <!--- responsive tag --->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="@Url.Content("~/assets/images/favicon.ico")" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+    <!--- bootstrap css --->
+    <link rel="stylesheet" href="@Url.Content("~/assets/css/bootstrap.min.css")" asp-append-version="true" />
+    <!--- bootstrap-flot label --->
+    <link rel="stylesheet" href="@Url.Content("~/assets/css/bootstrap-float-label.min.css")" asp-append-version="true" />
+    <link rel="stylesheet" href="@Url.Content("~/assets/css/jquery.dataTables.min.css")" asp-append-version="true" />
+    @*<link rel="stylesheet" href="@Url.Content("~/assets/css/responsive.dataTables.min.css")" asp-append-version="true" />*@
+    <!--- bootstrap-select --->
+    <link rel="stylesheet" href="@Url.Content("~/assets/css/bootstrap-select.min.css")" asp-append-version="true" />
+    <link rel="stylesheet" href="@Url.Content("~/assets/css/style.css")" asp-append-version="true" />
+    <!--- toastr css --->
+    <link rel="stylesheet" href="@Url.Content("~/plugins/toastr/toastr.min.css")" asp-append-version="true" />
+    <!--- daterange css --->
+    <link href="@Url.Content("~/assets/css/daterangepicker.css")" rel="stylesheet" asp-append-version="true"/>
+    <!--- custom css --->
+    <link rel="stylesheet" href="@Url.Content("~/css/site.css")" asp-append-version="true" />
+    <link rel="stylesheet" href="@Url.Content("~/assets/css/developer.css")" asp-append-version="true" />
+    @RenderSection("Styles", required: false)
+</head>
+<body class="innerpage">
+    <div class="pageloader"></div>
+    <div class="menuview">
+        <div class="sidemenuouter">
+            <div class="sidebarlogo">
+                <a class="sidebarlogolink" asp-controller="Dashboard" asp-action="Index">
+                    <img src="@Url.Content("~/assets/images/logo.svg")" alt="Health LAYBY" />
+                </a>
+            </div>
+            <ul class="sidemenuinner">
+                <li><a id="dashboard-menu" class="sidebarlink dashboard-icon" title="Dashboard" asp-controller="Dashboard" asp-action="Index">Dashboard</a></li>
+                <li><a id="customer-menu" class="sidebarlink customers-icon" title="Customers" asp-controller="Customer" asp-action="Index">Customers</a></li>
+                <li class="sublist">
+                    <a class="sidebarlink merchant-icon " title="Merchant" href="Javasctipt:void(0);">
+                        Merchant
+                        <span class="menuarrow"></span>
+                    </a>                    
+                    <ul class="submenu">
+                        <li><a id="merchant-menu" class="submenulink" title="Merchant List" asp-controller="Merchant" asp-action="Index">Merchant List</a></li>
+                        <li><a id="merchantrequest-menu" class="submenulink" title="Merchant Request" asp-controller="MerchantRequest" asp-action="Index">Merchant Request</a></li>
+                    </ul>
+                </li>                
+                <li><a id="category-menu" class="sidebarlink category-icon" title="Category" asp-controller="Category" asp-action="Index">Category</a></li>
+                <li><a id="service-menu" class="sidebarlink services-icon" title="Services" asp-controller="Service" asp-action="Index">Services</a></li>
+                <li><a id="layby-menu" class="sidebarlink layby-icon" title="LayBy" asp-controller="LayBy" asp-action="Index">LayBy</a></li>
+                <li><a id="wallet-menu" class="sidebarlink wallet-icon" title="Wallet" asp-controller="WalletManagement" asp-action="Index">Wallet</a></li>
+                <li><a id ="transaction-menu" class="sidebarlink transaction-icon" title="Transaction" asp-controller="TransactionHistory" asp-action="Index">Transaction</a></li>
+                <li><a id="cmc-menu" class="sidebarlink cmccontent-icon" title="CMC Content" asp-controller="ContentManagement" asp-action="Index">CMC Content</a></li>
+                <li><a id="config-menu" class="sidebarlink configmanagement-icon" title="Config Management" asp-controller="ConfigManagement" asp-action="Index">Config Management</a></li>
+                @*<li><a id="report-menu" class="sidebarlink report-icon" title="Report" asp-controller="Report" asp-action="Index">Report</a></li>*@
+            </ul>
+        </div>
+        <div class="contentSection">
+            <div class="row align-items-center mainHead">
+                <div class="col-xl-6">
+                    @RenderSection("HeaderTitle", required: false)
+                </div>
+                <div class="col-xl-6">
+                    <div class="searchOuter">
+                        <div class="searchtextbox">
+                            <input type="text" class="searchbox" placeholder="Search">
+                            <a href="#" class="searchicon"></a>
+                        </div>
+                        <div class="userdropdown">
+                            <button class="dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>@shortName</span>@fullName</button>
+                            <div class="dropdown-menu dropdown-menu-right">
+                                <span class="userdroplink"><a asp-route="updateProfile" class="userdropdownlink">Profile</a></span>
+                                <span class="userdroplink"><a asp-route="changePassword" class="userdropdownlink">Change Password</a></span>
+                                <span class="userdroplink"><a asp-controller="Login" asp-action="Logout" class="userdropdownlink logout">Logout</a></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @RenderSection("WalletHeader", required: false)
+
+            @if (isInnerContentDivRemove)
+            {
+                <text>
+                    @RenderBody()
+                </text>
+            }
+            else
+            {
+                <div class="innerContent">
+                    @RenderBody()
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- jQuery js -->
+    <script src="@Url.Content("~/assets/js/jquery.min.js")" asp-append-version="true"></script>
+    <script src="@Url.Content("~/plugins/jquery-validation/dist/jquery.validate.min.js")" asp-append-version="true"></script>
+    <script src="@Url.Content("~/plugins/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js")" asp-append-version="true"></script>
+    <!-- bootstrap js -->
+    <script src="@Url.Content("~/assets/js/popper.min.js")" asp-append-version="true"></script>
+    <script src="@Url.Content("~/assets/js/bootstrap.min.js")" asp-append-version="true"></script>
+    <!-- bootstrap-select js -->
+    <script src="@Url.Content("~/assets/js/bootstrap-select.min.js")" asp-append-version="true"></script>
+    <script src="@Url.Content("~/assets/js/jquery.dataTables.min.js")"></script>
+    @*<script src="@Url.Content("~/assets/js/dataTables.responsive.min.js")"></script>*@
+    <script src="@Url.Content("~/assets/js/script.js")"></script>
+    <!-- toastr js -->
+    <script src="@Url.Content("~/plugins/toastr/toastr.min.js")" asp-append-version="true"></script>
+    <!-- moment js -->
+    <script src="@Url.Content("~/plugins/moment/moment.min.js")" asp-append-version="true"></script>
+    <!-- daterangepicker js -->
+    <script src="@Url.Content("~/assets/js/daterangepicker.min.js")" asp-append-version="true"></script>
+    <!-- custom js -->
+    <script src="@Url.Content("~/js/site.js")" asp-append-version="true"></script>
+    <script>
+        showLoader();
+        $(document).ready(function () {
+            setTimeout(() => { hideLoader(); }, 1500);            
+
+            let success = '@TempData["SuccessMessage"]';
+            let error = '@TempData["Error"]';
+            let info = '@TempData["Info"]';
+            if (success != undefined && success != null && success.trim() != "") {
+                showSuccessMessage(success);
+            }
+            if (error != undefined && error != null && error.trim() != "") {
+                showErrorMessage(error);
+            }
+            if (info != undefined && info != null && info.trim() != "") {
+                showInfoMessage(info);
+            }
+        });       
+    </script>
+    @RenderSection("Scripts", required:false)
+    @RenderSection("Partials", required:false)    
+</body>
+</html>

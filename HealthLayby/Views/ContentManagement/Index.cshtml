@@ -1,0 +1,283 @@
+﻿@using HealthLayby.Repositories.Repositories;
+@inject ICMSRepository _cMSRepository;
+@using static HealthLayby.Helpers.Constant.Enum;
+
+@using System.Text.RegularExpressions;
+
+@functions {
+    string StripHTML(string? input)
+    {
+        if (!string.IsNullOrEmpty(input))
+        {
+            input = Regex.Replace(input, "<[h1|h2|h3|h4|h5][^>]*>", String.Empty);
+            return input;
+        }
+        return "";
+    }
+}
+@model CMSModel
+
+@{
+    var privacyPolicyDescription = await _cMSRepository.GetPageContentByPageCodeAsync((int)ContentManagementEnum.PrivacyPolicy);
+    var termsAndConditionDescription = await _cMSRepository.GetTermsandConditionContentByPageCodeAsync((int)ContentManagementEnum.Termsconditions);
+    var whyIncludingAdminFeeDescription = await _cMSRepository.GetWhyIncludingAdminFeeContentByPageCodeAsync((int)ContentManagementEnum.WhyIncludingAdminFee);
+    ViewData["Title"] = "Content Management";
+    string privacyPolicyDescriptionDescription = StripHTML(privacyPolicyDescription?.Description);
+    string termsAndConditionDescriptionDescription = StripHTML(termsAndConditionDescription?.Description);
+    string whyIncludingAdminFeeDescriptionDescription = StripHTML(whyIncludingAdminFeeDescription?.Description);
+}
+
+@section HeaderTitle
+    {
+    <h1 class="head-type1">Content Management</h1>
+    }
+
+@section Partials
+    {
+    <div class="modal fade" id="confirmdeletemodal" data-backdrop="static" data-keyboard="false" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered w-640">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="head-type2">Are you sure you want to delete?</h5>
+                    <button type="button" class="close" data-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group input-group">
+                        <textarea class="form-control" id="rejection" placeholder="Reason for Rejection" required></textarea>
+                    </div>
+                    <div class="text-center">
+                        <a href="Javascript:;" data-dismiss="modal" class="btn-type5 loginSubmit">Cancel</a>
+                        <a id="btn-delete-yes" href="Javascript:;" data-dismiss="modal" class="btn-type1 loginSubmit">Update</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="div-add-edit-faq">
+    </div>
+    <div id="div-add-edit-content">
+    </div>
+    }
+
+<div class="row">
+    <div class="col-xl-12">
+        <div class="customtabOuter">
+            <div class="customtab-head text-left" id="cmccontent">
+                <a href="Javascript:;" class="customtabH-link active" dataid="1" cid="cmccontent">Privacy Policy</a>
+                <a href="Javascript:;" class="customtabH-link" dataid="2" cid="cmccontent">FAQs</a>
+                <a href="Javascript:;" class="customtabH-link" dataid="3" cid="cmccontent">Terms & Conditions</a>
+                <a href="Javascript:;" class="customtabH-link" dataid="4" cid="cmccontent">Why Including Admin Fee</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="customtabOuter" id="cmccontent">
+    <div class="customtab-list">
+        <div class="customtab-list-inner content_1" dataid="panel_1" style="display: block;">
+            <div class="head-type2">@privacyPolicyDescription.Title</div>
+            <br />
+            <div class="cms-text1 mb-4 pre-scrollable">
+                <p>@Html.Raw(privacyPolicyDescriptionDescription)</p>
+            </div>
+            <div class="row align-items-center">
+                <div class="col-6">
+                    <span class="badge badge-success">@(privacyPolicyDescription.IsActive ? "Active" : "Inactive")</span>
+                </div>
+                <div class="col-6 text-right">
+                    <div class="form-group">
+                        <a href="Javascript:;" class="btn-type5" data-toggle="modal" onclick="editContent('@Convert.ToInt16(ContentManagementEnum.PrivacyPolicy)')">Edit</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="customtab-list-inner content_2" dataid="panel_2" style="display: none;">
+            <div class="faqsOuter" id="faq-parent"></div>
+            <div class="text-right">
+                <div class="form-group">
+                    <a class="btn-type1" id="btnadd" onclick="addEditFAQ(0)">Add</a>
+                </div>
+            </div>
+        </div>
+        <div class="customtab-list-inner content_3" dataid="panel_3" style="display: none;">
+            <div class="head-type2">@termsAndConditionDescription.Title</div>
+            <br />
+            <div class="cms-text1 mb-4 pre-scrollable">
+                <p>@Html.Raw(termsAndConditionDescriptionDescription)</p>
+            </div>
+            <div class="row align-items-center">
+                <div class="col-6">
+                    <span class="badge badge-success">@(termsAndConditionDescription.IsActive ? "Active" : "Inactive")</span>
+                </div>
+                <div class="col-6 text-right">
+                    <div class="form-group">
+                        <a href="Javascript:;" class="btn-type5" data-toggle="modal" onclick="editContent('@Convert.ToInt16(ContentManagementEnum.Termsconditions)')">Edit</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="customtab-list-inner content_4" dataid="panel_4" style="display: none;">
+            <div class="head-type2">@whyIncludingAdminFeeDescription.Title</div>
+            <br />
+            <div class="cms-text1 mb-4 pre-scrollable">
+                <p>@Html.Raw(whyIncludingAdminFeeDescriptionDescription)</p>
+            </div>
+            <div class="row align-items-center">
+                <div class="col-6">
+                    <span class="badge badge-success">@(whyIncludingAdminFeeDescription.IsActive ? "Active" : "Inactive")</span>
+                </div>
+                <div class="col-6 text-right">
+                    <div class="form-group">
+                        <a href="Javascript:;" class="btn-type5" data-toggle="modal" onclick="editContent('@Convert.ToInt16(ContentManagementEnum.WhyIncludingAdminFee)')">Edit</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section Styles
+    {
+    <style>
+        .ck-editor__editable {
+            height: 290px !important;
+        }
+    </style>
+    }
+
+@section Scripts{
+    <script type="text/javascript">
+        let privacyPolicyEditor;
+        $(document).ready(function ($) {
+            activeMenu("cmc-menu");
+            $('.customtabH-link').click(function (j) {
+                var section_id = $(this).attr("cid");
+                var data_id = $(this).attr("dataid");
+
+                if (data_id == 2) {
+                    bindFAQList();
+                }
+
+                if (!$(this).hasClass('active')) {
+                    $('#' + section_id + ' .customtabH-link').removeClass('active');
+                    $('#' + section_id + ' .customtab-list-inner').attr("style", "display:none;");
+                    $(this).addClass('active');
+                    $('#' + section_id + ' .content_' + data_id).attr("style", "display:block;");
+                }
+            });
+        });
+
+        function addEditFAQ(faqId) {
+            debugger
+            showLoader();
+            event.stopImmediatePropagation();
+            $.ajax({
+                url: "@Url.Action("AddEditFAQ", "ContentManagement")",
+                type: 'GET',
+                data: { id: faqId },
+                dataType: "HTML",
+                async: false,
+                success: function (html) {
+                    hideLoader();
+                    $("#div-add-edit-faq").html(html);
+                    $.validator.unobtrusive.parse("#add-edit-faq");
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    hideLoader();
+                    showErrorMessage("@MessageConstant.CommonErrorMessage");
+                }
+            })
+        };
+
+        function confirmDeleteFAQ(faqid) {
+            event.stopImmediatePropagation();
+            $("#btn-delete-yes").attr("onclick", `deleteFAQ("${faqid}")`);
+            $("#confirmdeletemodal").modal("show");
+        };
+
+        function deleteFAQ(faqId) {
+            var rejection = $("#rejection").val()
+            if (rejection == '') {
+                showErrorMessage('@MessageConstant.DescriptionInValid');
+                return false;
+            }
+
+            showLoader();
+
+            $.ajax({
+                url: "@Url.Action("Delete", "ContentManagement")",
+                type: 'DELETE',
+                data: { id: faqId, rejectreason: $("#rejection").val() },
+                dataType: "JSON",
+                async: false,
+                success: function (data) {
+                    hideLoader();
+                    $("#confirmdeletemodal").modal("hide");
+                    if (data.success) {
+                        $("#FAQform").selectpicker('refresh');
+                        bindFAQList();
+                        showSuccessMessage(data.message);
+                    }
+                    else {
+                        showErrorMessage(data.message);
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    hideLoader();
+                    showErrorMessage("@MessageConstant.CommonErrorMessage");
+                }
+            })
+        };
+
+        function bindFAQList() {
+            $.ajax({
+                url: '@Url.Action("FAQList", "ContentManagement")',
+                type: 'GET',
+                dataType: "html",
+                success: function (html) {
+                    $("#faq-parent").html(html);
+
+                    $(".faqsOuter .faqHeader").click(function () {
+                        if ($(this).parent().hasClass('active')) {
+                            $(this).parent().removeClass('active');
+                            $(this).next().slideUp();
+                        } else {
+                            $(".faqsOuter .faqHeader").parent().removeClass('active');
+                            $(".faqsOuter .faqHeader").next().slideUp();
+                            $(this).parent().addClass('active');
+                            $(this).next().slideDown();
+                        }
+                    });
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    showErrorMessage("@MessageConstant.CommonErrorMessage");
+                }
+            });
+        };
+
+        function editContent(pageCode) {
+            debugger
+            showLoader();
+            event.stopImmediatePropagation();
+            $.ajax({
+                url: "@Url.Action("AddEditContent", "ContentManagement")",
+                type: 'GET',
+                data: { contentManagementEnum: pageCode },
+                dataType: "HTML",
+                async: false,
+                success: function (html) {
+                    hideLoader();
+                    $("#div-add-edit-content").html(html);
+                    $("#privacy_modal").modal("show");
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    hideLoader();
+                    showErrorMessage("@MessageConstant.CommonErrorMessage");
+                }
+            })
+        };
+    </script>
+    }
+

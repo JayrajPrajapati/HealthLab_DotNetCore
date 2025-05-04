@@ -1,0 +1,217 @@
+﻿@using HealthLayby.Repositories.Repositories.MerchantRepositories;
+@model RegisterMerchantModel
+@inject IMerchantWebRepository _merchantWebRepository
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+
+    <!--- responsive tag --->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!--- Title Tag --->
+    @*<link rel="icon" href="assets/images/favicon.ico" />*@
+    <link rel="icon" href="@Url.Content("~/assets/images/favicon.ico")" asp-append-version="true" />
+    <title>Register</title>
+
+    <!--- Bootstrap CSS --->
+    @*<link rel="stylesheet" href="assets/css/bootstrap.min.css" />*@
+    <link rel="stylesheet" href="@Url.Content("~/assets/css/bootstrap.min.css")" asp-append-version="true" />
+
+    <!--- bootstrap-flot label --->
+    <link rel="stylesheet" href="@Url.Content("~/assets/css/bootstrap-float-label.min.css")" asp-append-version="true" />
+    <link rel="stylesheet" href="@Url.Content("~/assets/css/jquery.dataTables.min.css")" asp-append-version="true" />
+
+    <!--- bootstrap-select --->
+    <link rel="stylesheet" href="@Url.Content("~/assets/css/bootstrap-select.min.css")" asp-append-version="true" />
+    <link rel="stylesheet" href="@Url.Content("~/assets/css/style.css")" asp-append-version="true" />
+
+</head>
+
+<body class="">
+    <div class="pageloader"></div>
+    <div class="login-wrapper">
+        <h1 class="logo">
+            <a href="login.html" class="logo-link">
+                <img src="@Url.Content("~/assets/images/logo.svg")" alt="Health LAYBY" asp-append-version="true" />
+            </a>
+        </h1>
+        <div class="row align-items-center">
+            <div class="col-lg-6 col-12">
+                <div class="login-left-info">
+                    <div class="head-type1 login-head mb-4">Request for Registration</div>
+                    <form class="login-form register-form" asp-action="Register" asp-controller="Login" method="post" id="registerForm">
+                        <div class="row grid-sp15">
+                            <div class="col-lg-6 col-sm-6">
+                                <div class="form-group input-group">
+                                    <span class="has-float-label">
+                                        <input asp-for="FirstName" class="form-control" type="text" placeholder="First Name" id="FirstName" />
+                                        <label asp-for="FirstName">First Name<span class="text-danger">*</span></label>
+                                    </span>
+                                    <span asp-validation-for="FirstName" class="help-block text-danger small"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-6 col-sm-6">
+                                <div class="form-group input-group">
+                                    <span class="has-float-label">
+                                        <input asp-for="LastName" class="form-control" type="text" placeholder="Last Name" id="LastName" />
+                                        <label asp-for="LastName">Last Name<span class="text-danger">*</span></label>
+                                    </span>
+                                    <span asp-validation-for="LastName" class="help-block text-danger small"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-6 col-sm-6">
+                                <div class="form-group input-group">
+                                    <span class="has-float-label">
+                                        <input asp-for="Email" class="form-control" type="text" placeholder="Email" id="Email" />
+                                        <label asp-for="Email">Email<span class="text-danger">*</span></label>
+                                    </span>
+                                    <span asp-validation-for="Email" class="help-block text-danger small"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-6 col-sm-6">
+                                <div class="form-group input-group">
+                                    <span class="has-float-label">
+                                        <input asp-for="Phone" class="form-control" type="text" onkeypress="return /[0-9]/i.test(event.key)" placeholder="Phone" id="Phone" />
+                                        <label asp-for="Phone">Phone<span class="text-danger">*</span></label>
+                                    </span>
+                                    <span asp-validation-for="Phone" class="help-block text-danger small"></span>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-sm-6">
+                                <div class="form-group">
+                                    <select asp-for="Category" class="filterdropdown selectpicker w100" title="Select Category" asp-items="await _merchantWebRepository.GetActiveCategoryDropdownListAsync()">
+                                    </select>
+                                    <span asp-validation-for="Category"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-6 col-sm-6">
+                                <div class="form-group input-group">
+                                    <span class="has-float-label">
+                                        <input asp-for="ClinicName" class="form-control" type="text" placeholder="Clinic Name" id="ClinicName" />
+                                        <label asp-for="ClinicName">Clinic Name<span class="text-danger">*</span></label>
+                                    </span>
+                                    <span asp-validation-for="ClinicName" class="help-block text-danger small"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <select asp-for="ServiceId" class="filterdropdown selectpicker w100" title="Select Service" multiple></select>
+                                    <span asp-validation-for="ServiceId"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-12 col-12">
+                                <div class="form-group input-group">
+                                    <span class="has-float-label">
+                                        <textarea asp-for="Notes" class="form-control" placeholder="Notes" id="Notes"></textarea>
+                                        <label asp-for="Notes">Notes<span class="text-danger">*</span></label>
+                                    </span>
+                                    <span asp-validation-for="Notes" class="help-block text-danger small"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-12 col-12">
+                                <div class="form-group mb-4">
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" class="custom-control-input" id="customCheck1" checked>
+                                        <label class="custom-control-label" for="customCheck1">I am agreeing with our <a href="#"> Terms & Condition </a>and <a href="#">Privacy Policy.</a></label>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <input type="submit" class="btn-type1 loginSubmit w100" value="Register" />
+                        <div class="forgetlink text-center">
+                            Already have an account?
+                            <a asp-action="index" asp-controller="login" class="link-type1"> Already have an account?</a>
+                        </div>
+                    </form>
+
+                </div>
+                <div class="ft-info">&copy; 2023 Healthlayby. All Rights Reserved.</div>
+            </div>
+            <div class="col-lg-6 loginbannerOuter">
+                <div class="loginbanner" style="background:url('assets/images/register-formimg.png') no-repeat;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- jQuery Js -->
+    <script src="@Url.Content("~/assets/js/jquery.min.js")" asp-append-version="true"></script>
+    <script src="@Url.Content("~/assets/js/popper.min.js")" asp-append-version="true"></script>
+    <script src="@Url.Content("~/assets/js/bootstrap.min.js")" asp-append-version="true"></script>
+    <script src="@Url.Content("~/assets/js/bootstrap-select.min.js")" asp-append-version="true"></script>
+    <script src="@Url.Content("~/assets/js/jquery.dataTables.min.js")" asp-append-version="true"></script>
+    <script src="@Url.Content("~/assets/js/dataTables.responsive.min.js")" asp-append-version="true"></script>
+    <script src="@Url.Content("~/js/site.js")" asp-append-version="true"></script>
+    <script type='text/javascript' src="https://rawgit.com/RobinHerbots/jquery.inputmask/3.x/dist/jquery.inputmask.bundle.js"></script>
+
+    <!-- toastr js -->
+    <script src="@Url.Content("~/plugins/toastr/toastr.min.js")" asp-append-version="true"></script>
+
+    <script type="text/javascript">
+        $(document).ready(() => {
+            $("@Html.IdFor(q => q.ServiceId)").selectpicker();
+
+            $("#@Html.IdFor(x => x.Phone)").inputmask("+61(999)-999-9999", { "clearIncomplete": true });
+
+            $("#@Html.IdFor(q => q.Category)").on("change", function () {
+                var selectedValue = $("#@Html.IdFor(q => q.Category) option:selected").val();
+                if (selectedValue && selectedValue != '0') {
+                    $.ajax({
+                        type: 'GET',
+                        url: '@Url.Action("GetServiceDropdownListByCategory","Login")',
+                        data: {
+                            id: selectedValue
+                        },
+                        async: false,
+                        success: function (response) {
+                            if (response.success) {
+                                $("#ServiceId").html("");
+                                $.each(response.serviceDetail, function (key, value) {
+                                    $("#ServiceId").append($('<option></option>').val(value.value).html(value.text));
+                                })
+                                $("#ServiceId").selectpicker('refresh');
+                            }
+                        },
+                        error: function (XMLHttpRequest, textStatus, errorThrown) {
+                            hideLoader();
+                            showErrorMessage("@MessageConstant.CommonErrorMessage");
+                        },
+                    });
+                }
+            });
+            
+            $('#registerForm').on('submit', function () {
+                if (!$('#registerForm').valid()) {
+                    return false;
+                }
+                showLoader();
+            });
+
+            let success = '@ViewData[MessageConstant.SuccessMessageKey]';
+            let error = '@ViewData[MessageConstant.ErrorMessageKey]';
+
+            if (success != undefined && success != null && success.trim() != "") {
+                showSuccessMessage(success);
+            }
+
+            if (error != undefined && error != null && error.trim() != "") {
+                showErrorMessage(error);
+            }
+        });
+    </script>
+
+</body>
+</html>

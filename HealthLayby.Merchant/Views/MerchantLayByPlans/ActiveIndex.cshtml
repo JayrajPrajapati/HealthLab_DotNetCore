@@ -1,0 +1,301 @@
+﻿@model List<MerchantPlansModel>
+@{
+    ViewData["Title"] = "LayBy Management";
+}
+
+
+@section HeaderTitle
+    {
+    <h1 class="head-type1">LayBy Management</h1>
+
+    <!--- Bootstrap CSS --->
+    <link rel="stylesheet" href="@Url.Content("~/assets/css/bootstrap.min.css")" asp-append-version="true" />
+    <!--- bootstrap-flot label --->
+    <link rel="stylesheet" href="@Url.Content("~/assets/css/bootstrap-float-label.min.css")" asp-append-version="true" />
+    <link rel="stylesheet" href="@Url.Content("~/assets/css/jquery.dataTables.min.css")" asp-append-version="true" />
+    <!--- bootstrap-select --->
+    <link rel="stylesheet" href="@Url.Content("~/assets/css/bootstrap-select.min.css")" asp-append-version="true" />
+    <link rel="stylesheet" href="@Url.Content("~/assets/css/style.css")" asp-append-version="true" />
+    <link rel="stylesheet" href="@Url.Content("~/assets/css/developer.css")" asp-append-version="true" />
+    <!--- toastr css --->
+    <link rel="stylesheet" href="@Url.Content("~/plugins/toastr/toastr.min.css")" asp-append-version="true" />
+}
+
+<!-- Header Amount -->
+<div class="row grid-sp15 align-items-center walletheader">
+    <div class="col-lg-6">
+        <div class="walletheaderbox">
+            <span class="editformlabel">Total LayBy<br><strong>Amount</strong></span>
+            <span class="editformval"><span class="floatval">AUD</span> <span>@ViewBag.PlanTotalAmount</span></span>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="walletheaderbox">
+            <span class="editformlabel">Paid LayBy<br><strong>Amount</strong></span>
+            <span class="editformval"><span class="floatval">AUD</span> <span>@ViewBag.CustomerTotalAmtPaid</span></span>
+        </div>
+    </div>
+</div>
+
+<div class="layby-plans-sec">
+    <div class="row align-items-center innersubHead">
+        @foreach (var i in Model)
+        {
+            <div class="col-md-4 col-12">
+                <div class="layby-plans-box">
+                    <h4>@i.CustomerName, <span>@i.CustomerPhoneNumber</span></h4>
+
+                    <div class="ribbon ribbon-top-right"><span>@i.PlanStatus</span></div>
+
+                    <div class="form-group">
+                        <div class="viewformBg">
+                            <span class="viewformlabel">Merchant:</span>
+                            <span class="viewformval">@i.MerchantName</span>
+                        </div>
+                        <div class="viewformBg">
+                            <span class="viewformlabel">Service:</span>
+                            <span class="viewformval">@i.ServiceName</span>
+                        </div>
+                        <div class="viewformBg">
+                            <span class="viewformlabel">Amount:</span>
+                            <span class="viewformval">AUD @i.ServiceAmount</span>
+                        </div>
+                        <div class="viewformBg">
+                            <span class="viewformlabel">Duration:</span>
+                            <span class="viewformval">@i.ServiceDuration Months</span>
+                        </div>
+                        <div class="viewformBg">
+                            <span class="viewformlabel">Frequency:</span>
+                            <span class="viewformval">@i.ServiceFrequency</span>
+                        </div>
+
+                    </div>
+
+                    <div class="layby-plans-btn">
+                        <a class="btn-type5" title="View" data-dismiss="modal" data-toggle="modal" data-target="#viewlaybyplan" href="Javascript:;" onclick="ViewActvePlansDetails(@i.CustomerPlanId)">View </a>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Otp Modal -->
+            <div class="modal fade" id="Otpmodal">
+                <div class="modal-dialog modal-dialog-centered w-410">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="head-type2">Enter OTP</h5>
+                            <button type="button" class="close" data-dismiss="modal"></button>
+                        </div>
+                        <form>
+                            <div class="otp-form otp-input-fields" id="otpDigit">
+                                <input type="number" class="otp-field otp__digit otp__field__1" id="otpDigit1" name="opt-field[]" maxlength=1>
+                                <input type="number" class="otp-field otp__digit otp__field__2" id="otpDigit2" name="opt-field[]" maxlength=1>
+                                <input type="number" class="otp-field otp__digit otp__field__3" id="otpDigit3" name="opt-field[]" maxlength=1>
+                                <input type="number" class="otp-field otp__digit otp__field__4" id="otpDigit4" name="opt-field[]" maxlength=1>
+                                <input type="number" class="otp-field otp__digit otp__field__5" id="otpDigit5" name="opt-field[]" maxlength=1>
+                                <input type="number" class="otp-field otp__digit otp__field__6" id="otpDigit6" name="opt-field[]" maxlength=1>
+                            </div>
+                            <div id="validationErrorCode" class="field-error" style="display:none;">Please enter a valid verification code</div>
+                            <div id="validationError" class="field-error" style="display:none;"></div>
+                            <div id="customerPlan" style="display:none;"></div>
+                        </form>
+
+                        <div class="modal-footer">
+                            <a class="btn-type5 cancel-btn" title="Cancel" data-dismiss="modal">Cancel</a>
+                            <a class="btn-type5" title="Confirm" data-controls-modal="Otpmodal" data-backdrop="static" data-keyboard="false" href="#" onclick="confirmActiveOTP()">
+                                Confirm
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- View Service Modal -->
+<div id="div-layby-plan-active-view">
+</div>
+
+@section Scripts
+    {
+    <!-- toastr js -->
+    <script src="@Url.Content("~/plugins/toastr/toastr.min.js")" asp-append-version="true"></script>
+    <!-- Custom JS -->
+    <script type="text/javascript">
+        $(document).ready(function () {
+            activeSubMenu("merchant-plans-active");
+            removeActiveMenu("merchant-dashboard");
+
+            $('#listtable').DataTable({
+                "ordering": true,
+                "info": false,
+                "dom": 'rtip',
+                "columns": [
+                    { "width": "7%" },
+                    { "width": "15%" },
+                    { "width": "20%" },
+                    { "width": "10%" },
+                    { "width": "15%" },
+                    { "width": "14%" },
+                    { "width": "14%" },
+                    { "width": "5%" }
+                ]
+            });
+
+
+            let success = '@ViewData[MessageConstant.SuccessMessageKey]';
+            let error = '@ViewData[MessageConstant.ErrorMessageKey]';
+            if (success != undefined && success != null && success.trim() != "") {
+                showSuccessMessage(success);
+            }
+
+            if (error != undefined && error != null && error.trim() != "") {
+                showErrorMessage(error);
+            }
+
+            $(".otp-form *:input[type!=hidden]:first").focus();
+            let otp_fields = $(".otp-form .otp-field"),
+                otp_value_field = $(".otp-form .otp-value");
+            otp_fields
+                .on("input", function (e) {
+                    $(this).val(
+                        $(this)
+                            .val()
+                            .replace(/[^0-9]/g, "")
+                    );
+                    let opt_value = "";
+                    otp_fields.each(function () {
+                        let field_value = $(this).val();
+                        if (field_value != "") opt_value += field_value;
+                    });
+                    otp_value_field.val(opt_value);
+                })
+                .on("keyup", function (e) {
+                    let key = e.keyCode || e.charCode;
+                    if (key == 8 || key == 46 || key == 37 || key == 40) {
+                        $(this).prev().focus();
+                    } else if (key == 38 || key == 39 || $(this).val() != "") {
+                        $(this).next().focus();
+                    }
+                })
+                .on("paste", function (e) {
+                    let paste_data = e.originalEvent.clipboardData.getData("text");
+                    let paste_data_splitted = paste_data.split("");
+                    $.each(paste_data_splitted, function (index, value) {
+                        otp_fields.eq(index).val(value);
+                    });
+                });
+
+        });
+
+        function ViewActvePlansDetails(customerPlanId) {
+            showLoader();
+            $.ajax({
+                url: "@Url.Action("GetPlansDetails", "MerchantLayByPlans")",
+                type: 'GET',
+                data: { id: customerPlanId },
+                dataType: "Html",
+                async: false,
+                success: function (html) {
+                    hideLoader();
+                    $("#div-layby-plan-active-view").html("").html(html);
+                    $("#viewlaybyplan").modal("show");
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    hideLoader();
+                    showErrorMessage("@MessageConstant.CommonErrorMessage");
+                }
+            });
+        }
+
+        function SendOtp(merchantName, customerName, customerPlanId) {
+            showLoader();
+            $.ajax({
+                url: "@Url.Action("SendOTP", "MerchantLayByPlans")",
+                type: 'GET',
+                data: { merchantName: merchantName, customerName: customerName, planId: customerPlanId },
+                dataType: "JSON",
+                async: false,
+                success: function (response) {
+                    if (response.success) {
+                        hideLoader();
+                        $("#customerPlan").val(response.data);
+                        $("#customerPlan").text(response.data);
+                        showSuccessMessage(response.message);
+                    }
+                    else {
+                        hideLoader();
+                        showErrorMessage(response.message);
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    hideLoader();
+                    showErrorMessage("@MessageConstant.CommonErrorMessage");
+                }
+            });
+        }
+
+        function confirmActiveOTP() {
+            var customerPlanId = $("#customerPlan").val();
+            var digit1 = $("#otpDigit1").val(); var digit2 = $("#otpDigit2").val(); var digit3 = $("#otpDigit3").val(); var digit4 = $("#otpDigit4").val(); var digit5 = $("#otpDigit5").val(); var digit6 = $("#otpDigit6").val();
+            if (digit1 == '') {
+                $("#validationErrorCode").show();
+                return false;
+            }
+            else if (digit2 == '') {
+                $("#validationErrorCode").show();
+                return false;
+            }
+            else if (digit3 == '') {
+                $("#validationErrorCode").show();
+                return false;
+            }
+            else if (digit4 == '') {
+                $("#validationErrorCode").show();
+                return false;
+            }
+            else if (digit5 == '') {
+                $("#validationErrorCode").show();
+                return false;
+            }
+
+            else if (digit6 == '') {
+                $("#validationErrorCode").show();
+                return false;
+            }
+
+            var submittedOTP = digit1 + digit2 + digit3 + digit4 + digit5 + digit6;
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("SubmitOTP","MerchantLayByPlans")',
+                data: {
+                    Id: customerPlanId,
+                    submittedOTP: submittedOTP
+                },
+                async: false,
+                success: function (response) {
+                    if (response.success) {
+                        showSuccessMessage(response.message);
+                        $('#Otpmodal').modal('toggle');
+                        setTimeout(function () {
+                            location.reload();
+                        }, 1000);
+                    }
+                    else {
+                        $("#validationErrorCode").hide();
+                        $("#validationError").hide();
+                        $("#validationError").val(response.message);
+                        $("#validationError").text(response.message);
+                        $("#validationError").show();
+                        return false;
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    hideLoader();
+                    showErrorMessage("@MessageConstant.CommonErrorMessage");
+                },
+            });
+        };
+    </script>
+}

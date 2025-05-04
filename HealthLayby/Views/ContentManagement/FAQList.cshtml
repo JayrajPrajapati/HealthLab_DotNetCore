@@ -1,0 +1,28 @@
+﻿@model List<FAQModel>
+
+@{
+    Layout = null;
+}
+
+@foreach(var faq in Model)
+{
+    <div class="faqslist">
+        <div class="faqHeader">
+            <input type="hidden" asp-for="@faq.FAQId" />
+            @faq.Question 
+            <span>
+                <a id="edit" class="btn-type5 smallbtn" title="Edit" onclick="addEditFAQ(@faq.FAQId)"><i class="fa fa-pencil-square-o"></i></a>
+                <a class="btn-type4 smallbtn" title="Delete" onclick="confirmDeleteFAQ(@faq.FAQId)"><i class="fa fa-remove"></i></a>
+               
+            </span>
+        </div>
+        <div class="faqContent" style="display: none;"> 
+            @faq.Answer
+        </div>
+    </div>
+}
+
+@if(!Model.Any())
+{
+    <div class="norecord-found text-center">No data available!</div>
+}

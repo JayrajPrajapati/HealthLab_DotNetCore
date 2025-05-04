@@ -1,0 +1,89 @@
+﻿@{
+    ViewData["Title"] = "Report";
+}
+
+@section HeaderTitle
+{
+    <h1 class="head-type1">Report</h1>
+}
+
+<div class="row align-items-center innersubHead">
+    <div class="col-xl-5">
+        <h2 class="head-type2">Generate Report</h2>
+    </div>
+</div>
+    
+<div class="reportOuter">
+    <div class="row grid-sp15">
+        <div class="col-lg-4 col-sm-6">
+            <div class="form-group">
+                <select class="filterdropdown selectpicker w100" title="Report type">
+                    <option>Report Type 1</option>
+                    <option>Report Type 2</option>
+                    <option>Report Type 3</option>
+                    <option>Report Type 4</option>
+                </select>
+            </div>
+        </div>
+        <div class="col-lg-4 col-sm-6">
+            <div class="form-group">
+                <select class="filterdropdown selectpicker w100" title="Customer">
+                    <option>Aaron Willmott</option>
+                    <option>Joshua Barlee</option>
+                    <option>John Dave</option>
+                </select>
+            </div>
+        </div>
+        <div class="col-lg-4 col-sm-6">
+            <div class="form-group">
+                <select class="filterdropdown selectpicker w100" title="Service">
+                    <option>Service Type 1</option>
+                    <option>Service Type 2</option>
+                    <option>Service Type 3</option>
+                </select>
+            </div>
+        </div>
+        <div class="col-lg-4 col-sm-6">
+            <div class="form-group">
+                <div class="form-group input-group">
+                    <span class="has-float-label dateOuter">
+                        <input class="form-control datepicker" id="startdate" type="text" placeholder="dd/mm/yyyy" />
+                        <label for="startdate">Start Date</label>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-sm-6">
+            <div class="form-group">
+                <div class="form-group input-group">
+                    <span class="has-float-label dateOuter">
+                        <input class="form-control datepicker" id="enddate" type="text" placeholder="dd/mm/yyyy" />
+                        <label for="enddate">End Date</label>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-sm-6">
+            <div class="form-group">
+                <div class="text-right">
+                    <a href="Javascript:;" class="btn-type1">Update</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script>
+        $(document).ready(function () {
+            activeMenu("report-menu");            
+            $(".dateOuter .datepicker").daterangepicker({
+                autoApply: false,
+                singleDatePicker: true,
+                showDropdowns: true,
+                //minDate:new Date()
+            });
+        });
+    </script>
+}

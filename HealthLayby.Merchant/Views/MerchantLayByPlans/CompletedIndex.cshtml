@@ -1,0 +1,145 @@
+﻿@model List<MerchantPlansModel>
+@{
+    ViewData["Title"] = "LayBy Management";
+}
+
+@section HeaderTitle
+    {
+    <h1 class="head-type1">LayBy Management</h1>
+
+    <!--- Bootstrap CSS --->
+    <link rel="stylesheet" href="@Url.Content("~/assets/css/bootstrap.min.css")" asp-append-version="true" />
+    <!--- bootstrap-flot label --->
+    <link rel="stylesheet" href="@Url.Content("~/assets/css/bootstrap-float-label.min.css")" asp-append-version="true" />
+    <link rel="stylesheet" href="@Url.Content("~/assets/css/jquery.dataTables.min.css")" asp-append-version="true" />
+    <!--- bootstrap-select --->
+    <link rel="stylesheet" href="@Url.Content("~/assets/css/bootstrap-select.min.css")" asp-append-version="true" />
+    <link rel="stylesheet" href="@Url.Content("~/assets/css/style.css")" asp-append-version="true" />
+    <link rel="stylesheet" href="@Url.Content("~/assets/css/developer.css")" asp-append-version="true" />
+    <!--- toastr css --->
+    <link rel="stylesheet" href="@Url.Content("~/plugins/toastr/toastr.min.css")" asp-append-version="true" />
+}
+
+<!-- Header Amount -->
+<div class="row grid-sp15 align-items-center walletheader">
+    <div class="col-lg-6">
+        <div class="walletheaderbox">
+            <span class="editformlabel">Total LayBy<br><strong>Amount</strong></span>
+            <span class="editformval"><span class="floatval">AUD</span> <span>@ViewBag.PlanTotalAmount</span></span>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="walletheaderbox">
+            <span class="editformlabel">Paid LayBy<br><strong>Amount</strong></span>
+            <span class="editformval"><span class="floatval">AUD</span> <span>@ViewBag.CustomerTotalAmtPaid</span></span>
+        </div>
+    </div>
+</div>
+
+<div class="layby-plans-sec">
+    <div class="row align-items-center innersubHead">
+        @foreach (var i in Model)
+        {
+            <div class="col-md-4 col-12">
+                <div class="layby-plans-box">
+                    <h4>@i.CustomerName, <span>@i.CustomerPhoneNumber</span></h4>
+
+                    <div class="ribbon ribbon-top-right"><span>@i.PlanStatus</span></div>
+
+                    <div class="form-group">
+                        <div class="viewformBg">
+                            <span class="viewformlabel">Merchant:</span>
+                            <span class="viewformval">@i.MerchantName</span>
+                        </div>
+                        <div class="viewformBg">
+                            <span class="viewformlabel">Service:</span>
+                            <span class="viewformval">@i.ServiceName</span>
+                        </div>
+                        <div class="viewformBg">
+                            <span class="viewformlabel">Amount:</span>
+                            <span class="viewformval">AUD @i.ServiceAmount</span>
+                        </div>
+                        <div class="viewformBg">
+                            <span class="viewformlabel">Duration:</span>
+                            <span class="viewformval">@i.ServiceDuration Months</span>
+                        </div>
+                        <div class="viewformBg">
+                            <span class="viewformlabel">Frequency:</span>
+                            <span class="viewformval">@i.ServiceFrequency</span>
+                        </div>
+
+                    </div>
+
+                    <div class="layby-plans-btn">
+                        <a class="btn-type5" title="View" data-dismiss="modal" data-toggle="modal" data-target="#viewlaybyplan" href="Javascript:;" onclick="ViewCompletedPlansDetails(@i.CustomerPlanId)">View </a>
+                    </div>
+
+                </div>
+            </div>            
+        }
+    </div>
+</div>
+
+<!-- View Service Modal -->
+<div id="div-layby-plan-completed-view">
+</div>
+
+@section Scripts
+    {
+    <!-- toastr js -->
+    <script src="@Url.Content("~/plugins/toastr/toastr.min.js")" asp-append-version="true"></script>
+    <!-- Custom JS -->
+    <script type="text/javascript">
+        $(document).ready(function () {
+            activeSubMenu("merchant-plans-completed");
+            removeActiveMenu("merchant-dashboard");
+
+            $('#listtable').DataTable({
+                "ordering": true,
+                "info": false,
+                "dom": 'rtip',
+                "columns": [
+                    { "width": "7%" },
+                    { "width": "15%" },
+                    { "width": "20%" },
+                    { "width": "10%" },
+                    { "width": "15%" },
+                    { "width": "14%" },
+                    { "width": "14%" },
+                    { "width": "5%" }
+                ]
+            });
+
+
+            let success = '@ViewData[MessageConstant.SuccessMessageKey]';
+            let error = '@ViewData[MessageConstant.ErrorMessageKey]';
+            if (success != undefined && success != null && success.trim() != "") {
+                showSuccessMessage(success);
+            }
+
+            if (error != undefined && error != null && error.trim() != "") {
+                showErrorMessage(error);
+            }
+        });
+
+        function ViewCompletedPlansDetails(customerPlanId) {
+            showLoader();
+            $.ajax({
+                url: "@Url.Action("GetPlansDetails", "MerchantLayByPlans")",
+                type: 'GET',
+                data: { id: customerPlanId },
+                dataType: "Html",
+                async: false,
+                success: function (html) {
+                    hideLoader();
+                    $("#div-layby-plan-completed-view").html("").html(html);
+                    $("#viewlaybyplan").modal("show");
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    hideLoader();
+                    showErrorMessage("@MessageConstant.CommonErrorMessage");
+                }
+            });
+        }
+    </script>
+}

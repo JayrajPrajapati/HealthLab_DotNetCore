@@ -1,0 +1,264 @@
+﻿@model MerchantModel
+@{
+    ViewData["Title"] = "Merchant Request";
+    string defaultMerchant = DirectoryConstant.UserImageNotFound;
+    string defaultlogo = DirectoryConstant.ThumbnailsImageNotfound;
+}
+
+@section HeaderTitle
+    {
+    <h1 class="head-type1">Merchant Request</h1>
+}
+@section Partials
+    {
+    <div id="div-merchant-view">
+    </div>
+    <div id="div-merchant-reject">
+    </div>
+    <div id="div-merchant-Accept">
+    </div>
+}
+
+<div class="row align-items-center innersubHead">
+    <div class="col-xl-5">
+        <h2 class="head-type2">Request List <span id="merchant-count">-</span></h2>
+    </div>
+    <div class="col-xl-7">
+        <div class="inneraction">
+            <div class="searchtextbox">
+                <input id="grid-search" type="text" class="searchbox" placeholder="Search">
+                <a href="#" class="searchicon"></a>
+            </div>
+
+        </div>
+    </div>
+</div>
+<div class="listtableOuter">
+    <table id="merchant-grid" class="display responsive nowrap" style="width:100%">
+        <thead>
+            <tr>
+                <th>Logo</th>
+                <th>Merchant</th>
+                <th>Phone / Email</th>
+                <th>Clinic / Lab</th>
+                <th>Location</th>
+                <th>Category</th>
+                <th>services</th>
+                <th class="nosort text-center">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</div>
+
+@{
+    Func<string, IHtmlContent> actionContent =
+    @<div class="nosort text-right">
+        <button class="btn-type6 smallbtn" data-toggle="modal" title="View" onclick="viewMerchant(--merchant-id--)">View</button>
+        <button class="btn-type4 smallbtn" data-toggle="modal" title="Reject" onClick="rejectMerchant(--merchant-id--)">Reject</button>
+        <button class="btn-type1 smallbtn" title="Accept" onClick="openAccpetPopup(--merchant-id--)">Accept</button>
+    </div>;
+}
+
+
+@section Scripts
+    {
+    <script>
+        let datatable;
+        $(document).ready(function () {
+            activeSubMenu("merchantrequest-menu");
+
+            datatable = $('#merchant-grid').DataTable({
+                "paging": true,
+                "ordering": true,
+                "filter": false,
+                "destroy": true,
+                "orderMulti": false,
+                "serverSide": true,
+                "processing": true,
+                "bLengthChange": false,
+                "order": [],
+                "pageLength": 10,
+                "info": false,
+                "dom": 'rtip',
+                "columns": [
+                    { "width": "10%" },
+                    { "width": "15%" },
+                    { "width": "15%" },
+                    { "width": "12.5%" },
+                    { "width": "10%" },
+                    { "width": "10%" },
+                    { "width": "10%" },
+                    { "width": "30%" }
+                ],
+                "language": {
+                    "zeroRecords": "No data available!",
+                },
+                "ajax": {
+                    "url": "@Url.Action("GetMerchantRequestList", "MerchantRequest")",
+                    "type": "POST",
+                    "dataType": "JSON",
+                    "data": function (d) {
+                        return $.extend({}, d, {
+                            "search": {
+                                "regex": false,
+                                "value": $.trim($("#grid-search").val())
+                            }
+                        });
+                    }
+                },
+                "aoColumns": [
+                    { "mDataProp": "logo" },
+                    { "mDataProp": "fullName" },
+                    { "mDataProp": "phoneNumber" },
+                    { "mDataProp": "clinicName" },
+                    { "mDataProp": "location" },
+                    { "mDataProp": "merchantId" },
+                ],
+                "columnDefs": [
+                    {
+                        "render": function (a, aa, row) {
+                            return `<img src="@Url.Content($"{DirectoryConstant.MerchantLogoDirectory}")/${row.logo}" class="merchantlogo"  onError="nofindLogo(this)" />`
+                        },
+                        "orderable": false,
+                        "targets": 0
+                    },
+                    {
+                        "render": function (data, type, row) {
+                            return `<div class="merchantlistOuter">
+                                                                                        <img src="@DirectoryConstant.MerchantProfilePicDirectory/${row.profilePic}" class="merchantphoto" onError="nofindMerchant(this)" />` + `<span>` + row.fullName + `</span>
+                                                                    </div>`;
+                        },
+                        "targets": 1
+                    },
+                    {
+                        "render": function (_, __, row) {
+                            return row.phoneNumber + "</br>" + row.emailAddress;
+                        },
+                        "targets": 2
+                    },
+                    {
+                        "render": function (_, __, row) {
+                            return row.clinicName;
+                        },
+                        "targets": 3
+                    },
+                    {
+                        "render": function (_, __, row) {
+                            return row.clinicLocation;
+                        },
+                        "targets": 4
+                    },
+                    {
+                        "render": function (_, __, row) {
+                            return row.categoryName;
+                        },
+                        "targets": 5
+                    },
+                    {
+                        "render": function (_, __, row) {
+                            return row.servicesNames;
+                        },
+                        "targets": 6
+                    },
+                    {
+                        "orderable": false,
+                        "render": function (_, __, row) {
+                            var html = `@actionContent(string.Empty)`;
+                            html = html.split("--merchant-id--").join(row.merchantId);
+                            return html;
+                        },
+                        "targets": 7
+                    }
+                ],
+                "drawCallback": function (resultData) {
+                    $("#merchant-count").text(resultData.json.merchantRequestCount);
+                }
+            });
+
+            datatable.on('draw.dt', function () {
+                if ($('#merchant-grid tbody .dataTables_empty').length && datatable.page.info().pages)
+                    datatable.page('previous').draw('page');
+            });
+
+            $("#grid-search").keyup(function () {
+                drawMerchantGrid();
+            });
+        });
+
+        function drawMerchantGrid() {
+            datatable.draw();
+        };
+
+        function openAccpetPopup(merchantId) {
+            showLoader();
+            $.ajax({
+                url: "@Url.Action("AcceptMerchantRequest", "MerchantRequest")",
+                type: 'GET',
+                dataType: "Html",
+                async: false,
+                data: { id: merchantId },
+                success: function (html) {
+                    hideLoader();
+                    $("#div-merchant-Accept").html(html);
+                    $("#accept").modal("show");
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    hideLoader();
+                    showErrorMessage("@MessageConstant.CommonErrorMessage");
+                }
+            });
+        }
+
+
+
+        function viewMerchant(merchantId) {
+            $.ajax({
+                url: "@Url.Action("ViewMerchantRequest", "MerchantRequest")",
+                type: 'GET',
+                data: { id: merchantId },
+                dataType: "Html",
+                async: false,
+                success: function (html) {
+                    hideLoader();
+                    $("#div-merchant-view").html(html);
+                    $("#viewmerchant").modal("show");
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    hideLoader();
+                    showErrorMessage("@MessageConstant.CommonErrorMessage");
+                }
+            });
+        }
+
+        function rejectMerchant(merchantId) {
+            $.ajax({
+                url: "@Url.Action("RejectMerchantRequest", "MerchantRequest")",
+                type: 'GET',
+                data: { id: merchantId },
+                dataType: "Html",
+                async: false,
+                success: function (html) {
+                    hideLoader();
+                    $("#div-merchant-reject").html(html);
+                    $("#reject-merchant").modal("show");
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    hideLoader();
+                    showErrorMessage("@MessageConstant.CommonErrorMessage");
+                }
+            });
+        }
+
+        function nofindLogo(ex) {
+            ex.src = '@DirectoryConstant.ThumbnailsImageNotfound';
+            ex.onerror = null;
+        }
+
+        function nofindMerchant(ex) {
+            ex.src = '@DirectoryConstant.UserImageNotFound';
+            ex.onerror = null;
+        }
+    </script>
+}

@@ -1,0 +1,188 @@
+﻿@inject IGeneralRepository _generalRepository
+
+@model RewardModel
+
+<div class="modal fade" id="editreward" data-backdrop="static" data-keyboard="false" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered w-550">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="head-type2">Reward Detail</h5>
+                <button type="button" class="close" data-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form class="edit-reward" id="edit-reward-form">
+                    @Html.AntiForgeryToken()
+                    @Html.HiddenFor(model => model.RewardId)
+                    <div class="row grid-sp15">
+                        <div class="col-lg-6">
+                            <div class="form-group input-group">
+                                <select asp-for="Month" class="filterdropdown selectpicker w100" title="Month" asp-items="Html.GetEnumSelectList<MonthEnum>()"></select>
+                                <span asp-validation-for="Month"></span>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group input-group">
+                                <select asp-for="CategoryId" class="filterdropdown selectpicker w100" title="Select Categroy" asp-items="await _generalRepository.GetActiveCategoryDropdownListAsync()">
+                                </select>
+                                <span asp-validation-for="CategoryId"></span>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group input-group">
+                                <select asp-for="MerchantId" class="filterdropdown selectpicker w100" asp-items="await _generalRepository.GetActiveMerchantDropdownListAsync()" title="Select Merchant">
+                                </select>
+                                <span asp-validation-for="MerchantId"></span>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group input-group">
+                                <select class="filterdropdown selectpicker w100" asp-for="IsActive">
+                                    <option value="@true.ToString()">Active</option>
+                                    <option value="@false.ToString()">Inactive</option>
+                                </select>
+                                <span asp-validation-for="IsActive"></span>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="row grid-sp15">
+                                <div class="col-lg-7">
+                                    <div class="form-group input-group">
+                                        <select asp-for="DiscountType" class="filterdropdown selectpicker w100" title="Discount Type" asp-items="Html.GetEnumSelectList<DiscountTypeEnum>()">
+                                        </select>
+                                        <span asp-validation-for="DiscountType"></span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-5">
+                                    <div class="form-group">
+                                        <input class="form-control" type="number" asp-for="Discount" />
+                                        <span asp-validation-for="Discount"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="text-right">
+                                <button type="submit" class="btn-type1 loginSubmit">Update</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $("#edit-reward-form #@Html.IdFor(x => x.Discount)").on("focusout", function () {
+            $(this).val(parseFloat(this.value).toFixed(2));
+            $(this).valid();
+        });
+
+        $("#edit-reward-form #IsActive").selectpicker();
+        $("#edit-reward-form #Month").selectpicker();
+        $("#edit-reward-form #CategoryId").selectpicker();
+        $("#edit-reward-form #MerchantId").selectpicker();
+        $("#edit-reward-form #DiscountType").selectpicker();
+
+        $.validator.unobtrusive.parse("#edit-reward-form");
+        $('#edit-reward-form').unbind();
+
+        $("#edit-reward-form #Discount").rules('remove');
+
+        if ($("#edit-reward-form #DiscountType").val() == '0') {
+            $("#edit-reward-form #Discount").rules('add', {
+                max: 100, 
+                messages: {
+                    max: "Please enter a value less than or equal to 100.00!"
+                }
+            });
+
+            $("#edit-reward-form #Discount").rules('add', { 
+                min: 0.1,
+                messages: {
+                    min: "Please enter a value greater than 0.00!"
+                }
+            });
+        }
+        else {
+            $("#edit-reward-form #Discount").rules('remove');
+            $("#edit-reward-form #Discount").rules('add', {
+                min: 0.1,
+                messages: {
+                    min: "Please enter a value greater than 0.00!"
+                }
+            });
+        }
+
+        $("#edit-reward-form #DiscountType").on('change', function () {
+            if (this.value == '0') {
+                $("#edit-reward-form #Discount").val('0.00')
+                $("#edit-reward-form #Discount").rules('add', {
+                    max: 100,
+                    messages: {
+                        max: "Please enter a value less than or equal to 100.00!"
+                    }
+                });
+                $("#edit-reward-form #Discount").rules('add', {
+                    min: 0.1,
+                    messages: {
+                        min: "Please enter a value greater than 0.00!"
+                    }
+                });
+            }
+            else {
+                $("#edit-reward-form #Discount").val('0.00')
+                $("#edit-reward-form #Discount").rules('remove');
+                $("#edit-reward-form #Discount").rules('add', {
+                    min: 0.1,
+                    messages: {
+                        min: "Please enter a value greater than 0.00!"
+                    }
+                });
+            }
+            $("#edit-reward-form #Discount").valid();
+        });
+
+        $('#edit-reward-form').on('submit', function () {
+            event.preventDefault();
+
+            if (!$('#edit-reward-form').valid())
+                return false;
+
+            showLoader();
+
+            var formData = new FormData($("#edit-reward-form")[0]);
+
+            $.ajax({
+                url: "@Url.Action("Save", "Rewards")",
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (data) {
+                    hideLoader();
+                    if (data.success) {
+                        $("#editreward").modal("hide");
+                        $("#add-reward-form").trigger("reset");
+                        $("#add-reward-form #IsActive").selectpicker('refresh');
+                        $("#add-reward-form #Month").selectpicker('refresh');
+                        $("#add-reward-form #CategoryId").selectpicker('refresh');
+                        $("#add-reward-form #MerchantId").selectpicker('refresh');
+                        $("#add-reward-form #DiscountType").selectpicker('refresh');
+                        $("#add-reward-form #DiscountType").selectpicker('refresh');
+                        drawRewardGrid();
+                        showSuccessMessage(data.message);
+                    }
+                    else {
+                        showErrorMessage(data.message);
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    hideLoader();
+                    showErrorMessage("@MessageConstant.CommonErrorMessage");
+                }
+            });
+        });
+    });
+</script>

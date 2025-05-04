@@ -1,0 +1,81 @@
+﻿@{
+    ViewData["Title"] = "Transaction";
+}
+
+@section HeaderTitle
+    {
+    <h1 class="head-type1">Transaction History</h1>
+}
+
+<!-- jQuery js -->
+<script src="@Url.Content("~/assets/js/jquery.min.js")" asp-append-version="true"></script>
+<!-- bootstrap-select js -->
+<script src="@Url.Content("~/assets/js/jquery.dataTables.min.js")"></script>
+<script src="@Url.Content("~/assets/js/dataTables.responsive.min.js")"></script>
+
+<div class="row">
+    <div class="col-xl-5">
+        <h2 class="head-type2">Transaction List <span id="tran-count">-</span></h2>
+    </div>    
+    <div class="col-xl-7 pull-right">
+        <div class="inneraction">
+            <div class="searchtextbox m-0">
+                <input id="grid-search" type="text" class="searchbox" placeholder="Search">
+                <a href="#" class="searchicon"></a>
+            </div>
+        </div>
+    </div>   
+</div>
+
+<div class="row">
+    <div class="col-xl-12">
+        <div class="customtabOuter">
+            <div class="customtab-head text-center mt-2 mb-0 pb-0" id="listTab">
+                <a href="Javascript:;" dataid="1" class="customtabH-link active" cid="listTab" id="laybyTran">LayBy Transaction</a>
+                <a href="Javascript:;" dataid="2" class="customtabH-link" cid="listTab" id="walletTran">Wallet Transaction</a>
+                <a href="Javascript:;" dataid="3" class="customtabH-link" cid="listTab" id="directPayTran">Direct Pay</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="customtabOuter" id="listTab">
+    <div class="customtab-list">
+        <div class="customtab-list-inner content_1" dataid="panel_1" style="display: block;">
+            @await Html.PartialAsync("_LayByTransaction")
+        </div>
+        <div class="customtab-list-inner content_2" dataid="panel_2" style="display: none;">
+            @await Html.PartialAsync("_WalletTransaction")
+        </div>
+        <div class="customtab-list-inner content_3" dataid="panel_3" style="display: none;">
+            @await Html.PartialAsync("_DirectPayTransaction")
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function () {
+        activeMenu("transaction-menu");
+        $('.customtabH-link').click(function (j) {
+            var section_id = $(this).attr("cid");
+            var data_id = $(this).attr("dataid");
+            if (!$(this).hasClass('active')) {
+                $('#' + section_id + ' .customtabH-link').removeClass('active');
+                $('#' + section_id + ' .customtab-list-inner').attr("style", "display:none;");
+                $(this).addClass('active');
+                $('#' + section_id + ' .content_' + data_id).attr("style", "display:block;");
+            }
+        });
+
+        $("#walletTran").on("click", function() {
+            $("#tran-count").text($("#filtercount").val());
+        });
+        $("#laybyTran").on("click", function () {
+            $("#tran-count").text($("#filtercountlyby").val());
+        });
+        $("#directPayTran").on("click", function () {
+            $("#tran-count").text($("#filtercountDirectpay").val());
+        });
+    });
+</script>

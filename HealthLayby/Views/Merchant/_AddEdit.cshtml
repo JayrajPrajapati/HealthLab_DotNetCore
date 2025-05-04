@@ -1,0 +1,634 @@
+﻿@model MerchantModel
+
+@{
+    Layout = null;
+    var imageSrc = string.Empty;
+    var logoSrc = string.Empty;
+    if (!string.IsNullOrEmpty(Model.ProfilePic))
+    {
+        imageSrc = DirectoryConstant.MerchantProfilePicDirectory + "/" + Model.ProfilePic;
+    }
+    if (!string.IsNullOrEmpty(Model.Logo))
+    {
+        logoSrc = DirectoryConstant.MerchantLogoDirectory + "/" + Model.Logo;
+    }
+}
+
+<div class="modal fade" id="merachant-add-edit" data-backdrop="static" data-keyboard="false" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered w-640">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="head-type2">@(Model.MerchantId > 0 ? "Edit" : "Add") Merchant</h5>
+                <button type="button" class="close" data-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addEditMerchantForm">
+                    <div class="addmerchantform">
+                        <div class="addmerchantinfo">
+                            @Html.AntiForgeryToken()
+                            @Html.HiddenFor(model => model.MerchantId)
+                            @Html.HiddenFor(model => model.ImageBase64)
+                            @Html.HiddenFor(model => model.ImageFileExtension)
+                            @Html.HiddenFor(model => model.LogoBase64)
+                            @Html.HiddenFor(model => model.LogoFileExtension)
+                            @Html.HiddenFor(model => model.ServiceIds)
+                            @Html.HiddenFor(model => model.ProfilePic)
+                            @Html.HiddenFor(model => model.Logo)
+                            <div class="row grid-sp15">
+                                <div class="col-lg-6">
+                                    <div class="form-group input-group">
+                                        <span class="has-float-label">
+                                            <input class="form-control" type="text" asp-for="FirstName" placeholder="First Name" />
+                                            <label asp-for="FirstName">First Name<span class="text-danger">*</span></label>
+                                        </span>
+                                        <span asp-validation-for="FirstName" class="text-danger"></span>
+
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="form-group input-group">
+                                        <span class="has-float-label">
+                                            <input class="form-control" type="text" asp-for="LastName" placeholder="Last Name" />
+                                            <label asp-for="LastName">Last Name<span class="text-danger">*</span></label>
+                                        </span>
+                                        <span asp-validation-for="LastName" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="form-group input-group">
+                                        <span class="has-float-label">
+                                            <input class="form-control" type="text" asp-for="EmailAddress" placeholder="Email" />
+                                            <label asp-for="EmailAddress">Email<span class="text-danger">*</span></label>
+                                        </span>
+                                        <span asp-validation-for="EmailAddress" class="text-danger"></span>
+
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="form-group input-group">
+                                        <span class="has-float-label">
+                                            <input class="form-control" type="text" onkeypress="return /[0-9]/i.test(event.key)" asp-for="PhoneNumber" placeholder="Phone Number" />
+                                            <label asp-for="PhoneNumber">Phone</label>
+                                        </span>
+                                        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="editmerchantimage">
+                            <div class="customfileupload">
+                                <input type="file" class="fileupload profileupload" accept="image/*" id="imageCropFileInput" />
+                                <img class="profile-pic" src="" alt="Profile Pic" id="selectedImage1" />
+                                <div class="editfileup" id="edite-image">&nbsp;</div>
+                                <div id="rmvcls2">
+                                    Profile Pic<span class="text-danger">*</span>
+                                    <span class="imageinfo" id="pixelText">Upload Image : 80 X 80 pixels</span>
+                                </div>
+                                <a class="closefileimg" id="close-image"><img src="~/assets/images/closewhite.png" alt="close"></a>
+                            </div>
+                        </div>
+                    </div>
+                    <hr class="hrrow" />
+                    <div class="addmerchantform">
+                        <div class="addmerchantinfo">
+                            <div class="row grid-sp15">
+                                <div class="col-lg-6">
+                                    <div class="form-group input-group">
+                                        <span class="has-float-label">
+                                            <input class="form-control" asp-for="ClinicName" type="text" placeholder="Clinic or Lab Name" />
+                                            <label asp-for="ClinicName">Clinic or Lab Name<span class="text-danger">*</span></label>
+                                        </span>
+                                        <span asp-validation-for="ClinicName" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <select class="filterdropdown selectpicker w100" asp-for="IsActive">
+                                            <option value="@true.ToString()">Active</option>
+                                            <option value="@false.ToString()">Inactive</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="form-group input-group">
+                                        <span class="has-float-label">
+                                            <input class="form-control" asp-for="ClinicLocation" placeholder="Location" />
+                                            <label asp-for="ClinicLocation">Location<span class="text-danger">*</span></label>
+                                        </span>
+                                        <span asp-validation-for="ClinicLocation" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                @if (Model.MerchantId == 0)
+                                {
+                                    <div class="col-lg-6">
+                                        <div class="form-group input-group">
+                                            <span class="has-float-label">
+                                                <input class="form-control" asp-for="Password" type="password" placeholder="Password" />
+                                                <label asp-for="Password">Password</label>
+                                                <i class="eye-off" id="eyeCh"></i>
+                                            </span>
+                                            <span asp-validation-for="Password" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-12">
+                                        <div class="form-group input-group">
+                                            <select asp-for="CategoryId" class="filterdropdown selectpicker w100" title="Select Category" onchange="GetServices()">
+                                                @foreach (var category in Model.CategoryList)
+                                                {
+                                                    <option value="@category.Value">@category.Text</option>
+                                                }
+                                            </select>
+                                            <span asp-validation-for="CategoryId" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="col-lg-6">
+                                        <div class="form-group input-group">
+                                            @Html.HiddenFor(m=>m.Password)
+                                            <select asp-for="CategoryId" class="filterdropdown selectpicker w100" title="Select Category" onchange="GetServices()">
+                                                @foreach (var category in Model.CategoryList)
+                                                {
+                                                    if (Model.CategoryId == Convert.ToInt64(category.Value))
+                                                    {
+                                                        <option value="@category.Value" selected>@category.Text</option>
+                                                    }
+                                                    else
+                                                    {
+                                                        <option value="@category.Value">@category.Text</option>
+                                                    }
+                                                }
+                                            </select>
+                                            <span asp-validation-for="CategoryId" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                }
+                                <div class="col-lg-12 serviceboxdiv" style="display:none">
+                                    <div class="form-group input-group">
+                                        <select asp-for="ServiceId" class="filterdropdown selectpicker w100" title="Select Service" multiple>
+                                        </select>
+                                        <span asp-validation-for="ServiceId" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="editmerchantimage">
+                            <div class="customfileupload">
+                                <input type="file" class="fileupload profileupload " accept="image/*" id="logoCropFileInput">
+                                <img class="profile-pic" src="" alt="Profile Pic" id="selectedLogo1" />
+                                <div class="editfileup" id="edite-logo">&nbsp;</div>
+                                <div id="rmvcls3">
+                                    Logo Pic<span class="text-danger">*</span>
+                                    <span class="imageinfo" id="pixelText">Upload Image : 80 X 80 pixels</span>
+                                </div>
+                                <a class="closefileimg" id="close-logo"><img src="~/assets/images/closewhite.png" alt="close"></a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="@(Model.MerchantId > 0 ? "bggray": "saperate-line")">
+                        <h3 class="head-type3">@(Model.MerchantId > 0 ? "Update" : "Add") Bank Details:</h3>
+                        <div class="row grid-sp15">
+                            <div class="col-lg-6">
+                                <div class="form-group input-group">
+                                    <span class="has-float-label">
+                                        <input class="form-control" type="text" onkeypress="return /[0-9]/i.test(event.key)" asp-for="BSBNo">
+                                        <label asp-for="BSBNo">BSB Number<span class="text-danger">*</span></label>
+                                    </span>
+                                    <span class="text-danger field-validation-error" id="spnBSBNo"></span>
+
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-group input-group">
+                                    <span class="has-float-label">
+                                        <input class="form-control readonlys" type="text" asp-for="BranchName" readonly>
+                                        <label asp-for="BranchName">Bank Location (Branch)<span class="text-danger">*</span></label>
+                                    </span>
+
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-group input-group">
+                                    <span class="has-float-label">
+                                        <input class="form-control readonlys" type="text" asp-for="BankName" readonly>
+                                        <label asp-for="BankName">Bank Name<span class="text-danger">*</span></label>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-group input-group">
+                                    <span class="has-float-label">
+                                        <input class="form-control" type="text" onkeypress="return /[0-9]/i.test(event.key)" asp-for="BankAccountNo">
+                                        <label asp-for="BankAccountNo">Bank Account Number<span class="text-danger">*</span></label>
+                                    </span>
+                                    <span asp-validation-for="BankAccountNo" class="text-danger"></span>
+
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <button type="submit" class="btn-type1 loginSubmit">@(Model.MerchantId > 0 ? "Update" : "Add")</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+
+        $("#eyeCh").on("click", function () {
+            if ($(this).hasClass("eye-off")) {
+                $(this).addClass("eye-on");
+                $(this).removeClass("eye-off");
+                $("#@Html.IdFor(x => x.Password)").attr("type", "text");
+            }
+            else {
+                $(this).addClass("eye-off");
+                $(this).removeClass("eye-on");
+                $("#@Html.IdFor(x => x.Password)").attr("type", "password");
+            }
+        });
+        if ($("#@Html.IdFor(x => x.CategoryId)").val() > 0 && $("#@Html.IdFor(x => x.MerchantId)").val() > 0) {
+            GetServices();
+        }
+
+        if ($("#@Html.IdFor(x => x.MerchantId)").val() > 0) {
+            $("#@Html.IdFor(x => x.FirstName)").attr('readonly', true);
+            $("#@Html.IdFor(x => x.LastName)").attr('readonly', true);
+            $("#@Html.IdFor(x => x.PhoneNumber)").attr('readonly', true);
+            $("#@Html.IdFor(x => x.ClinicName)").attr('readonly', true);
+            $("#@Html.IdFor(x => x.ClinicLocation)").attr('readonly', true);
+        }
+
+
+        $("#@Html.IdFor(x => x.PhoneNumber)").inputmask("+61(999)-999-9999", { "clearIncomplete": true });
+        $("#@Html.IdFor(x => x.BSBNo)").inputmask("999-999", { "clearIncomplete": true });
+        $("#@Html.IdFor(x => x.BankAccountNo)").inputmask("9999999999", { "clearIncomplete": true });
+
+        $("#@Html.IdFor(x => x.IsActive)").selectpicker();
+        $("#@Html.IdFor(x => x.BankName)").selectpicker();
+        $("#@Html.IdFor(x => x.CategoryId)").selectpicker();
+        $("#@Html.IdFor(x => x.ServiceId)").selectpicker();
+        $("#@Html.IdFor(x => x.BankName)").change(function () {
+            $(this).valid();
+        });
+
+        $('#addEditMerchantForm').unbind();
+        $.validator.unobtrusive.parse("#addEditMerchantForm");
+
+        if ('@imageSrc' != '') {
+            $("#addEditMerchantForm #selectedImage1").attr('src', '@imageSrc');
+            $("#addEditMerchantForm #selectedImage1").on('error', function handleError() {
+                this.src = '@DirectoryConstant.UserImageNotFound';
+                this.alt = 'default';
+            });
+            $("#addEditMerchantForm #rmvcls2").addClass("editfiletext");
+        }
+        else {
+            $("#close-image,#edite-image").css("display", "none");
+            $("#addEditMerchantForm #selectedImage1").attr('src', '@DirectoryConstant.UserImageNotFound');
+            $("#addEditMerchantForm #selectedImage1").attr("alt", 'default');
+        }
+
+        if ('@logoSrc' != '') {
+            $("#addEditMerchantForm #selectedLogo1").attr('src', '@logoSrc');
+            $("#addEditMerchantForm #selectedLogo1").on('error', function handleError() {
+                this.src = '@DirectoryConstant.ImageNotFound';
+                this.alt = 'default';
+            });
+            $("#addEditMerchantForm #rmvcls3").addClass("editfiletext");
+        }
+        else {
+            $("#edite-logo,#close-logo").css("display", "none");
+            $("#addEditMerchantForm #selectedLogo1").attr('src', '@DirectoryConstant.ImageNotFound').attr("alt", 'default');
+        }
+
+        $('#addEditMerchantForm').unbind('submit');
+        $('#addEditMerchantForm').on('submit', function () {
+            event.preventDefault();
+
+            if (!$('#addEditMerchantForm').valid()) {
+                return false;
+            }
+
+            if ($("#@Html.IdFor(x => x.ImageBase64)").val() == '' && $("#@Html.IdFor(x => x.ProfilePic)").val() == '') {
+                showErrorMessage("@MessageConstant.RequiredProfilePic");
+                return false;
+            }
+
+            if ($("#@Html.IdFor(x => x.LogoBase64)").val() == '' && $("#@Html.IdFor(x => x.Logo)").val() == '') {
+                showErrorMessage("@MessageConstant.RequiredLogo");
+                return false;
+            }
+
+            showLoader();
+            var serviceIds = $("#ServiceId").val().toString();
+            var categoryId = $("#@Html.IdFor(x => x.CategoryId) option:selected").val();
+            if (categoryId == '') {
+                showErrorMessage("@MessageConstant.InvalidModalState");
+                hideLoader();
+            }
+            else if (serviceIds == '') {
+                showErrorMessage("@MessageConstant.ServiceNotAvailable");
+                hideLoader();
+            }
+            else {
+                $("#ServiceIds").val(serviceIds);
+                var formData = new FormData($("#addEditMerchantForm")[0])
+
+                $.ajax({
+                    url: "@Url.Action("Save", "Merchant")",
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (data) {
+                        hideLoader();
+                        if (data.success) {
+                            $("#merachant-add-edit").modal("hide");
+                            $('#addEditMerchantForm')[0].reset();
+                            drawMerchantGrid();
+
+                            showSuccessMessage(data.message);
+                        }
+                        else {
+                            showErrorMessage(data.message);
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        hideLoader();
+                        showErrorMessage("@MessageConstant.CommonErrorMessage");
+                    }
+                });
+            }
+        });
+    });
+
+    $("#imageCropFileInput").unbind();
+    $("#imageCropFileInput").on("change", function (event) {
+        const validExtensions = ['png', 'jpg', 'jpeg'];
+        let fileName, fileNameExt, fileSize;
+
+        if (event.target.files) {
+            fileName = event.target.files[0].name;
+            fileNameExt = fileName.substr(fileName.lastIndexOf('.') + 1);
+            fileSize = event.target.files[0].size / 1024;
+        }
+
+        $("#@Html.IdFor(x => x.ImageFileExtension)").val(fileNameExt);
+
+        if ($.inArray(fileNameExt, validExtensions) == -1) {
+            showErrorMessage("@MessageConstant.InValidFileType");
+            $("#imageCropFileInput").val("");
+            return false;
+        }
+
+        if (fileSize > 2048) {
+            showErrorMessage("@MessageConstant.InValidFileSize");
+            $("#imageCropFileInput").val("");
+            return false;
+        }
+
+        let imageCropFileInput = this;
+        var reader = new FileReader();
+        reader.onload = function (event) {
+            var base64Url = event.target.result;
+            $("#profile-crop-img").attr("src", event.target.result);
+            $('#img-preview').modal('show');
+            $("#merachant-add-edit").addClass("d-none");
+            imageCropFileInput.value = null;
+        };
+        reader.readAsDataURL(imageCropFileInput.files[0]);
+    });
+
+    $("#img-preview .close").unbind();
+    $("#img-preview .close").on('click', function () {
+        $("#merachant-add-edit").removeClass("d-none");
+        $("#imageCropFileInput").val("");
+    });
+
+    var createProfileCropper;
+    $("#img-preview").unbind();
+    $('#img-preview').on('shown.bs.modal', function () {
+        let options = {
+            aspectRatio: 1 / 1,
+            preview: '.img-preview'
+        };
+
+        createProfileCropper = new Cropper($("#profile-crop-img")[0], options);
+    }).on('hidden.bs.modal', function () {
+        if (createProfileCropper) {
+            createProfileCropper.destroy();
+        }
+        $("#profile-crop-img").addClass("cropper-hidden");
+        $("#profile-crop-img").data('cropper', null);
+    });
+
+    $("#btn-crop-profile").unbind();
+    $("#btn-crop-profile").on("click", function () {
+
+        const base64URL = createProfileCropper["getCroppedCanvas"]({ maxWidth: 4096, maxHeigth: 4096, fillColor: "#fff" }, undefined).toDataURL("image/jpeg");
+        $('#@Html.IdFor(x => x.ImageBase64)').val(base64URL.split(",")[1]);
+        $('#selectedImage1').attr('src', base64URL);
+        $("#selectedImage1").css("display", "inline-block");
+        $("#rmvcls2").removeClass("custfileup");
+        $("#rmvcls2").addClass("editfiletext");
+        $('#img-preview').modal('hide');
+        $("#edite-image").show();
+        $("#close-image").show();
+        $("#merachant-add-edit").removeClass("d-none");
+        if (createProfileCropper) {
+
+            createProfileCropper.destroy();
+        }
+        $("#profile-crop-img").data('cropper', null);
+    });
+
+    $('#img-preview').on('hidden.bs.modal', function (e) {
+        $("body").addClass("modal-open");
+    });
+
+    $("#logoCropFileInput").unbind();
+    $("#logoCropFileInput").on("change", function (event) {
+        const validExtensions = ['png', 'jpg', 'jpeg'];
+        let fileName, fileNameExt, fileSize;
+
+        if (event.target.files) {
+            fileName = event.target.files[0].name;
+            fileNameExt = fileName.substr(fileName.lastIndexOf('.') + 1);
+            fileSize = event.target.files[0].size / 1024;
+        }
+
+        $("#@Html.IdFor(x => x.LogoFileExtension)").val(fileNameExt);
+
+        if ($.inArray(fileNameExt, validExtensions) == -1) {
+            showErrorMessage("@MessageConstant.InValidFileType");
+            $("#logoCropFileInput").val("");
+            return false;
+        }
+
+        if (fileSize > 2048) {
+            showErrorMessage("@MessageConstant.InValidFileSize");
+            $("#logoCropFileInput").val("");
+            return false;
+        }
+
+        let logoCropFileInput = this;
+        var reader = new FileReader();
+        reader.onload = function (event) {
+            var base64Url = event.target.result;
+            $("#logo-crop-img").attr("src", event.target.result);
+            $('#logo-preview').modal('show');
+            $("#merachant-add-edit").addClass("d-none");
+            logoCropFileInput.value = null;
+        };
+        reader.readAsDataURL(logoCropFileInput.files[0]);
+    });
+
+    $("#logo-preview .close").unbind();
+    $("#logo-preview .close").on('click', function () {
+        $("#merachant-add-edit").removeClass("d-none");
+        $("#logoCropFileInput").val("");
+    });
+
+    var createLogoCropper;
+    $("#logo-preview").unbind();
+    $('#logo-preview').on('shown.bs.modal', function () {
+        let options = {
+            aspectRatio: 2.5 / 1,
+            preview: '.img-preview'
+        };
+
+        createLogoCropper = new Cropper($("#logo-crop-img")[0], options);
+    }).on('hidden.bs.modal', function () {
+        if (createLogoCropper) {
+            createLogoCropper.destroy();
+        }
+        $("#logo-crop-img").addClass("cropper-hidden");
+        $("#logo-crop-img").data('cropper', null);
+    });
+
+    $("#btn-crop-logo").unbind();
+    $("#btn-crop-logo").on("click", function () {
+        const base64URL = createLogoCropper["getCroppedCanvas"]({ maxWidth: 4096, maxHeigth: 4096, fillColor: "#fff" }, undefined).toDataURL("image/jpeg");
+
+        $('#@Html.IdFor(x => x.LogoBase64)').val(base64URL.split(",")[1]);
+        $(".defaultlogo").css("display", "none");
+        $('#selectedLogo1').attr('src', base64URL);
+        $("#selectedLogo1").css("display", "inline-block");
+        $('#logo-preview').modal('hide');
+        $("#rmvcls3").removeClass("custfileup");
+        $("#rmvcls3").addClass("editfiletext");
+        $("#edite-logo").show();
+        $("#close-logo").show();
+        $("#merachant-add-edit").removeClass("d-none");
+        if (createLogoCropper) {
+            createLogoCropper.destroy();
+        }
+        $("#logo-crop-img").data('cropper', null);
+    });
+
+    $('#logo-preview').on('hidden.bs.modal', function (e) {
+        $("body").addClass("modal-open");
+    });
+
+    $('#merachant-add-edit').on('shown.bs.modal', function (e) {
+        $("body").addClass("modal-open");
+    });
+
+    function GetServices() {
+        var categoryId = $('#CategoryId option:selected').val();
+        var servicesIdss = $("#ServiceIds").val().split(',');
+        if (categoryId != null && categoryId > 0 && categoryId != undefined) {
+            $.ajax({
+                url: '@Url.Action("GetServiceDropdownList","Merchant")',
+                type: "GET",
+                data: { categoryId: categoryId },
+                async: false,
+                success: function (services) {
+                    if (services.length > 0 && services != null && services != undefined) {
+                        $("#ServiceId").html("");
+                        $(".serviceboxdiv").show();
+                        $.each(services, function (i, service) {
+                            $("#ServiceId").append(
+                                $('<option></option>').val(service.value).html(service.text));
+                        });
+                        if (servicesIdss.length > 0) {
+                            $("#ServiceId").selectpicker();
+                            $("#ServiceId").selectpicker('refresh');
+                            $('#ServiceId').selectpicker('val', servicesIdss);
+                        }
+                        $("#ServiceId").selectpicker('refresh')
+
+
+                    }
+                    else {
+                        $("#ServiceId").html("");
+                        $(".serviceboxdiv").hide();
+                    }
+                }
+            });
+        }
+    }
+
+    $("#BSBNo").on("change, keyup , focus, blur", function () {
+        if ($(this).val() == '') {
+            $("#spnBSBNo").text("BSB Number cannot be blank!");
+        }
+        else {
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("GetBankDetailbyBSB","Merchant")',
+                data: {
+                    bsbNumber: $(this).val().replace(/-/g, "")
+                },
+                async: false,
+                success: function (response) {
+                    if (response.success) {
+                        $("#BankName").val(response.data.bankName);
+                        $("#BankName").text(response.data.bankName);
+                        $("#BranchName").val(response.data.bankLocation);
+                        $("#BranchName").text(response.data.bankLocation);
+                        $("#spnBSBNo").text("");
+                    }
+                    else {
+                        $("#BankName").val('');
+                        $("#BankName").text('')
+                        $("#BranchName").val('')
+                        $("#BranchName").text('');
+                        $("#spnBSBNo").text(response.message);
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    hideLoader();
+                    showErrorMessage("@MessageConstant.CommonErrorMessage");
+                },
+            });
+        }
+    });
+
+    $("#close-image").click(function () {
+        $("#addEditMerchantForm #selectedImage1").attr("src", '@DirectoryConstant.UserImageNotFound');
+        $("#addEditMerchantForm #selectedImage1").attr("alt", 'default');
+        $("#close-image,#edite-image").css("display", "none");
+        $("#@Html.IdFor(x => x.ImageBase64)").val('');
+        $("#@Html.IdFor(x => x.ImageFileExtension)").val('');
+        $("#@Html.IdFor(x => x.ProfilePic)").val('');
+    });
+
+    $("#close-logo").click(function () {
+        $("#addEditMerchantForm #selectedLogo1").attr("src", '@DirectoryConstant.ImageNotFound');
+        $("#addEditMerchantForm #selectedLogo1").attr("alt", 'default');
+        $("#close-logo,#edite-logo").css("display", "none");
+        $("#@Html.IdFor(x => x.LogoBase64)").val('');
+        $("#@Html.IdFor(x => x.LogoFileExtension)").val('');
+        $("#@Html.IdFor(x => x.Logo)").val('');
+    });
+
+</script>
+

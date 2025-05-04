@@ -1,0 +1,234 @@
+﻿@model CategoryModel
+
+@{
+
+    Layout = null;
+    var imageSrc = string.Empty;
+    string deultimage = "assets/images/default.png";
+    if (!string.IsNullOrEmpty(Model.ProfilePic))
+    {
+        imageSrc = DirectoryConstant.CategoryPicDirectory + "/" + Model.ProfilePic;
+    }
+}
+
+<div class="modal fade" id="add-category-modal" data-backdrop="static" data-keyboard="false" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered w-410">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="head-type2">@(Model.CategoryId > 0 ? "Edit" : "Add") Category</h5>
+                <button type="button" class="close" data-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addCategoryForm" class="addcategory" asp-action="SaveCategory" asp-controller="Category" method="post">
+                    @Html.AntiForgeryToken()
+                    @Html.HiddenFor(model => model.CategoryId)
+                    @Html.HiddenFor(model => model.ImageFileExtension)
+                    @Html.HiddenFor(model => model.ImageBase64)
+                    @Html.HiddenFor(model => model.ProfilePic)
+                    <div class="row grid-sp15 align-items-center">
+                        <div class="col-lg-6">
+                            <div class="form-group input-group">
+                                <span class="has-float-label">
+                                    <input class="form-control" asp-for="CategoryName" type="text" />
+                                    <label asp-for="CategoryName">Category Name<span class="text-danger">*</span></label>
+                                </span>
+                                <span asp-validation-for="CategoryName" class="help-block text-danger small"></span>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <select class="filterdropdown selectpicker w100" asp-for="IsActive">
+                                    <option value="True">Active</option>
+                                    <option value="False">Inactive</option>
+                                </select>
+                                <span asp-validation-for="IsActive" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-lg-8">
+                            <div class="form-group input-group">
+                                <div class="editmerchantimage">
+                                    <div class="customfileupload" style="height: 100px;">
+                                        <input type="file" class="fileupload profileupload" accept="image/*" id="imageCropFileInput" style="left:60px" />
+                                        <img class="profile-pic" src="" alt="Profile Pic" id="selectedImage1" />
+                                        <div class="editfileup" id="edite-image">&nbsp;</div>
+                                        <div id="rmvcls2">
+                                            @(Model.CategoryId > 0 ? "Category Icon" : "Upload Category Icon")<span class="text-danger">*</span>
+                                            <span class="imageinfo" id="pixelText">Upload Image : 80 X 80 pixels</span>
+                                        </div>
+                                        <a class="closefileimg" id="close-image"><img src="~/assets/images/closewhite.png" alt="close"></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 text-right">
+                            <div class="text-right">
+                                <input type="submit" class="btn-type1 loginSubmit" value="@(Model.CategoryId > 0 ? "Update" : "Add")" />
+                            </div>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $("#@Html.IdFor(x => x.IsActive)").selectpicker();
+
+        $("#add-category-modal .close").click(function () {
+            $("#addCategoryForm").trigger("reset");
+            $("#addCategoryForm #IsActive").selectpicker('refresh');
+            $("#addCategoryForm").modal("hide");
+            $("#addCategoryForm").formReset();
+        });
+
+        if ('@imageSrc' != '') {
+            $("#addCategoryForm #selectedImage1").attr('src', '@imageSrc');
+            $("#addCategoryForm #selectedImage1").on('error', function handleError() {
+                this.src = '@deultimage';
+                this.alt = 'default';
+            });
+        }
+        else {
+            $("#edite-image,#close-image").css("display", "none");
+            $("#addCategoryForm #selectedImage1").attr('src', '@DirectoryConstant.ImageNotFound');
+            $("#addCategoryForm #selectedImage1").attr("alt", 'default');
+        }
+
+
+        $("#close-image").click(function () {
+            $("#addCategoryForm #selectedImage1").attr("src", '@DirectoryConstant.ImageNotFound');
+            $("#addCategoryForm #selectedImage1").attr("alt", 'default');
+            $("#close-image,#edite-image").css("display", "none");
+            $("#@Html.IdFor(x => x.ImageBase64)").val('');
+            $("#@Html.IdFor(x => x.ImageFileExtension)").val('');
+            $("#@Html.IdFor(x => x.ProfilePic)").val('');
+        });
+
+        $('#addCategoryForm').on('submit', function () {
+            event.preventDefault();
+
+            if (!$('#addCategoryForm').valid())
+                return false;
+            showLoader();
+
+            var formData = new FormData($("#addCategoryForm")[0])
+            $.ajax({
+                url: "@Url.Action("SaveCategory", "Category")",
+                type: 'POST',
+                data: formData,
+                async: false,
+                processData: false,
+                contentType: false,
+                success: function (data) {
+                    hideLoader();
+                    if (data.success) {
+                        $("#add-category-modal").modal("hide");
+                        $('#addCategoryForm')[0].reset();
+                        $("#addCategoryForm #IsActive").selectpicker('refresh');
+                        drawCategoryGrid();
+                        showSuccessMessage(data.message);
+                    }
+                    else {
+                        showErrorMessage(data.message);
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    hideLoader();
+                    showErrorMessage("@MessageConstant.CommonErrorMessage");
+                }
+            });
+        });
+    });
+
+    $("#imageCropFileInput").unbind();
+    $("#imageCropFileInput").on("change", function (event) {
+        const validExtensions = ['png', 'jpg', 'jpeg'];
+        let fileName, fileNameExt, fileSize;
+
+        if (event.target.files) {
+            fileName = event.target.files[0].name;
+            fileNameExt = fileName.substr(fileName.lastIndexOf('.') + 1);
+            fileSize = event.target.files[0].size / 1024;
+        }
+
+        $("#@Html.IdFor(x => x.ImageFileExtension)").val(fileNameExt);
+
+        if ($.inArray(fileNameExt, validExtensions) == -1) {
+            showErrorMessage("@MessageConstant.InValidFileType");
+            $("#imageCropFileInput").val("");
+            return false;
+        }
+
+        if (fileSize > 2048) {
+            showErrorMessage("@MessageConstant.InValidFileSize");
+            $("#imageCropFileInput").val("");
+            return false;
+        }
+
+        let imageCropFileInput = this;
+        var reader = new FileReader();
+        reader.onload = function (event) {
+            var base64Url = event.target.result;
+            $("#profile-crop-img").attr("src", event.target.result);
+            $('#img-preview').modal('show');
+            $("#add-category-modal").addClass("d-none");
+            imageCropFileInput.value = null;
+        };
+        reader.readAsDataURL(imageCropFileInput.files[0]);
+    });
+
+    $("#img-preview .close").unbind();
+    $("#img-preview .close").on('click', function () {
+        $("#add-category-modal").removeClass("d-none");
+        $("#imageCropFileInput").val("");
+    });
+
+    var createProfileCropper;
+    $("#img-preview").unbind();
+    $('#img-preview').on('shown.bs.modal', function () {
+        let options = {
+            aspectRatio: 1 / 1,
+            preview: '.img-preview'
+        };
+
+        createProfileCropper = new Cropper($("#profile-crop-img")[0], options);
+    }).on('hidden.bs.modal', function () {
+        if (createProfileCropper) {
+            createProfileCropper.destroy();
+        }
+        $("#profile-crop-img").addClass("cropper-hidden");
+        $("#profile-crop-img").data('cropper', null);
+    });
+
+    $("#btn-crop-profile").unbind();
+    $("#btn-crop-profile").on("click", function () {
+
+        const base64URL = createProfileCropper["getCroppedCanvas"]({ maxWidth: 4096, maxHeigth: 4096, fillColor: "#fff" }, undefined).toDataURL("image/jpeg");
+        $('#@Html.IdFor(x => x.ImageBase64)').val(base64URL.split(",")[1]);
+        $('#selectedImage1').attr('src', base64URL);
+        $("#selectedImage1").css("display", "inline-block");
+        $('#img-preview').modal('hide');
+        $("#edite-image,#close-image").show();
+        $("#add-category-modal").removeClass("d-none");
+        if (createProfileCropper) {
+
+            createProfileCropper.destroy();
+        }
+        $("#profile-crop-img").data('cropper', null);
+    });
+
+    $('#img-preview').on('hidden.bs.modal', function (e) {
+        $("body").addClass("modal-open");
+    });
+
+    $('#add-category-modal').on('shown.bs.modal', function (e) {
+        $("body").addClass("modal-open");
+    });
+
+    $("#edite-image").on("click", function () {
+        $("#imageCropFileInput").trigger("click");
+    })
+</script>

@@ -1,0 +1,492 @@
+﻿@model CustomerModel
+
+@{
+    Layout = null;
+    var existcount = 0;
+}
+
+<div id="Mainemergency">
+    <div id="mainclass" class="row grid-sp15 " style=display:none>
+        <input id="customerEmergencyContacts_EmergencyCustomerId" type="hidden" />
+        <div class="col-lg-3 col-md-6">
+            <div class="form-group input-group">
+                <span class="has-float-label">
+                    <input class="form-control" id="customerEmergencyContacts_FirstName" type="text" placeholder="First Name" required />
+                    <label>First Name<span class="text-danger">*</span></label>
+                </span>
+                <span class="field-validation-error" id="spncustomerEmergencyContacts_FirstName"></span>
+            </div>
+        </div>
+
+        <div class="col-lg-2 col-md-6">
+            <div class="form-group input-group">
+                <span class="has-float-label">
+                    <input class="form-control" id="customerEmergencyContacts_LastName" type="text" placeholder="Last Name" />
+                    <label>Last Name<span class="text-danger">*</span></label>
+                </span>
+                <span class="field-validation-error" id="spncustomerEmergencyContacts_LastName"></span>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="form-group input-group">
+                <span class="has-float-label">
+                    <input class="form-control" id="customerEmergencyContacts_Number" type="text" placeholder="Mobile Number" id="MobileNUmberInput" required />
+                    <label>Emergency Number<span class="text-danger"></span></label>
+                </span>
+                <span class="field-validation-error" id="customerEmergencyContacts_Number"></span>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="form-group input-group">
+                <span class="has-float-label">
+                    <input class="form-control" id="customerEmergencyContacts_Email" type="email" placeholder="Emergency Email" required />
+                    <label>
+                        Emergency Email<span class="text-danger">*</span>
+                    </label>
+                </span>
+                <span class="field-validation-error" id="spncustomerEmergencyContacts_Email"></span>
+            </div>
+        </div>
+        <div id="divdelete" class="row add-row-field remove" style=display:none>
+            <div class="col-12 text-center">
+                <a href="#" class="close-insert-row" id="btnDelete" onclick="removeEmergencyContact(this)"><img class="close-insert-img" src="assets/images/closewhite.png" alt="plush"></a>
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="editcustomer" data-backdrop="static" data-keyboard="false" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered" id="model-content">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="head-type2">Customer Details</h5>
+                <button type="button" class="close" data-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form class="addcustomer" id="editCustomerForm">
+                    @Html.AntiForgeryToken()
+                    @Html.HiddenFor(model => model.CustomerId)
+                    <div class="row grid-sp15">
+                        <div class="col-lg-4 col-md-6">
+                            <div class="form-group input-group">
+                                <span class="has-float-label">
+                                    <input class="form-control" asp-for="FirstName" type="text" placeholder="First Name" />
+                                    <label asp-for="FirstName">First Name<span class="text-danger">*</span></label>
+                                </span>
+                                <span asp-validation-for="FirstName"></span>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6">
+                            <div class="form-group input-group">
+                                <span class="has-float-label">
+                                    <input class="form-control" asp-for="LastName" type="text" placeholder="Last Name" />
+                                    <label asp-for="LastName">Last Name<span class="text-danger">*</span></label>
+                                </span>
+                                <span asp-validation-for="LastName"></span>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6">
+                            <div class="form-group input-group">
+                                <span class="has-float-label">
+                                    <input class="form-control" asp-for="Email" type="text" placeholder="Email" />
+                                    <label asp-for="Email">Email<span class="text-danger">*</span></</label>
+                                </span>
+                                <span asp-validation-for="Email"></span>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6">
+                            <div class="form-group input-group">
+                                <span class="has-float-label">
+                                    <input class="form-control" asp-for="PhoneNumber" type="text" placeholder="Phone Number" />
+                                    <label asp-for="PhoneNumber">Phone<span class="text-danger">*</span></label>
+                                </span>
+                                <span asp-validation-for="PhoneNumber"></span>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6">
+                            <div class="form-group">
+                                <select class="filterdropdown selectpicker w100" asp-for="IsActive">
+                                    <option value="@true.ToString()">Active</option>
+                                    <option value="@false.ToString()">Inactive</option>
+                                </select>
+                                <span asp-validation-for="IsActive"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <h3 class="head-type3  mb-4">Emergency Number</h3>
+                    @if (Model.customerEmergencyContacts != null && @Model.customerEmergencyContacts.Count > 0)
+                    {
+                        @for (int i = 0; i < Model.customerEmergencyContacts.Count; i++)
+                        {
+                            <input asp-for="@Model.customerEmergencyContacts[i].EmergencyContactId" id="customerEmergencyContacts_EmergencyContactId_@i" type="hidden" />
+                            if ((Model.customerEmergencyContacts[i].EmergencyContactId > 0))
+                            {
+                                existcount++;
+                                <div class="row grid-sp15 exisEmergencyDiv removedivExist_@i">
+                                    <div class="col-lg-3 col-md-6">
+                                        <div class="form-group input-group">
+                                            <span class="has-float-label">
+                                                <input class="form-control" asp-for="@Model.customerEmergencyContacts[i].FirstName" id="customerEmergencyContacts_FirstName_@i" type="text" placeholder="First Name" />
+                                                <label asp-for="@Model.customerEmergencyContacts[i].FirstName">First Name<span class="text-danger">*</span></label>
+                                            </span>
+                                            <span asp-validation-for="@Model.customerEmergencyContacts[i].FirstName" id="spncustomerEmergencyContacts_FirstName"></span>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-2 col-md-6">
+                                        <div class="form-group input-group">
+                                            <span class="has-float-label">
+                                                <input class="form-control" asp-for="@Model.customerEmergencyContacts[i].LastName" id="customerEmergencyContacts_LastName_@i" type="text" placeholder="Last Name" />
+                                                <label asp-for="@Model.customerEmergencyContacts[i].LastName">Last Name<span class="text-danger">*</span></label>
+                                            </span>
+                                            <span asp-validation-for="@Model.customerEmergencyContacts[i].LastName"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3 col-md-6">
+                                        <div class="form-group input-group">
+                                            <span class="has-float-label">
+                                                <input class="form-control emergencyNumber" asp-for="@Model.customerEmergencyContacts[i].Number" id="customerEmergencyContacts_Number_@i" type="text" placeholder="Mobile Number" />
+                                                <label asp-for="@Model.customerEmergencyContacts[i].Number">Emergency Number<span class="text-danger"></span></label>
+                                            </span>
+                                            <span asp-validation-for="EmergencyMobileNumber"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3 col-md-6">
+                                        <div class="form-group input-group">
+                                            <span class="has-float-label">
+                                                <input class="form-control" asp-for="@Model.customerEmergencyContacts[i].Email" id="customerEmergencyContacts_Email_@i" type="email" placeholder="Emergency Email" />
+                                                <label asp-for="@Model.customerEmergencyContacts[i].Email">
+                                                    Emergency Email<span class="text-danger">*</span>
+                                                </label>
+                                            </span>
+                                            <span asp-validation-for="@Model.customerEmergencyContacts[i].Email" id="spncustomerEmergencyContacts_Email"></span>
+                                        </div>
+                                    </div>
+                                    @if (i > 0)
+                                    {
+                                        <div class="row add-row-field">
+                                            <div class="col-12 text-center">
+                                                <a href="#" class="close-insert-row" onclick="deleteEmergencyContact(@Model.customerEmergencyContacts[i].EmergencyContactId,@existcount,@i)"><img class="close-insert-img" src="assets/images/closewhite.png" alt="plush"></a>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+
+                            }
+                        }
+                    }
+                    <div id="cloneData"></div>
+                    <div class="row add-row-field">
+                        <div class="col-12 text-center">
+                            <a href="#"><img class="img-plus" src="assets/images/fileupload-plus.svg" alt="plush" id="plus-icon" @(existcount == 3 ? "style=display:none" : "") onclick="AddTextBox(@existcount)"></a>
+                        </div>
+                    </div>
+                    @Html.Hidden("existcountvariable", existcount)
+                    <h3 class="head-type3 mb-3">Family Member</h3>
+                    <div class="row grid-sp15">
+                        <div class="col-lg-4 col-md-6">
+                            <div class="form-group input-group">
+                                <span class="has-float-label">
+                                    <input class="form-control" asp-for="FamilyMemberFirstName" type="text" placeholder="First Name" disabled />
+                                    <label asp-for="FamilyMemberFirstName">First Name</label>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6">
+                            <div class="form-group input-group">
+                                <span class="has-float-label">
+                                    <input class="form-control" asp-for="FamilyMemberLastName" type="text" placeholder="Last Name" disabled />
+                                    <label asp-for="FamilyMemberLastName">Last Name</label>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6">
+                            <div class="form-group input-group">
+                                <span class="has-float-label">
+                                    <input class="form-control" asp-for="FamilyRelation" type="text" placeholder="Family Relation" disabled />
+                                    <label asp-for="FamilyRelation">Relation</label>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row grid-sp15">
+                        <div class="col-lg-4 col-md-6">
+                            <div class="form-group">
+                                <div class="editformBg">
+                                    <span class="editformlabel">Registered on:</span>
+                                    <span class="editformval"> @Model.RegisteredOn</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6">
+                            <div class="form-group">
+                                <div class="editformBg">
+                                    <span class="editformlabel">Plans:</span>
+                                    <span class="editformval">@Model.Plans</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6">
+                            <div class="form-group">
+                                <div class="editformBg singleview">
+                                    <div class="editformlabel text-center">Wallet Amount(AUD):</div>
+                                    <div class="editformval text-center">@Model.WalletAmt</div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="row grid-sp15">
+                        <div class="col-lg-6">
+                            <a class="btn-type4" title="Delete" data-dismiss="modal" data-toggle="modal" data-target="#delete" href="Javascript:;" onclick="confirmDeleteCustomer(@Model.CustomerId,1)">Delete</a>
+
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="text-right">
+                                <button type="submit" class="btn-type1 loginSubmit">Update</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+    $(document).ready(function () {
+        let isValid = true;
+        $("#editCustomerForm #@Html.IdFor(x => x.PhoneNumber)").inputmask("+61(999)-999-9999", { "clearIncomplete": true });
+        $('.exisEmergencyDiv').each(function (emegencyIndex) {
+            $(`#customerEmergencyContacts_Number_${emegencyIndex}`).inputmask("+61(999)-999-9999", { "clearIncomplete": true });
+        });
+
+        $("#editCustomerForm #IsActive").selectpicker();
+        $.validator.unobtrusive.parse("#editCustomerForm");
+        $('#editCustomerForm').unbind();
+
+        $('#editCustomerForm').on('submit', function () {
+            var emegencyData = [];
+            $('.exisEmergencyDiv').each(function (emegencyIndex) {
+                var EmergencyContactId = $(`#customerEmergencyContacts_EmergencyContactId_${emegencyIndex}`).val();
+                var FirstName = $(`#customerEmergencyContacts_FirstName_${emegencyIndex}`).val();
+                var LastName = $(`#customerEmergencyContacts_LastName_${emegencyIndex}`).val();
+                var Number = $(`#customerEmergencyContacts_Number_${emegencyIndex}`).val();
+                var Email = $(`#customerEmergencyContacts_Email_${emegencyIndex}`).val();
+                var emegency = {};
+
+                emegency.FirstName = FirstName;
+                emegency.LastName = LastName;
+                emegency.Number = Number;
+                emegency.Email = Email;
+                emegency.EmergencyContactId = parseInt(EmergencyContactId);
+                emegencyData.push(emegency);
+
+            });
+            $('.emegencyDiv').each(function (emegencyIndex) {
+                var existcount = $("#existcountvariable").val();
+                var idIndex = emegencyIndex + 1;
+                var FirstName = $(`.emegencyDiv #customerEmergencyContacts_FirstName_${idIndex}`).val();
+                var LastName = $(`.emegencyDiv #customerEmergencyContacts_LastName_${idIndex}`).val();
+                var Number = $(`.emegencyDiv #customerEmergencyContacts_Number_${idIndex}`).val();
+                var Email = $(`.emegencyDiv #customerEmergencyContacts_Email_${idIndex}`).val();
+
+                if (FirstName == '' || FirstName == undefined || FirstName.trim() == '') {
+                    $("#spncustomerEmergencyContacts_FirstName_" + (emegencyIndex + 1)).text("@MessageConstant.InvalidModalState");
+                    $("#spncustomerEmergencyContacts_FirstName_" + (emegencyIndex + 1)).show();
+                    isValid = false;
+                    return;
+                }
+                else {
+                    $("#spncustomerEmergencyContacts_FirstName_" + (emegencyIndex + 1)).text("");
+                    isValid = true;
+                }
+                if (LastName == '' || LastName == undefined || LastName.trim() == '') {
+                    $("#spncustomerEmergencyContacts_LastName_" + (emegencyIndex + 1)).text("@MessageConstant.InvalidModalState");
+                    $("#spncustomerEmergencyContacts_LastName_" + (emegencyIndex + 1)).show();
+                    isValid = false;
+                    return;
+                }
+                else {
+                    $("#spncustomerEmergencyContacts_LastName_" + (emegencyIndex + 1)).text("");
+                    isValid = true;
+                }
+                if (Email == '' || Email == undefined || Email.trim() == '') {
+                    $("#spncustomerEmergencyContacts_Email_" + (emegencyIndex + 1)).text("@MessageConstant.EmailCannotBeBlank");
+                    $("#spncustomerEmergencyContacts_Email_" + (emegencyIndex + 1)).show();
+                    isValid = false;
+                    return;
+                }
+                else {
+                    $("#spncustomerEmergencyContacts_Email_" + (emegencyIndex + 1)).text("");
+                    isValid = true;
+                }
+
+                if (!IsEmail(Email)) {
+                    $("#spncustomerEmergencyContacts_Email_" + (emegencyIndex + 1)).text("@MessageConstant.EmailIsNotValid");
+                    $("#spncustomerEmergencyContacts_Email_" + (emegencyIndex + 1)).show();
+                    isValid = false;
+                    return;
+                }
+
+                var emegency = {};
+                emegency.FirstName = FirstName;
+                emegency.LastName = LastName;
+                emegency.Number = Number;
+                emegency.Email = Email;
+                emegency.EmergencyContactId = 0;
+                emegencyData.push(emegency);
+
+            });
+
+            event.preventDefault();
+            if (!$('#editCustomerForm').valid())
+                return false;
+
+            if (isValid) {
+                showLoader();
+                let formdetails = {
+                    'CustomerId': @Model.CustomerId,
+                    'FirstName': $("#editCustomerForm #@Html.IdFor(x=>x.FirstName)").val(),
+                    'LastName': $("#editCustomerForm #@Html.IdFor(x=>x.LastName)").val(),
+                    'Email': $("#editCustomerForm #@Html.IdFor(x=>x.Email)").val(),
+                    'PhoneNumber': $("#editCustomerForm #@Html.IdFor(x=>x.PhoneNumber)").val(),
+                    'IsActive': $("#editCustomerForm #@Html.IdFor(x=>x.IsActive)").val(),
+                    'FamilyMemberFirstName': $("#editCustomerForm #@Html.IdFor(x=>x.FamilyMemberFirstName)").val(),
+                    'FamilyMemberLastName': $("#editCustomerForm #@Html.IdFor(x=>x.FamilyMemberLastName)").val(),
+                    'FamilyRelation': $("#editCustomerForm #@Html.IdFor(x=>x.FamilyRelation)").val(),
+                    'customerEmergencyContacts': emegencyData,
+                };
+                $.ajax({
+                    url: "@Url.Action("Save", "Customer")",
+                    type: 'POST',
+                    datatype: 'application/json',
+                    data: { customerModel: formdetails },
+                    async: false,
+                    success: function (data) {
+                        hideLoader();
+                        if (data.success) {
+                            $("#editcustomer").modal("hide");
+                            $('#editCustomerForm')[0].reset();
+                            drawCustomerGrid();
+
+                            showSuccessMessage(data.message);
+                        }
+                        else {
+                            showErrorMessage(data.message);
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        hideLoader();
+                        showErrorMessage("@MessageConstant.CommonErrorMessage");
+                    }
+                });
+            }
+            else {
+                hideLoader();
+            }
+        });
+    });
+
+    function AddTextBox(emergencyId) {
+        cloneEmergencyDiv(emergencyId);
+    }
+
+    function cloneEmergencyDiv(tableQuestionId) {
+        var existdata = $("#existcountvariable").val();
+        var totalQue = $(".emegencyDiv").length;
+        idIndex = totalQue + 1;
+        let totalcount = parseInt(existdata) + parseInt(idIndex);
+        if (totalcount >= 3) {
+            $("#plus-icon").hide();
+        }
+        var divClone = $("#Mainemergency").clone();
+
+        $(divClone).find('#mainclass').attr('id', 'emegencyDiv_' + idIndex);
+        $(divClone).find('#emegencyDiv_' + idIndex).addClass('emegencyDiv');
+        $(divClone).find('#emegencyDiv_' + idIndex).attr('table-question-id', tableQuestionId);
+        $(divClone).find('#emegencyDiv_' + idIndex).removeAttr('style');
+
+        $(divClone).find("#divdelete").attr('id', 'divdelete_' + idIndex);
+        $(divClone).find(`#divdelete_${idIndex}`).attr('cur-que-index', idIndex)
+        $(divClone).find(`#divdelete_${idIndex}`).removeAttr('style');
+
+        $(divClone).find("#btnDelete").attr('id', 'btnDelete_' + idIndex);
+        $(divClone).find(`#btnDelete_${idIndex}`).attr('cur-que-index', idIndex)
+
+        $(divClone).find('#customerEmergencyContacts_FirstName').attr('id', 'customerEmergencyContacts_FirstName_' + idIndex);
+        $(divClone).find(`#customerEmergencyContacts_FirstName_${idIndex}`).attr('cur-que-index', idIndex)
+        $(divClone).find('#spncustomerEmergencyContacts_FirstName').attr('id', 'spncustomerEmergencyContacts_FirstName_' + idIndex);
+
+        $(divClone).find('#customerEmergencyContacts_LastName').attr('id', 'customerEmergencyContacts_LastName_' + idIndex);
+        $(divClone).find(`#customerEmergencyContacts_LastName_${idIndex}`).attr('cur-que-index', idIndex)
+        $(divClone).find('#spncustomerEmergencyContacts_LastName').attr('id', 'spncustomerEmergencyContacts_LastName_' + idIndex);
+
+        $(divClone).find('#customerEmergencyContacts_Number').attr('id', 'customerEmergencyContacts_Number_' + idIndex);
+        $(divClone).find(`#customerEmergencyContacts_Number_${idIndex}`).attr('cur-que-index', idIndex)
+        $(divClone).find('#spncustomerEmergencyContacts_Number').attr('id', 'spncustomerEmergencyContacts_Number_' + idIndex);
+
+        $(divClone).find(`#customerEmergencyContacts_Number_${idIndex}`).inputmask("+61(999)-999-9999", { "clearIncomplete": true });
+
+        $(divClone).find('#customerEmergencyContacts_Email').attr('id', 'customerEmergencyContacts_Email_' + idIndex);
+        $(divClone).find(`#customerEmergencyContacts_Email_${idIndex}`).attr('cur-que-index', idIndex)
+        $(divClone).find('#spncustomerEmergencyContacts_Email').attr('id', 'spncustomerEmergencyContacts_Email_' + idIndex);
+
+        $("#cloneData").append(divClone);
+    }
+
+    function deleteEmergencyContact(emergencyContactId, count, id) {
+        if (emergencyContactId > 0) {
+            showLoader();
+            $.ajax({
+                url: "@Url.Action("DeleteEmergencyContact", "Customer")",
+                type: 'DELETE',
+                data: { id: emergencyContactId },
+                dataType: "JSON",
+                async: false,
+                success: function (data) {
+                    hideLoader();
+                    $('.removedivExist_' + id).remove();
+                    $("#plus-icon").show();
+                    var existdata = $("#existcountvariable").val();
+                    $("#existcountvariable").val(parseInt(existdata) - 1)
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    hideLoader();
+                    showErrorMessage("@MessageConstant.CommonErrorMessage");
+                }
+            })
+        }
+        else {
+            showErrorMessage("@MessageConstant.CommonErrorMessage");
+        }
+    };
+
+    function removeEmergencyContact(ctrl) {
+        if (ctrl != null && ctrl != "" && ctrl != undefined) {
+            var selectedDeleteId = ctrl.id;
+            var emegencyIndex = $('#' + selectedDeleteId).attr('cur-que-index');
+            $('#emegencyDiv_' + emegencyIndex).remove();
+            $("#plus-icon").show();
+        }
+    }
+
+    function IsEmail(email) {
+        var regex = /^[a-zA-Z0-9._]+[a-zA-Z0-9]+@@[a-zA-Z0-9]+\.[a-zA-Z]{2,4}$/;
+        if (!regex.test(email)) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+
+    $('#editcustomer').on('shown.bs.modal', function (e) {
+        $("body").addClass("modal-open");
+    });
+</script>
+

@@ -1,0 +1,164 @@
+﻿@model CustomerModel
+
+@{
+    Layout = null;
+}
+
+<div class="modal fade" id="addcustomer" data-backdrop="static" data-keyboard="false" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="head-type2">Add Customer</h5>
+                <button type="button" class="close"></button>
+            </div>
+            <div class="modal-body">
+                <form class="addcustomer" id="addCustomerForm">
+                    @Html.AntiForgeryToken()
+                    @Html.HiddenFor(model => model.CustomerId)
+                    <div class="row grid-sp15">
+                        <div class="col-lg-4">
+                            <div class="form-group input-group">
+                                <span class="has-float-label">
+                                    <input class="form-control" asp-for="FirstName" type="text" placeholder="First Name" />
+                                    <label asp-for="FirstName">First Name<span class="text-danger">*</span></label>
+                                </span>
+                                <span asp-validation-for="FirstName"></span>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="form-group input-group">
+                                <span class="has-float-label">
+                                    <input class="form-control" asp-for="LastName" type="text" placeholder="Last Name" />
+                                    <label asp-for="LastName">Last Name<span class="text-danger">*</span></label>
+                                </span>
+                                <span asp-validation-for="LastName"></span>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="form-group input-group">
+                                <span class="has-float-label">
+                                    <input class="form-control" asp-for="Email" type="text" placeholder="Email" />
+                                    <label asp-for="Email">Email<span class="text-danger">*</span></</label>
+                                </span>
+                                <span asp-validation-for="Email"></span>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="form-group input-group">
+                                <span class="has-float-label">
+                                    <input class="form-control" asp-for="PhoneNumber" type="text" placeholder="Phone" />
+                                    <label asp-for="PhoneNumber">Phone<span class="text-danger">*</span></label>
+                                </span>
+                                <span asp-validation-for="PhoneNumber"></span>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="form-group">
+                                <select class="filterdropdown selectpicker w100" asp-for="IsActive">
+                                    <option value="@true.ToString()">Active</option>
+                                    <option value="@false.ToString()">Inactive</option>
+                                </select>
+                                <span asp-validation-for="IsActive"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="saperate-line">
+                        <h3 class="head-type3">Emergency Number</h3>
+                        <div class="row grid-sp15">
+                            <div class="col-lg-4">
+                                <div class="form-group input-group">
+                                    <span class="has-float-label">
+                                        <input class="form-control" asp-for="EmergencyFirstName" type="text" placeholder="First Name" />
+                                        <label asp-for="EmergencyFirstName">First Name<span>*</span></label>
+                                    </span>
+                                    <span asp-validation-for="EmergencyFirstName"></span>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="form-group input-group">
+                                    <span class="has-float-label">
+                                        <input class="form-control" asp-for="EmergencyLastName" type="text" placeholder="Last Name" />
+                                        <label asp-for="EmergencyLastName">Last Name</label>
+                                    </span>
+                                    <span asp-validation-for="EmergencyLastName"></span>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="form-group input-group">
+                                    <span class="has-float-label">
+                                        <input class="form-control" asp-for="EmergencyEmail" type="text" placeholder="Emergency Email" />
+                                        <label asp-for="EmergencyEmail">Emergency Email<span class="text-danger">*</span></</label>
+                                    </span>
+                                    <span asp-validation-for="EmergencyEmail"></span>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="form-group input-group">
+                                    <span class="has-float-label">
+                                        <input class="form-control" asp-for="EmergencyMobileNumber" type="text" placeholder="Emergency Number   " />
+                                        <label asp-for="EmergencyMobileNumber">Emergency Number<span class="text-danger">*</span></label>
+                                    </span>
+                                    <span asp-validation-for="EmergencyMobileNumber"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <button type="submit" class="btn-type1 loginSubmit">Add Customer</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+
+        $("#addCustomerForm #@Html.IdFor(x => x.PhoneNumber)").inputmask("+61(999)-999-9999", { "clearIncomplete": true });
+        $("#addCustomerForm #@Html.IdFor(x => x.EmergencyMobileNumber)").inputmask("+61(999)-999-9999", { "clearIncomplete": true });
+
+        $("#addcustomer .close").click(function () {
+            $("#addCustomerForm").trigger("reset");
+            $("#addCustomerForm #IsActive").selectpicker('refresh');
+            $("#addcustomer").modal("hide");
+            $("#addCustomerForm").formReset();
+        });
+
+        $('#addCustomerForm').on('submit', function () {
+            event.preventDefault();
+            
+            if (!$('#addCustomerForm').valid())
+                return false;
+
+            showLoader();
+
+            var formData = new FormData($("#addCustomerForm")[0])
+
+            $.ajax({
+                url: "@Url.Action("Save", "Customer")",
+                type: 'POST',
+                data: formData,                
+                processData: false,
+                contentType: false,
+                success: function (data) {
+                    hideLoader();
+                    if (data.success) {
+                        $("#addcustomer").modal("hide");
+                        $("#addCustomerForm").trigger("reset");
+                        $("#addCustomerForm #IsActive").selectpicker('refresh');
+                        drawCustomerGrid();
+                        showSuccessMessage(data.message);
+                    }
+                    else {
+                        showErrorMessage(data.message);
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    hideLoader();
+                    showErrorMessage("@MessageConstant.CommonErrorMessage");
+                }
+            });
+        });
+    });
+</script>

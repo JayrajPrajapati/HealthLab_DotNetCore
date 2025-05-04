@@ -1,0 +1,20 @@
+.close-insert-row {
+    background: red;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    position: relative;
+    top: 10px;
+}
+
+.close-insert-img {
+    width: 10px;
+}
+
+
+/*Developer*/
+.readonlys {
+    background-color: gainsboro !important;
+}

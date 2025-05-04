@@ -1,0 +1,81 @@
+﻿@model MerchantRequestModel
+
+<!-- Reject Merchant Modal -->
+<div class="modal fade" id="reject-merchant" data-backdrop="static" data-keyboard="false" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered w-410">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="head-type2">Reject</h5>
+                <button type="button" class="close" data-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="reject-form">
+                    @Html.HiddenFor(m => m.MerchantId)
+                    <div class="form-group input-group">
+                        <span class="has-float-label">
+                            <textarea class="form-control" asp-for="RejectReason" placeholder="Reason for Rejection"></textarea>
+                            <label asp-for="RejectReason">Reason for Rejection<span class="text-danger">*</span></label>
+                        </span>
+                        <span asp-validation-for="RejectReason" class="text-danger"></span>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <button href="Javascript:;" data-dismiss="modal" class="btn-type5 cancel-btn" id="btn-reject-cancel">Cancel</button>
+                        </div>
+                        <div class="col-md-6 text-right">
+                            <button type="submit" class="btn-type5">Submit</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $.validator.unobtrusive.parse("#reject-form");
+        $('#reject-form').unbind();
+        $("#reject-form").submit(function () {
+            event.preventDefault();
+
+            if (!$(this).valid())
+                return false;
+
+            showLoader();
+
+            $.ajax({
+                url: "@Url.Action("MerchantAcceptRejectRequest", "MerchantRequest")",
+                type: 'POST',
+                dataType: "JSON",
+                data: {
+                    id: $("#@Html.IdFor(m=>m.MerchantId)").val(),
+                    rejectedReason: $("#@Html.IdFor(m=>m.RejectReason)").val(),
+                    merchantRequestenum: @Convert.ToInt32(MerchantRequestEnum.Rejected)
+                                },
+                success: function (data) {
+                    hideLoader();
+                    if (data.success) {
+                        $("#reject-merchant").modal("hide");
+                        $("#reject-form").trigger("reset");
+                        drawMerchantGrid();
+                        showSuccessMessage(data.message);
+                    }
+                    else {
+                        showErrorMessage(data.message);
+                    }
+
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    hideLoader();
+
+                    showErrorMessage("Error: " + errorThrown);
+                }
+            });
+        });
+    });
+
+    $('#reject-merchant').on('shown.bs.modal', function (e) {
+        $('body').addClass("modal-open"); ``
+    })
+</script>

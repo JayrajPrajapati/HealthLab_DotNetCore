@@ -1,0 +1,419 @@
+﻿@model MerchantModel
+@{
+    ViewData["Title"] = "Merchant Page";
+}
+
+@section HeaderTitle
+    {
+    <h1 class="head-type1">Merchant Management</h1>
+}
+
+@section Partials
+    {
+    <div id="div-merchant-add-edit">
+    </div>
+    <div id="div-merchant-view">
+    </div>
+    <div id="div-pay-merchant-view">
+    </div>
+    <div class="modal fade" id="merchant-delete" data-backdrop="static" data-keyboard="false" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered w-410">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="head-type2">Are you sure you want to delete?</h5>
+                    <button type="button" class="close" data-dismiss="modal"></button>
+                </div>
+                <div class="modal-footer">
+                    <a class="btn-type5 cancel-btn" title="Cancel" data-dismiss="modal" href="Javascript:;" id="btn-delete-cancel">Cancel</a>
+                    <a class="btn-type5" id="btn-delete-merchant" title="Confirm" data-dismiss="modal" href="Javascript:;">Confirm</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @*Image-crop popup*@
+    <div class="modal fade" id="img-preview" data-backdrop="static" data-keyboard="false" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered w-700">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="head-type2">Image Crop</h5>
+                    <button type="button" class="close" data-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="profile_img_data">
+                    <div class="crop-outer">
+                        <div class="img-container">
+                            <img alt="Picture" id="profile-crop-img" class="cropper-hidden">
+                        </div>
+                    </div>
+                    <div class="text-right" style="margin-bottom:20px;">
+                        <button class="cropImageBtn btn-type1" id="btn-crop-profile" style="margin: 0px 0 0 auto;">Crop</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @*Logo-crop popup*@
+    <div class="modal fade" id="logo-preview" data-backdrop="static" data-keyboard="false" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered w-700">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="head-type2">Logo Crop</h5>
+                    <button type="button" class="close" data-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="profile_img_data">
+                    <div class="crop-outer">
+                        <div class="img-container">
+                            <img alt="Picture" id="logo-crop-img" class="cropper-hidden">
+                        </div>
+                    </div>
+                    <div class="text-right" style="margin-bottom:20px;">
+                        <button class="cropImageBtn btn-type1" id="btn-crop-logo" style="margin: 0px 0 0 auto;">Crop</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<div class="row align-items-center innersubHead">
+    <div class="col-xl-5">
+        <h2 class="head-type2">Merchant List <span id="merchant-count">-</span></h2>
+    </div>
+    <div class="col-xl-7">
+        <div class="inneraction">
+            <div class="searchtextbox">
+                <input id="grid-search" type="text" class="searchbox" placeholder="Search ">
+                <a href="#" class="searchicon"></a>
+            </div>
+            <a class="btn-type1 inneractionbtn" title="Add Merchant" data-toggle="modal" onclick="merchantAddEdit(0)">Add Merchant</a>
+        </div>
+    </div>
+</div>
+<div class="listtableOuter">
+    <table id="merchant-grid" class="display responsive nowrap" style="width:100%">
+        <thead>
+            <tr>
+                <th>Logo</th>
+                <th>Merchant</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Clinic/Lab</th>
+                <th>Location</th>
+                <th>Status</th>
+                <th class="nosort text-right">&nbsp;</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</div>
+
+@{
+    Func<string, IHtmlContent> actionContent =
+    @<div class="userdropdown listaction">
+        <button class="dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
+        <div class="dropdown-menu dropdown-menu-right">
+            <span class="userdroplink" onclick="viewMerchant(--merchant-id--)">
+                <a class="userdropdownlink" href="Javascript:;" data-toggle="modal" data-target="#viewmerchant">View</a>
+            </span>
+            <span class="userdroplink"><a class="userdropdownlink" href="Javascript:;" data-toggle="modal" data-target="#editmerchant" onclick='merchantAddEdit(--merchant-id--)'>Edit</a></span>
+            <span class="userdroplink"><a class="userdropdownlink" href="Javascript:;" data-toggle="modal" data-target="#paymerchant" onclick='viewPayMerchant(--merchant-id--)'>Pay Merchant</a></span>
+            <span class="userdroplink" onclick="confirmDeleteMerchant(--merchant-id--,0)">
+                <a class="userdropdownlink logout">Delete</a>
+            </span>
+        </div>
+    </div>;
+}
+
+@section Styles
+    {
+    <link rel="stylesheet" href="@Url.Content("https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.css")" asp-append-version="true" />
+    <style>
+        .crop-outer {
+            margin-bottom: 1rem;
+            overflow: hidden;
+            padding: 2px;
+        }
+
+        .img-container {
+            max-height: 450px;
+            min-height: 450px;
+        }
+
+        .img-container, .img-preview {
+            background-color: #f7f7f7;
+            text-align: center;
+            width: 100%;
+        }
+
+        .crop-outer .img-container > img {
+            max-width: 100%;
+            vertical-align: middle;
+            border-style: none;
+        }
+
+        .cropper-hidden {
+            display: none !important;
+        }
+    </style>
+}
+
+@section Scripts
+    {
+    <script src="@Url.Content("https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.js")" asp-append-version="true"></script>
+    <script src="@Url.Content("~/plugins/numbermask/jquery.inputmask.min.js")" asp-append-version="true"></script>
+    <script>
+        let datatable;
+        $(document).ready(function () {
+            activeSubMenu("merchant-menu");
+
+            datatable = $('#merchant-grid').DataTable({
+                "paging": true,
+                "ordering": true,
+                "filter": false,
+                "destroy": true,
+                "orderMulti": false,
+                "serverSide": true,
+                "processing": true,
+                "bLengthChange": false,
+                "order": [],
+                "pageLength": 10,
+                "info": false,
+                "dom": 'rtip',
+                "columns": [
+                    { "width": "10%" },
+                    { "width": "25%" },
+                    { "width": "22%" },
+                    { "width": "22%" },
+                    { "width": "14%" },
+                    { "width": "5%" },
+                    { "width": "5%" },
+                    { "width": "5%" }
+                ],
+                "language": {
+                    "zeroRecords": "No data available!",
+                },
+                "ajax": {
+                    "url": "@Url.Action("GetMerchantList", "Merchant")",
+                    "type": "POST",
+                    "dataType": "JSON",
+                    "data": function (d) {
+                        return $.extend({}, d, {
+                            "search": {
+                                "regex": false,
+                                "value": $.trim($("#grid-search").val())
+                            }
+                        });
+                    }
+                },
+                "aoColumns": [
+                    { "mDataProp": "logo" },
+                    { "mDataProp": "fullName" },
+                    { "mDataProp": "emailAddress" },
+                    { "mDataProp": "phoneNumber" },
+                    { "mDataProp": "clinicName" },
+                    { "mDataProp": "cliniclocation" },
+                    { "mDataProp": "isActive" },
+                    { "mDataProp": "merchantId" },
+                ],
+                "columnDefs": [
+                    {
+                        "render": function (a, aa, row) {
+                            return `<img src="@DirectoryConstant.MerchantLogoDirectory/${row.logo}" class="merchantlogo" onError="nofindLogo(this)" />`;
+                        },
+                        "orderable": false,
+                        "targets": 0
+                    },
+                    {
+                        "render": function (data, type, row) {
+                            return `<div id="merchantImage" class="merchantlistOuter"><img src="@DirectoryConstant.MerchantProfilePicDirectory/${row.profilePic}" class="merchantphoto" onError="nofindMerchant(this)" />` + `<span>` + row.fullName + `</span></div>`;
+                        },
+                        "targets": 1
+                    },
+                    {
+                        "render": function (_, __, row) {
+                            return row.emailAddress;
+                        },
+                        "targets": 2
+                    },
+                    {
+                        "render": function (_, __, row) {
+                            return row.phoneNumber;
+                        },
+                        "targets": 3
+                    },
+                    {
+                        "render": function (_, __, row) {
+                            return row.clinicName;
+                        },
+                        "targets": 4
+                    },
+                    {
+                        "render": function (_, __, row) {
+                            return row.clinicLocation;
+                        },
+                        "targets": 5
+                    },
+                    {
+                        "render": function (_, __, row) {
+                            if (row.isActive)
+                                return `<span class="badge badge-success">Active</span>`;
+                            else
+                                return `<span class="badge badge-light">Inactive</span>`;
+
+                        },
+                        "targets": 6,
+                        "class": "text-center"
+                    },
+                    {
+                        "orderable": false,
+                        "render": function (_, __, row) {
+                            var html = `@actionContent(string.Empty)`;
+                            html = html.split("--merchant-id--").join(row.merchantId);
+                            return html;
+                        },
+                        "targets": 7,
+                    }
+                ],
+                "drawCallback": function (resultData) {
+                    $("#merchant-count").text(resultData.json.merchantCount);
+                }
+            });
+
+            datatable.on('draw.dt', function () {
+                if ($('#merchant-grid tbody .dataTables_empty').length && datatable.page.info().pages)
+                    datatable.page('previous').draw('page');
+            });
+
+            $("#grid-search").keyup(function () {
+                drawMerchantGrid();
+            });
+
+            $('#merchant-delete').on('shown.bs.modal', function (e) {
+                $("body").addClass("modal-open");
+            });
+        });
+
+        function drawMerchantGrid() {
+            datatable.draw('page');
+        };
+
+        function merchantAddEdit(merchantId) {
+            showLoader();
+            $.ajax({
+                url: "@Url.Action("AddEdit", "Merchant")",
+                type: 'GET',
+                data: { id: merchantId },
+                dataType: "Html",
+                async: false,
+                success: function (html) {
+                    hideLoader();
+                    $("#div-merchant-add-edit").html("").html(html);
+                    $("#merachant-add-edit").modal("show");
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    hideLoader();
+                    showErrorMessage("@MessageConstant.CommonErrorMessage");
+                }
+            });
+        }
+
+        function viewMerchant(merchantId) {
+            showLoader();
+            $.ajax({
+                url: "@Url.Action("ViewMerchant", "Merchant")",
+                type: 'GET',
+                data: { id: merchantId },
+                dataType: "Html",
+                async: false,
+                success: function (html) {
+                    hideLoader();
+                    $("#div-merchant-view").html("").html(html);
+                    $("#viewmerchant").modal("show");
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    hideLoader();
+                    showErrorMessage("@MessageConstant.CommonErrorMessage");
+                }
+            });
+        }
+
+        function confirmDeleteMerchant(merchantId, pagecode) {
+
+            $("#btn-delete-merchant").attr("onclick", `deleteMerchant(${merchantId}, ${pagecode});`);
+            $("#btn-delete-cancel").attr("onclick", `CancelPopup(${merchantId}, ${pagecode});`);
+            $("#merchant-delete").modal("show");
+            $("#viewmerchant").modal("hide");
+
+        }
+
+        function PayMerchant() {
+            $("#paymerchant").modal("show");
+        }
+
+        function deleteMerchant(merchantId, pagecode) {
+            showLoader();
+            $.ajax({
+                url: "@Url.Action("Delete", "Merchant")",
+                type: 'DELETE',
+                data: { id: merchantId },
+                dataType: "JSON",
+                async: false,
+                success: function (data) {
+                    hideLoader();
+                    $("#merchant-delete").modal("hide");
+                    if (data.success) {
+                        drawMerchantGrid();
+                        showSuccessMessage(data.message);
+                    }
+                    else {
+                        showErrorMessage(data.message);
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    hideLoader();
+                    showErrorMessage("@MessageConstant.CommonErrorMessage");
+                }
+            })
+        };
+
+        function viewPayMerchant(merchantId) {
+            showLoader();
+            $.ajax({
+                url: "@Url.Action("ViewPayMerchant", "Merchant")",
+                type: 'GET',
+                data: { id: merchantId },
+                dataType: "Html",
+                async: false,
+                success: function (html) {
+                    hideLoader();
+                    $("#div-pay-merchant-view").html("").html(html);
+                    $("#paymerchant").modal("show");
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    hideLoader();
+                    showErrorMessage("@MessageConstant.CommonErrorMessage");
+                }
+            });
+        }
+
+        function CancelPopup(merchantId, pagecode) {
+            if (pagecode == 2) {
+                viewMerchant(merchantId);
+            }
+        }
+
+        function nofindLogo(ex) {
+            ex.src = '@DirectoryConstant.ThumbnailsImageNotfound';
+            ex.onerror = null;
+        }
+
+        function nofindMerchant(ex) {
+            ex.src = '@DirectoryConstant.UserImageNotFound';
+            ex.onerror = null;
+        }
+    </script>
+}

@@ -1,0 +1,743 @@
+﻿@model MerchentProfileModel
+@{
+    ViewData["Title"] = "My Profile";
+
+    var imageSrc = string.Empty;
+    var logoSrc = string.Empty;
+    if (!string.IsNullOrEmpty(Model.profileImage))
+    {
+        imageSrc = DirectoryConstant.MerchantProfilePicDirectory + "/" + Model.profileImage;
+    }
+    if (!string.IsNullOrEmpty(Model.Logo))
+    {
+        logoSrc = DirectoryConstant.MerchantLogoDirectory + "/" + Model.Logo;
+    }
+}
+
+@section HeaderTitle
+    {
+    <h1 class="head-type1">My Profile</h1>
+
+    <!--- Bootstrap CSS --->
+    <link rel="stylesheet" href="@Url.Content("~/assets/css/bootstrap.min.css")" asp-append-version="true" />
+    <!--- bootstrap-flot label --->
+    <link rel="stylesheet" href="@Url.Content("~/assets/css/bootstrap-float-label.min.css")" asp-append-version="true" />
+    <link rel="stylesheet" href="@Url.Content("~/assets/css/jquery.dataTables.min.css")" asp-append-version="true" />
+    <link rel="stylesheet" href="@Url.Content("~/assets/css/responsive.dataTables.min.css")" asp-append-version="true" />
+    <!--- bootstrap-select --->
+    <link rel="stylesheet" href="@Url.Content("~/assets/css/bootstrap-select.min.css")" asp-append-version="true" />
+    <link rel="stylesheet" href="@Url.Content("~/assets/css/style.css")" asp-append-version="true" />
+    <link rel="stylesheet" href="@Url.Content("~/assets/css/developer.css")" asp-append-version="true" />
+    <link rel="stylesheet" href="@Url.Content("~/plugins/toastr/toastr.min.css")" asp-append-version="true" />
+}
+
+
+<body class="innerpage">
+    <form asp-action="UpdateProfile" asp-controller="MerchantProfile" method="post" id="profileForm">
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(model => model.ImageFileExtension)
+        @Html.HiddenFor(model => model.ImageBase64)
+        @Html.HiddenFor(model => model.profileImage)
+        @Html.HiddenFor(model => model.LogoFileExtension)
+        @Html.HiddenFor(model => model.LogoBase64)
+        @Html.HiddenFor(model => model.Logo)
+        <div class="row align-items-center innersubHead">
+            <div class="col-md-9 col-12">
+                <div class="innerContent my-profile-sec">
+                    <div class="row align-items-center innersubHead">
+                        <div class="col-12">
+                            <h2 class="head-type2">My Profile (Owner)</h2>
+                        </div>
+                    </div>
+                    <div class="reportOuter">
+                        <div class="addmerchantform">
+                            <div class="editmerchantimage">
+                                <div class="customfileupload" style="height: 100px;">
+                                    <input type="file" class="fileupload profileupload" accept="image/*" id="profileImageList" style="left:53px" />
+                                    <img class="profile-pic" src="" alt="Profile Pic" id="selectedImage1" style="display:none;" />
+                                    <div class="editfileup" id="edite-image">&nbsp;</div>
+                                    <div class="custfileup" id="rmvcls2">
+                                        <span class="imageinfo" id="pixelText">Upload Image : 80 X 80 pixels</span>
+                                    </div>
+                                    <a class="closefileimg" id="close-image"><img src="~/assets/images/closewhite.png" alt="close"></a>
+                                </div>
+                            </div>
+                            <div class="addmerchantinfo">
+                                <div class="row grid-sp15">
+                                    <div class="col-lg-6">
+                                        <div class="form-group input-group">
+                                            <span class="has-float-label">
+                                                <input asp-for="firstName" id="firstName" type="text" class="form-control" placeholder="First Name">
+                                                <label asp-for="firstName">First Name<span class="text-danger">*</span></label>
+                                            </span>
+                                            <span asp-validation-for="firstName" class="help-block text-danger small"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="form-group input-group">
+                                            <span class="has-float-label">
+                                                <input asp-for="lastName" id="lastName" type="text" class="form-control" placeholder="Last Name">
+                                                <label asp-for="lastName">Last Name<span class="text-danger">*</span></label>
+                                            </span>
+                                            <span asp-validation-for="lastName" class="help-block text-danger small"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="form-group input-group">
+                                            <span class="has-float-label">
+                                                <input asp-for="emailAddress" id="emailAddress" type="email" class="form-control readonlys" placeholder="Email" readonly>
+                                                <label asp-for="emailAddress">Email<span class="text-danger">*</span></label>
+                                            </span>
+                                            <span asp-validation-for="emailAddress" class="help-block text-danger small"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="form-group input-group">
+                                            <span class="has-float-label">
+                                                <input asp-for="phoneNumber" id="phoneNumber" type="text" class="form-control" placeholder="Phone">
+                                                <label asp-for="phoneNumber">Phone<span class="text-danger">*</span></label>
+                                            </span>
+                                            <span asp-validation-for="phoneNumber" class="help-block text-danger small"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr class="hrrow">
+                        <div class="row align-items-center innersubHead">
+                            <div class="col-12">
+                                <h2 class="head-type2 mt-2">Business name</h2>
+                            </div>
+                        </div>
+
+                        <div class="addmerchantform">
+                            <div class="addmerchantimage">
+                                <div class="editmerchantimage">
+                                    <div class="customfileupload" style="height: 100px;">
+                                        <input type="file" class="fileupload profileupload" accept="image/*" id="LogoList" style="left:53px" />
+                                        <img class="profile-pic" src="" alt="Logo" id="selectedImage2" style="display:none;" />
+                                        <div class="editfileup" id="edite-image1">&nbsp;</div>
+                                        <div class="custfileup" id="rmvcls3">
+                                            <span class="imageinfo" id="pixelText">Upload Image : 80 X 80 pixels</span>
+                                        </div>
+                                        <a class="closefileimg" id="close-image1"><img src="~/assets/images/closewhite.png" alt="close"></a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="addmerchantinfo">
+                                <div class="row grid-sp15">
+                                    @* @foreach (var isx in Model.clinics)
+                                    {
+                                    <div class="col-lg-6">
+                                    <div class="form-group input-group">
+                                    <span class="has-float-label">
+                                    <input asp-for="@isx.ClinicName" id="clinicName" type="text" class="form-control" placeholder="Clinic or Lab Name">
+                                    <label asp-for="@isx.ClinicName">Clinic or Lab Name<span class="text-danger">*</span></label>
+                                    </span>
+                                    <span asp-validation-for="@isx.ClinicName" class="help-block text-danger small"></span>
+                                    </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                    <div class="form-group input-group">
+                                    <span class="has-float-label">
+                                    <textarea asp-for="@isx.ClinicLocation" id="clinicLocation" class="form-control" placeholder="Clinic Location"></textarea>
+                                    <label asp-for="@isx.ClinicLocation">Location</label>
+                                    </span>
+                                    </div>
+                                    </div>
+                                    }*@
+                                    <div class="col-lg-6">
+                                        <div class="form-group input-group">
+                                            <span class="has-float-label">
+                                                <input asp-for="@Model.clinicName" id="clinicName" type="text" class="form-control" placeholder="Clinic or Lab Name">
+                                                <label asp-for="@Model.clinicName">Clinic or Lab Name<span class="text-danger">*</span></label>
+                                            </span>
+                                            <span asp-validation-for="@Model.clinicName" class="help-block text-danger small"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="form-group input-group">
+                                            <span class="has-float-label">
+                                                <textarea asp-for="@Model.clinicLocation" id="clinicLocation" class="form-control" placeholder="Clinic Location"></textarea>
+                                                <label asp-for="@Model.clinicLocation">Location</label>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="text-right">
+                            <a href="Javascript:;" class="btn-type5">Add Clinicians</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row align-items-center innersubHead">
+            <div class="col-md-9 col-12">
+                <div class="innerContent">
+                    <div class="row align-items-center innersubHead">
+                        <div class="col-12">
+                            <h2 class="head-type2">Profession Details</h2>
+                        </div>
+                    </div>
+                    <div class="reportOuter">
+                        <div class="addmerchantform">
+                            <div class="editmerchantimage qr-code-right">
+                                <div class="qr-code-box">
+                                    <a href="Javascript:;" data-toggle="modal" data-target="#viewqrcode">
+                                        <img src="assets/images/qr-code-img.png" alt="qr-code">
+                                    </a>
+                                </div>
+                                <div class="qr-code-button">
+                                    <a href="#"><img src="assets/images/download-icon.svg" alt="download"></a>
+                                    <a href="#"><img src="assets/images/shar-icon.svg" alt="share"></a>
+                                </div>
+                            </div>
+                            <div class="addmerchantinfo">
+                                <div class="row grid-sp15">
+                                    <div class="col-lg-6">
+                                        <div class="form-group input-group">
+                                            <span class="has-float-label">
+                                                <input asp-for="@Model.bsbNumber" id="bsbNumber" type="text" class="form-control" placeholder="BSB Number">
+                                                <label asp-for="@Model.bsbNumber">BSB Number<span class="text-danger">*</span></label>
+                                            </span>
+                                            <span asp-validation-for="@Model.bsbNumber" class="help-block text-danger small"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="form-group input-group">
+                                            <span class="has-float-label">
+                                                <input asp-for="@Model.bankName" id="BankName" type="text" class="form-control readonlys" placeholder="Bank Name" readonly>
+                                                <label asp-for="@Model.bankName">Bank Name</label>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="form-group input-group">
+                                            <span class="has-float-label">
+                                                <input asp-for="@Model.bankLocation" id="BankLocation" type="text" class="form-control readonlys" placeholder="Bank Location" readonly>
+                                                <label asp-for="@Model.bankLocation">Bank Location (Branch)</label>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="form-group input-group">
+                                            <span class="has-float-label">
+                                                <input asp-for="@Model.accountNumber" id="accountNumber" type="text" class="form-control" placeholder="Account Number">
+                                                <label asp-for="@Model.accountNumber">Account Number<span class="text-danger">*</span></label>
+                                            </span>
+                                            <span asp-validation-for="@Model.accountNumber" class="help-block text-danger small"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="text-right">
+                            <input type="submit" class="btn-type1" value="Update" />
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </form>
+
+    <div class="modal fade" id="viewqrcode">
+        <div class="modal-dialog modal-dialog-centered w-640">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="head-type2">QR Details</h5>
+                    <button type="button" class="close" data-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form class="addcustomer">
+                        <div class="row grid-sp15">
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    <img class="merchantviewlogo" src="assets/images/merchantlist-logo.svg" alt="Logo ipsum">
+                                </div>
+                                <div class="form-group">
+                                    <div class="viewformBg">
+                                        <span class="viewformlabel">Name:</span>
+                                        <span class="viewformlabel">@Model.firstName</span>
+                                    </div>
+                                    <div class="viewformBg">
+                                        <span class="viewformlabel">Email:</span>
+                                        <span class="viewformval">@Model.emailAddress</span>
+                                    </div>
+                                    <div class="viewformBg">
+                                        <span class="viewformlabel">Phone:</span>
+                                        <span class="viewformval">@Model.phoneNumber</span>
+                                    </div>
+                                    <div class="viewformBg">
+                                        @* @foreach (var clinicItem in Model.clinics)
+                                        {
+                                        <span class="viewformlabel">Clinic/Lab:</span>
+                                        <span class="viewformval">@clinicItem.ClinicName</span>
+                                        }*@
+                                        <span class="viewformlabel">Clinic/Lab:</span>
+                                        <span class="viewformval">@Model.clinicName</span>
+                                    </div>
+                                    <div class="viewformBg">
+                                        @*@foreach (var clinicItem in Model.clinics)
+                                        {
+                                        <span class="viewformlabel">Location:</span>
+                                        <span class="viewformval">@clinicItem.ClinicLocation</span>
+                                        }*@
+                                        <span class="viewformlabel">Location:</span>
+                                        <span class="viewformval">@Model.clinicLocation</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    <img class="merchantviewlogo" src="assets/images/qr-big-img.png" alt="qr" />
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="row grid-sp15">
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <div class="editformBg singleview">
+                                        <span class="editformlabel">
+                                            Bank:<br /><br />
+                                            @Model.bankName <br />@Model.bankLocation <br /><br />
+                                        </span>
+                                        <span class="editformval">BSB number @Model.bsbNumber</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row grid-sp15">
+                            <div class="col-lg-6">
+                                <a class="btn-type5" title="Print" data-dismiss="modal" data-toggle="modal" href="Javascript:;">Print</a>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="text-right">
+                                    <a class="btn-type5" data-dismiss="modal" title="Edit" href="Javascript:;">Share</a>
+                                    <a href="Javascript:;" data-dismiss="modal" data-toggle="modal" data-target="#paymerchant" class="btn-type1 loginSubmit">Download</a>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @*Image-crop popup*@
+    <div class="modal fade" id="img-preview" data-backdrop="static" data-keyboard="false" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered w-700">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="head-type2">Image Crop</h5>
+                    <button type="button" class="close" data-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="profile_img_data">
+                    <div class="crop-outer">
+                        <div class="img-container">
+                            <img alt="Picture" id="profile-crop-img" class="cropper-hidden">
+                        </div>
+                    </div>
+                    <div class="text-right" style="margin-bottom:20px;">
+                        <button class="cropImageBtn btn-type1" id="btn-crop-profile" style="margin: 0px 0 0 auto;">Crop</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="img-preview1" data-backdrop="static" data-keyboard="false" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered w-700">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="head-type2">Image Crop</h5>
+                    <button type="button" class="close" data-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="profile_img_data1">
+                    <div class="crop-outer">
+                        <div class="img-container">
+                            <img alt="Picture" id="profile-crop-img1" class="cropper-hidden">
+                        </div>
+                    </div>
+                    <div class="text-right" style="margin-bottom:20px;">
+                        <button class="cropImageBtn btn-type1" id="btn-crop-profile1" style="margin: 0px 0 0 auto;">Crop</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+@section Styles
+    {
+    <link rel="stylesheet" href="@Url.Content("https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.css")" asp-append-version="true" />
+    <style>
+        .crop-outer {
+            margin-bottom: 1rem;
+            overflow: hidden;
+            padding: 2px;
+        }
+
+        .img-container {
+            max-height: 450px;
+            min-height: 450px;
+        }
+
+        .img-container, .img-preview {
+            background-color: #f7f7f7;
+            text-align: center;
+            width: 100%;
+        }
+
+        .crop-outer .img-container > img {
+            max-width: 100%;
+            vertical-align: middle;
+            border-style: none;
+        }
+
+        .cropper-hidden {
+            display: none !important;
+        }
+    </style>
+}
+
+@section Scripts
+    {
+    <script src="@Url.Content("~/plugins/toastr/toastr.min.js")" asp-append-version="true"></script>
+    <!-- Cropper Js-->
+    <script src="@Url.Content("https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.js")" asp-append-version="true"></script>
+    <script src="@Url.Content("~/plugins/numbermask/jquery.inputmask.min.js")" asp-append-version="true"></script>
+    <!-- Custom JS -->
+    <script>
+        $(document).ready(function () {
+            activeSubMenu("merchant-setting-profile");
+            removeActiveMenu("merchant-dashboard");
+
+            $('#listtable').DataTable({
+                responsive: true,
+                "ordering": true,
+                "info": false,
+                "dom": 'rtip'
+            });
+
+            if ('@imageSrc' != '') {
+                $("#profileForm #selectedImage1").attr('src', '@imageSrc');
+                $("#profileForm #selectedImage1").on('error', function handleError() {
+                    this.src = '@DirectoryConstant.UserImageNotFound';
+                    this.alt = 'default';
+                });
+                $("#profileForm #selectedImage1").css("display", "inline-block");
+                $("#profileForm #rmvcls2").removeClass("custfileup");
+                $("#profileForm #rmvcls2").addClass("editfiletext");
+            }
+            else {
+                $("#profileForm #selectedImage1").css("display", "inline-block");
+                $("#rmvcls2").removeClass("custfileup");
+                $("#close-image").css("display", "none");
+                $("#profileForm #selectedImage1").attr('src', '@DirectoryConstant.UserImageNotFound');
+                $("#profileForm #selectedImage1").attr("alt", 'default');
+            }
+
+            if ('@logoSrc' != '') {
+                $("#profileForm #selectedImage2").attr('src', '@logoSrc');
+                $("#profileForm #selectedImage2").on('error', function handleError() {
+                    this.src = '@DirectoryConstant.UserImageNotFound';
+                    this.alt = 'default';
+                });
+                $("#profileForm #selectedImage2").css("display", "inline-block");
+                $("#profileForm #rmvcls3").removeClass("custfileup");
+                $("#profileForm #rmvcls3").addClass("editfiletext");
+            }
+            else {
+                $("#close-image1").css("display", "none");
+                $("#rmvcls3").removeClass("custfileup");
+                $("#profileForm #selectedImage2").css("display", "inline-block");
+                $("#profileForm #selectedImage2").attr('src', '@DirectoryConstant.UserImageNotFound');
+                $("#profileForm #selectedImage2").attr("alt", 'default');
+            }
+
+            $("#close-image").click(function () {
+                $("#profileForm #selectedImage1").attr("src", '@DirectoryConstant.UserImageNotFound');
+                $("#profileForm #selectedImage1").attr("alt", 'default');
+                $("#close-image").css("display", "none");
+                $("#@Html.IdFor(x=>x.profileImage)").val('');
+                $("#@Html.IdFor(x=>x.ImageFileExtension)").val('');
+                $("#@Html.IdFor(x=>x.ImageBase64)").val('');
+            });
+
+            $("#close-image1").click(function () {
+                $("#profileForm #selectedImage2").attr("src", '@DirectoryConstant.UserImageNotFound');
+                $("#profileForm #selectedImage2").attr("alt", 'default');
+                $("#close-image1").css("display", "none");
+                $("#@Html.IdFor(x=>x.Logo)").val('');
+                $("#@Html.IdFor(x=>x.LogoBase64)").val('');
+                $("#@Html.IdFor(x=>x.LogoFileExtension)").val('');
+            });
+
+            $("#@Html.IdFor(x => x.phoneNumber)").inputmask("+61(999)-999-999");
+            $("#@Html.IdFor(x => x.bsbNumber)").inputmask("999999");
+            $("#@Html.IdFor(x => x.accountNumber)").inputmask("99999999999999");
+
+            $('#profileForm').on('submit', function () {
+                if (!$('#profileForm').valid()) {
+                    return false;
+                }
+                showLoader();
+            });
+
+            let success = '@ViewData[MessageConstant.SuccessMessageKey]';
+            let error = '@ViewData[MessageConstant.ErrorMessageKey]';
+
+            if (success != undefined && success != null && success.trim() != "") {
+                showSuccessMessage(success);
+            }
+
+            if (error != undefined && error != null && error.trim() != "") {
+                showErrorMessage(error);
+            }
+        });
+
+        $("#bsbNumberModel").keyup(function () {
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("GetBankDetailbyBSB","Login")',
+                data: {
+                    bsbNumber: $("#bsbNumberModel").val()
+                },
+                async: false,
+                success: function (response) {
+                    if (response.success) {
+                        $("#BankNameModel").val(response.data.bankName);
+                        $("#BankNameModel").text(response.data.bankName);
+                        $("#BankLocationModel").val(response.data.bankLocation);
+                        $("#BankLocationModel").text(response.data.bankLocation);
+                    }
+                    else {
+                        $("#BankNameModel").val('');
+                        $("#BankNameModel").text('')
+                        $("#BankLocationModel").val('')
+                        $("#BankLocationModel").text('');
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    hideLoader();
+                    showErrorMessage("@MessageConstant.CommonErrorMessage");
+                },
+            });
+        });
+
+        $("#bsbNumber").keyup(function () {
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("GetBankDetailbyBSB","Login")',
+                data: {
+                    bsbNumber: $("#bsbNumber").val()
+                },
+                async: false,
+                success: function (response) {
+                    if (response.success) {
+                        $("#BankName").val(response.data.bankName);
+                        $("#BankName").text(response.data.bankName);
+                        $("#BankLocation").val(response.data.bankLocation);
+                        $("#BankLocation").text(response.data.bankLocation);
+                    }
+                    else {
+                        $("#BankName").val('');
+                        $("#BankName").text('')
+                        $("#BankLocation").val('')
+                        $("#BankLocation").text('');
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    hideLoader();
+                    showErrorMessage("@MessageConstant.CommonErrorMessage");
+                },
+            });
+        });
+
+        $("#profileImageList").unbind();
+        $("#profileImageList").on("change", function (event) {
+            const validExtensions = ['png', 'jpg', 'jpeg'];
+            let fileName, fileNameExt, fileSize;
+
+            if (event.target.files) {
+                fileName = event.target.files[0].name;
+                fileNameExt = fileName.substr(fileName.lastIndexOf('.') + 1);
+                fileSize = event.target.files[0].size / 1024;
+            }
+
+            $("#@Html.IdFor(x => x.ImageFileExtension)").val(fileNameExt);
+
+            if ($.inArray(fileNameExt, validExtensions) == -1) {
+                showErrorMessage("@MessageConstant.InValidFileType");
+                $("#profileImageList").val("");
+                return false;
+            }
+
+            if (fileSize > 2048) {
+                showErrorMessage("@MessageConstant.InValidFileSize");
+                $("#profileImageList").val("");
+                return false;
+            }
+
+            let profileImageId = this;
+            var reader = new FileReader();
+            reader.onload = function (event) {
+                var base64Url = event.target.result;
+                $("#profile-crop-img").attr("src", event.target.result);
+                $('#img-preview').modal('show');
+                $("#profileForm").addClass("d-none");
+                profileImageId.value = null;
+            };
+            reader.readAsDataURL(profileImageId.files[0]);
+        });
+
+        $("#img-preview .close").unbind();
+        $("#img-preview .close").on('click', function () {
+            $("#profileForm").removeClass("d-none");
+            $("#profileImageList").val("");
+        });
+
+        var createProfileCropper;
+        $("#img-preview").unbind();
+        $('#img-preview').on('shown.bs.modal', function () {
+            let options = {
+                aspectRatio: 1 / 1,
+                preview: '.img-preview'
+            };
+
+            createProfileCropper = new Cropper($("#profile-crop-img")[0], options);
+        }).on('hidden.bs.modal', function () {
+            if (createProfileCropper) {
+                createProfileCropper.destroy();
+            }
+            $("#profile-crop-img").addClass("cropper-hidden");
+            $("#profile-crop-img").data('cropper', null);
+        });
+
+        $("#btn-crop-profile").unbind();
+        $("#btn-crop-profile").on("click", function () {
+
+            const base64URL = createProfileCropper["getCroppedCanvas"]({ maxWidth: 4096, maxHeigth: 4096, fillColor: "#fff" }, undefined).toDataURL("image/jpeg");
+            $('#@Html.IdFor(x => x.ImageBase64)').val(base64URL.split(",")[1]);
+            $('#selectedImage1').attr('src', base64URL);
+            $("#selectedImage1").css("display", "inline-block");
+            $("#rmvcls2").removeClass("custfileup");
+            $("#rmvcls2").addClass("editfiletext");
+            $('#img-preview').modal('hide');
+            $("#edite-image").show();
+            $("#close-image").show();
+            $("#profileForm").removeClass("d-none");
+            if (createProfileCropper) {
+
+                createProfileCropper.destroy();
+            }
+            $("#profile-crop-img").data('cropper', null);
+        });
+
+        $('#img-preview').on('hidden.bs.modal', function (e) {
+            $("body").addClass("modal-open");
+        });
+
+        /**/
+
+        $("#LogoList").unbind();
+        $("#LogoList").on("change", function (event) {
+            const validExtensions = ['png', 'jpg', 'jpeg'];
+            let fileName, fileNameExt, fileSize;
+
+            if (event.target.files) {
+                fileName = event.target.files[0].name;
+                fileNameExt = fileName.substr(fileName.lastIndexOf('.') + 1);
+                fileSize = event.target.files[0].size / 1024;
+            }
+
+            $("#@Html.IdFor(x => x.LogoFileExtension)").val(fileNameExt);
+
+            if ($.inArray(fileNameExt, validExtensions) == -1) {
+                showErrorMessage("@MessageConstant.InValidFileType");
+                $("#LogoList").val("");
+                return false;
+            }
+
+            if (fileSize > 2048) {
+                showErrorMessage("@MessageConstant.InValidFileSize");
+                $("#LogoList").val("");
+                return false;
+            }
+
+            let logoId = this;
+            var reader = new FileReader();
+            reader.onload = function (event) {
+                var base64Url = event.target.result;
+                $("#profile-crop-img1").attr("src", event.target.result);
+                $('#img-preview1').modal('show');
+                $("#profileForm").addClass("d-none");
+                logoId.value = null;
+            };
+            reader.readAsDataURL(logoId.files[0]);
+        });
+
+        $("#img-preview1 .close").unbind();
+        $("#img-preview1 .close").on('click', function () {
+            $("#profileForm").removeClass("d-none");
+            $("#LogoList").val("");
+        });
+
+        var createProfileCropper1;
+        $("#img-preview1").unbind();
+        $('#img-preview1').on('shown.bs.modal', function () {
+            let options = {
+                aspectRatio: 1 / 1,
+                preview: '.img-preview1'
+            };
+
+            createProfileCropper1 = new Cropper($("#profile-crop-img1")[0], options);
+        }).on('hidden.bs.modal', function () {
+            if (createProfileCropper1) {
+                createProfileCropper1.destroy();
+            }
+            $("#profile-crop-img1").addClass("cropper-hidden");
+            $("#profile-crop-img1").data('cropper', null);
+        });
+
+        $("#btn-crop-profile1").unbind();
+        $("#btn-crop-profile1").on("click", function () {
+            const base64URL = createProfileCropper1["getCroppedCanvas"]({ maxWidth: 4096, maxHeigth: 4096, fillColor: "#fff" }, undefined).toDataURL("image/jpeg");
+            $('#@Html.IdFor(x => x.LogoBase64)').val(base64URL.split(",")[1]);
+            $('#selectedImage2').attr('src', base64URL);
+            $("#selectedImage2").css("display", "inline-block");
+            $("#rmvcls3").removeClass("custfileup");
+            $("#rmvcls3").addClass("editfiletext");
+            $('#img-preview1').modal('hide');
+            $("#edite-image1").show();
+            $("#close-image1").show();
+            $("#profileForm").removeClass("d-none");
+            if (createProfileCropper) {
+
+                createProfileCropper.destroy();
+            }
+            $("#profile-crop-img1").data('cropper', null);
+        });
+
+        $('#img-preview1').on('hidden.bs.modal', function (e) {
+            $("body").addClass("modal-open");
+        });
+
+        $('#profileForm').on('shown.bs.modal', function (e) {
+            $("body").addClass("modal-open");
+        });
+
+    </script>
+}

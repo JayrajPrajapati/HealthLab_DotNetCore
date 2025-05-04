@@ -1,0 +1,156 @@
+﻿@using static HealthLayby.Helpers.Constant.Enum;
+
+@model CMSModel
+@{
+    string Title = "Privacy Policy";
+    if (Model.PageCode == ContentManagementEnum.Termsconditions)
+    {
+        Title = "Terms and Conditions";
+    }
+    else if (Model.PageCode == ContentManagementEnum.WhyIncludingAdminFee)
+    {
+        Title = "Why Including Admin Fee";
+    }
+
+}
+
+@section Styles
+    {
+    <style>
+        .ck-editor__editable {
+            height: 290px !important;
+        }
+    </style>
+}
+
+<div class="modal fade" id="privacy_modal">
+    <div class="modal-dialog modal-dialog-centered w-640">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="head-type2">@Title</h5>
+                <button type="button" class="close" data-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    @Html.HiddenFor(m=>m.PageCode)
+                    <div class="form-group">
+                        <input class="form-control" type="text" asp-for="Title" placeholder="Enter Title" required />
+                    </div>
+                    <div class="form-group">
+                        <textarea placeholder="Enter Description" class="form-control form-control-user" maxlength="5000" id="txtDescription">
+                            @Html.Raw(Model.Description)
+                                </textarea>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="form-group">
+                                <select asp-for="IsActive" class="filterdropdown selectpicker w100">
+                                    <option value="true">Active</option>
+                                    <option value="false">Inactive</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="text-right">
+                                <a href="Javascript:;" class="btn-type1 loginSubmit" id="submitContent">Update</a>
+                            </div>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="@Url.Content("~/plugins/ckeditor/js/ckeditor.js")" asp-append-version="true"></script>
+<script>
+
+    $(document).ready(function () {
+        $('#@(Html.IdFor(x => x.IsActive))').val('@(Model.IsActive.ToString().ToLower() ?? true.ToString())');
+        $('#@(Html.IdFor(x => x.IsActive))').selectpicker('refresh');
+        ClassicEditor.defaultConfig = {
+            toolbar: {
+                items: [
+                    'heading',
+                    '|',
+                    'bold',
+                    'italic',
+                    '|',
+                    'bulletedList',
+                    'numberedList',
+                    '|',
+                    'insertTable',
+                    '|',
+                    '|',
+                    'undo',
+                    'redo'
+                ]
+            },
+            table: {
+                contentToolbar: ['tableColumn', 'tableRow', 'mergeTableCells']
+            },
+            language: 'en'
+        };
+        ClassicEditor.create(document.getElementById('txtDescription'))
+            .then(editor => {
+                privacyPolicyEditor = editor;
+                console.log(privacyPolicyEditor);
+
+            })
+            .catch(error => {
+                console.error(error);
+            });
+
+    });
+
+    $("#submitContent").click(function () {
+        var Title = $("#@Html.IdFor(x=>x.Title)").val();
+        if (Title == '') {
+            showErrorMessage('@MessageConstant.InvalidModalState');
+            return false;
+        }
+        var description = privacyPolicyEditor.getData();
+        if (description == '') {
+            var status = $("#@Html.IdFor(x=>x.IsActive)").val();
+            if (status != "False") {
+                showErrorMessage('@MessageConstant.DescriptionInValid');
+                return false;
+            }
+        }
+        else {
+            if (description.indexOf('img') != -1) {
+                showErrorMessage('@MessageConstant.EditorImageUploadNotAllowed');
+                return false;
+            }
+        }
+        showLoader();
+        $.ajax({
+            url: '@Url.Action("EditContent", "ContentManagement")',
+            type: 'POST',
+            data: {
+                description: privacyPolicyEditor.getData(),
+                pageCode: $('#@Html.IdFor(x=>x.PageCode
+                                        )').val(),
+                                                isActive: $('#@Html.IdFor(x=>x.IsActive)').val(),
+                    title: $('#@Html.IdFor(x=>x.Title)').val()
+                                            },
+            dataType: "JSON",
+            success: function (data) {
+                if (data.success) {
+                    showSuccessMessage(data.message);
+                    location.reload();
+                }
+                else {
+                    showErrorMessage(data.message);
+                }
+                hideLoader();
+
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                hideLoader();
+                showErrorMessage("@MessageConstant.CommonErrorMessage");
+            }
+        });
+    });
+</script>

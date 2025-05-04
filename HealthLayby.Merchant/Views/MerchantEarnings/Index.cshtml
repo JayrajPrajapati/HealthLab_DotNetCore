@@ -1,0 +1,107 @@
+﻿@{
+    ViewData["Title"] = "Earnings";
+}
+
+@section HeaderTitle
+    {
+    <div class="row align-items-center mainHead">
+        <div class="col-xl-6">
+            <h1 class="head-type1">Earnings</h1>
+        </div>
+    </div>
+
+    <!--- Bootstrap CSS --->
+    <link rel="stylesheet" href="@Url.Content("~/assets/css/bootstrap.min.css")" asp-append-version="true" />
+    <link rel="stylesheet" href="@Url.Content("~/assets/css/bootstrap-float-label.min.css")" asp-append-version="true" />
+    <link rel="stylesheet" href=@Url.Content("~/assets/css/jquery.dataTables.min.css") asp-append-version="true" />
+    <!--- bootstrap-select --->
+    <link rel="stylesheet" href=@Url.Content("~/assets/css/bootstrap-select.min.css") asp-append-version="true" />
+    <!--- bootstrap-select --->
+    <link rel="stylesheet" href="@Url.Content("~/assets/css/style.css")" asp-append-version="true" />
+}
+
+<div class="row grid-sp15 align-items-center walletheader">
+    <div class="col-lg-6">
+        <div class="walletheaderbox">
+            <span class="editformlabel"><strong class="mb-1">Total Earning</strong><br />As of July 4, 2023</span>
+            <span class="editformval"><span class="floatval">AUD</span> <span>456</span><span class="floatval">.00</span></span>
+        </div>
+    </div>
+</div>
+<div class="innerContent">
+    <div class="row align-items-center innersubHead">
+        <div class="col-xl-9 col-12">
+            <h2 class="head-type2">Transactions</h2>
+        </div>
+        <div class="col-xl-3 col-12">
+            <div class="input-group input-daterange">
+                <input type="text" class="start-date form-control datepicker" placeholder="dd/mm/yyyy" id="startdate">
+                <span class="input-group-addon">to</span>
+                <input type="text" class="end-date form-control datepicker" placeholder="dd/mm/yyyy" id="enddate">
+                <img src="~/assets/images/calender.svg" alt="date" />
+                <label for="dateRange">Date Range</label>
+            </div>
+
+        </div>
+    </div>
+    <div class="listtableOuter">
+        <table id="listtable" class="display responsive nowrap" style="width:100%">
+            <thead>
+                <tr>
+                    <th>Transaction ID</th>
+                    <th class="nosort">Date</th>
+                    <th>Type</th>
+                    <th class="text-right">Amount(AUD)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>GF84654HGHF</td>
+                    <td>Jan 1, 2023</td>
+                    <td> Full Payment </td>
+                    <td class="text-right">220.00</td>
+                </tr>
+                <tr>
+                    <td>GF84654HGHF</td>
+                    <td>Jan 1, 2023</td>
+                    <td> Full Payment </td>
+                    <td class="text-right">220.00</td>
+                </tr>
+                <tr>
+                    <td>GF84654HGHF</td>
+                    <td>Jan 1, 2023</td>
+                    <td> Full Payment </td>
+                    <td class="text-right">220.00</td>
+                </tr>
+                <tr>
+                    <td>GF84654HGHF</td>
+                    <td>Jan 1, 2023</td>
+                    <td> Full Payment </td>
+                    <td class="text-right">220.00</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts{
+    <!-- Custom JS -->
+    <script type="text/javascript">
+        $(document).ready(function () {
+            activeMenu("merchant-wallet");
+            removeActiveMenu("merchant-dashboard");
+
+            $('#listtable').DataTable({
+                "ordering": true,
+                "info": false,
+                "dom": 'rtip',
+                "columns": [
+                    { "width": "30%" },
+                    { "width": "30%" },
+                    { "width": "15%" },
+                    { "width": "10%" },
+                ]
+            });
+        });
+    </script>
+}

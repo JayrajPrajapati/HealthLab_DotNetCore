@@ -1,0 +1,382 @@
+﻿@model DashboardMerchantModel
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+@section HeaderTitle
+    {
+    <h1 class="head-type1">Dashboard</h1>
+
+    <!--- Bootstrap CSS --->
+    <link rel="stylesheet" href="@Url.Content("~/assets/css/bootstrap.min.css")" asp-append-version="true" />
+    <link rel="stylesheet" href="@Url.Content("~/assets/css/jquery.dataTables.min.css")" asp-append-version="true" />
+    <!--- bootstrap-select --->
+    <link rel="stylesheet" href="@Url.Content("~/assets/css/bootstrap-select.min.css")" asp-append-version="true" />
+    <link rel="stylesheet" href="@Url.Content("~/assets/css/style.css")" asp-append-version="true" />
+}
+<div class="row grid-sp15 align-items-center walletheader">
+    <div class="col-xl-4 col-lg-6">
+        <div class="walletheaderbox mb-2">
+            <span class="editformlabel">Total Amount<br><strong>Received</strong></span>
+            <span class="editformval"> <span class="floatval">AUD</span> <span>640</span><span class="floatval">.00</span></span>
+        </div>
+    </div>
+    <div class="col-xl-4 col-lg-6">
+        <div class="walletheaderbox mb-2">
+            <span class="editformlabel">Amount by Service<br><strong>Category</strong></span>
+            <span class="editformval"> <span class="floatval">AUD</span> <span>243</span><span class="floatval">.00</span></span>
+        </div>
+    </div>
+    <div class="col-xl-4 col-lg-6">
+        <div class="walletheaderbox mb-2">
+            <span class="editformlabel">Total<br><strong>Earnings</strong></span>
+            <span class="editformval"><span class="floatval">AUD</span> <span>120</span><span class="floatval">.00</span></span>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-xl-12">
+        <div class="innerContent mb-4">
+            <div class="row align-items-center innersubHead">
+                <div class="col-xl-5">
+                    <h2 class="head-type2">Popular Services</h2>
+                </div>
+            </div>
+
+            <div class="popular-service-sec">
+                @foreach (var item in Model.Service)
+                {
+                    <div class="popular-service-box">
+                        <div class="popular-serv-img">
+                            <img src="assets/images/hlw-icons-05.png" alt="img">
+                            @*<img src="assets/images/@item.Image" alt="img">*@
+                        </div>
+                        <h4>@item.ServiceName</h4>
+                    </div>
+                }
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="innerContent">
+    <div class="row align-items-center">
+        <div class="col-xl-5">
+            <h2 class="head-type2">LayBy Recent Transactions</h2>
+        </div>
+    </div>
+    <div class="listtableOuter">
+        <table id="dashbordrecent" class="display responsive nowrap" style="width:100%">
+            <thead>
+                <tr>
+                    <th>Transaction ID</th>
+                    <th class="nosort">Date</th>
+                    <th>Amount</th>
+                    <th>Type</th>
+                    <th>Service</th>
+                    <th>Customer</th>
+                    <th class="nosort text-right">&nbsp;</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>F465HFFDCBB</td>
+                    <td>Jan 1, 2023</td>
+                    <td> 140.00 </td>
+                    <td> LayBy Payment</td>
+                    <td>Service Name</td>
+                    <td>Joshua Barlee</td>
+                    <td class="text-right">
+                        <div class="userdropdown listaction">
+                            <button class="dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
+                            <div class="dropdown-menu dropdown-menu-right">
+                                <span class="userdroplink"><a class="userdropdownlink" href="Javascript:;" data-toggle="modal" data-target="#viewlayby">View</a></span>
+                                <span class="userdroplink"><a class="userdropdownlink logout" href="Javascript:;" data-toggle="modal" data-target="#delete">Delete</a></span>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>F465HFFDCBB</td>
+                    <td>Jan 1, 2023</td>
+                    <td> 140.00 </td>
+                    <td> LayBy Payment</td>
+                    <td>Service Name</td>
+                    <td>Joshua Barlee</td>
+                    <td class="text-right">
+                        <div class="userdropdown listaction">
+                            <button class="dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
+                            <div class="dropdown-menu dropdown-menu-right">
+                                <span class="userdroplink"><a class="userdropdownlink" href="Javascript:;" data-toggle="modal" data-target="#viewlayby">View</a></span>
+                                <span class="userdroplink"><a class="userdropdownlink logout" href="Javascript:;" data-toggle="modal" data-target="#delete">Delete</a></span>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>F465HFFDCBB</td>
+                    <td>Jan 1, 2023</td>
+                    <td> 140.00 </td>
+                    <td> LayBy Payment</td>
+                    <td>Service Name</td>
+                    <td>Joshua Barlee</td>
+                    <td class="text-right">
+                        <div class="userdropdown listaction">
+                            <button class="dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
+                            <div class="dropdown-menu dropdown-menu-right">
+                                <span class="userdroplink"><a class="userdropdownlink" href="Javascript:;" data-toggle="modal" data-target="#viewlayby">View</a></span>
+                                <span class="userdroplink"><a class="userdropdownlink logout" href="Javascript:;" data-toggle="modal" data-target="#delete">Delete</a></span>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>F465HFFDCBB</td>
+                    <td>Jan 1, 2023</td>
+                    <td> 140.00 </td>
+                    <td> LayBy Payment</td>
+                    <td>Service Name</td>
+                    <td>Joshua Barlee</td>
+                    <td class="text-right">
+                        <div class="userdropdown listaction">
+                            <button class="dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
+                            <div class="dropdown-menu dropdown-menu-right">
+                                <span class="userdroplink"><a class="userdropdownlink" href="Javascript:;" data-toggle="modal" data-target="#viewlayby">View</a></span>
+                                <span class="userdroplink"><a class="userdropdownlink logout" href="Javascript:;" data-toggle="modal" data-target="#delete">Delete</a></span>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>F465HFFDCBB</td>
+                    <td>Jan 1, 2023</td>
+                    <td> 140.00 </td>
+                    <td> LayBy Payment</td>
+                    <td>Service Name</td>
+                    <td>Joshua Barlee</td>
+                    <td class="text-right">
+                        <div class="userdropdown listaction">
+                            <button class="dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
+                            <div class="dropdown-menu dropdown-menu-right">
+                                <span class="userdroplink"><a class="userdropdownlink" href="Javascript:;" data-toggle="modal" data-target="#viewlayby">View</a></span>
+                                <span class="userdroplink"><a class="userdropdownlink logout" href="Javascript:;" data-toggle="modal" data-target="#delete">Delete</a></span>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>F465HFFDCBB</td>
+                    <td>Jan 1, 2023</td>
+                    <td> 140.00 </td>
+                    <td> LayBy Payment</td>
+                    <td>Service Name</td>
+                    <td>Joshua Barlee</td>
+                    <td class="text-right">
+                        <div class="userdropdown listaction">
+                            <button class="dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
+                            <div class="dropdown-menu dropdown-menu-right">
+                                <span class="userdroplink"><a class="userdropdownlink" href="Javascript:;" data-toggle="modal" data-target="#viewlayby">View</a></span>
+                                <span class="userdroplink"><a class="userdropdownlink logout" href="Javascript:;" data-toggle="modal" data-target="#delete">Delete</a></span>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>F465HFFDCBB</td>
+                    <td>Jan 1, 2023</td>
+                    <td> 140.00 </td>
+                    <td> LayBy Payment</td>
+                    <td>Service Name</td>
+                    <td>Joshua Barlee</td>
+                    <td class="text-right">
+                        <div class="userdropdown listaction">
+                            <button class="dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
+                            <div class="dropdown-menu dropdown-menu-right">
+                                <span class="userdroplink"><a class="userdropdownlink" href="Javascript:;" data-toggle="modal" data-target="#viewlayby">View</a></span>
+                                <span class="userdroplink"><a class="userdropdownlink logout" href="Javascript:;" data-toggle="modal" data-target="#delete">Delete</a></span>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>F465HFFDCBB</td>
+                    <td>Jan 1, 2023</td>
+                    <td> 140.00 </td>
+                    <td> LayBy Payment</td>
+                    <td>Service Name</td>
+                    <td>Joshua Barlee</td>
+                    <td class="text-right">
+                        <div class="userdropdown listaction">
+                            <button class="dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
+                            <div class="dropdown-menu dropdown-menu-right">
+                                <span class="userdroplink"><a class="userdropdownlink" href="Javascript:;" data-toggle="modal" data-target="#viewlayby">View</a></span>
+                                <span class="userdroplink"><a class="userdropdownlink logout" href="Javascript:;" data-toggle="modal" data-target="#delete">Delete</a></span>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>  
+
+@*<div class="innerContent">
+    <div class="row align-items-center">
+        <div class="col-xl-5">
+            <h2 class="head-type2">LayBy Recent Transactions</h2>
+        </div>
+    </div>
+    <div class="listtableOuter">
+        <table id="dashbordrecent" class="display responsive nowrap" style="width:100%">
+            <thead>
+                <tr>
+                    <th>Transaction ID</th>
+                    <th class="nosort">Date</th>
+                    <th>Amount</th>
+                    <th>Type</th>
+                    <th>Customer</th>
+                    <th class="nosort text-right">&nbsp;</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+</div>*@
+
+@*{
+    Func<string, IHtmlContent> actionContent =
+    @<div class="userdropdown listaction">
+        <button class="dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
+        @*<div class="dropdown-menu dropdown-menu-right">
+            <span class="userdroplink" onclick="viewMerchant(--merchant-id--)">
+                <a class="userdropdownlink" href="Javascript:;" data-toggle="modal" data-target="#viewmerchant">View</a>
+            </span>
+            <span class="userdroplink"><a class="userdropdownlink" href="Javascript:;" data-toggle="modal" data-target="#editmerchant" onclick='merchantAddEdit(--merchant-id--)'>Edit</a></span>
+            <span class="userdroplink"><a class="userdropdownlink" href="Javascript:;" data-toggle="modal" data-target="#paymerchant" onclick='viewPayMerchant(--merchant-id--)'>Pay Merchant</a></span>
+            <span class="userdroplink" onclick="confirmDeleteMerchant(--merchant-id--,0)">
+                <a class="userdropdownlink logout">Delete</a>
+            </span>
+        </div>
+}*@
+
+
+
+@section Scripts
+    {
+    <!-- toastr js -->
+    <script src="@Url.Content("~/plugins/toastr/toastr.min.js")" asp-append-version="true"></script>
+    <!-- Custom JS -->
+
+    <script type="text/javascript">
+        let datatable;
+        jQuery(document).ready(function ($) {
+            $('#dashbordrecent').DataTable({
+                "ordering": true,
+                "info": false,
+                "dom": 'rtip',
+            });
+        });
+
+                //datatable = $('#dashbordrecent').DataTable({
+                //    "paging": true,
+                //    "ordering": true,
+                //    "filter": false,
+                //    "destroy": true,
+                //    "orderMulti": false,
+                //    "serverSide": true,
+                //    "processing": true,
+                //    "bLengthChange": false,
+                //    "order": [],
+                //    "pageLength": 10,
+                //    "info": false,
+                //    "dom": 'rtip',
+                //    "columns": [
+                //        { "width": "20%" },
+                //        { "width": "20%" },
+                //        { "width": "20%" },
+                //        { "width": "20%" },
+                //        { "width": "10%" },
+                //        { "width": "10%" }
+                //    ],
+                //    "language": {
+                //        "zeroRecords": "No data available!",
+                //    },
+                //    "ajax": {
+                //        "url": "@Url.Action("GetTransactionList", "MerchantDashBoard")",
+                //        "type": "POST",
+                //        "dataType": "JSON",
+                //        "data": function (d) {
+                //            return $.extend({}, d, {
+                //                "search": {
+                //                    "regex": false,
+                //                    "value":
+                //                }
+                //            });
+                //        }
+                //    },
+                //    "aoColumns": [
+                //        { "mDataProp": "Transaction" },
+                //        { "mDataProp": "Date" },
+                //        { "mDataProp": "Amount" },
+                //        { "mDataProp": "Type" },
+                //        { "mDataProp": "Customer" },
+                //    ],
+                //    "columnDefs": [
+                //        {
+                //            "render": function (a, aa, row) {
+                //                return row.emailAddress;
+                //            },
+                //            "targets": 0
+                //        },
+                //        {
+                //            "render": function (data, type, row) {
+                //                return row.emailAddress;
+                //            },
+                //            "targets": 1
+                //        },
+                //        {
+                //            "render": function (_, __, row) {
+                //                return row.emailAddress;
+                //            },
+                //            "targets": 2
+                //        },
+                //        {
+                //            "render": function (_, __, row) {
+                //                return row.phoneNumber;
+                //            },
+                //            "targets": 3
+                //        },
+                //        {
+                //            "render": function (_, __, row) {
+                //                return row.clinicName;
+                //            },
+                //            "targets": 4
+                //        },
+                //        {
+                //            "orderable": false,
+                //            "render": function (_, __, row) {
+                //                var html = `actionContent(string.Empty)`;
+                //                html = html.split("--merchant-id--").join(row.merchantId);
+                //                return html;
+                //            },
+                //            "targets": 5,
+                //        }
+                //    ],
+                //    "drawCallback": function (resultData) {
+                //        //$("#merchant-count").text(resultData.json.merchantCount);
+                //    }
+                //});
+
+                //datatable.on('draw.dt', function () {
+                //    if ($('#dashbordrecent tbody .dataTables_empty').length && datatable.page.info().pages)
+                //        datatable.page('previous').draw('page');
+                //});
+
+                //$("#grid-search").keyup(function () {
+                //    drawMerchantGrid();
+                //});
+
+    </script>
+}

@@ -1,0 +1,355 @@
+﻿@{
+    ViewData["Title"] = "Service";
+}
+
+@section HeaderTitle
+    {
+    <h1 class="head-type1">Service Management</h1>
+}
+
+
+@section Partials
+    {
+    <div id="div-service-add-edit">
+    </div>
+
+    <div id="div-view-service"></div>
+
+    <div id="div-edit-service"></div>
+
+    <div class="modal fade" id="deleteService" data-backdrop="static" data-keyboard="false" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered w-410">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="head-type2">Are you sure you want to delete?</h5>
+                    <button type="button" class="close" data-dismiss="modal"></button>
+                </div>
+                <div class="modal-footer">
+                    <a class="btn-type5 cancel-btn" title="Cancel" data-dismiss="modal" href="Javascript:;">Cancel</a>
+                    <a id="btn-delete-service" class="btn-type5" title="Confirm" data-dismiss="modal" href="Javascript:;">Confirm</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @*Image-crop popup*@
+    <div class="modal fade" id="img-preview" data-backdrop="static" data-keyboard="false" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered w-700">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="head-type2">Image Crop</h5>
+                    <button type="button" class="close" data-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="profile_img_data">
+                    <div class="crop-outer">
+                        <div class="img-container">
+                            <img alt="Picture" id="profile-crop-img" class="cropper-hidden">
+                        </div>
+                    </div>
+                    <div class="text-right" style="margin-bottom:20px;">
+                        <button class="cropImageBtn btn-type1" id="btn-crop-profile" style="margin: 0px 0 0 auto;">Crop</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+<div class="row align-items-center innersubHead">
+    <div class="col-xl-5">
+        <h2 class="head-type2">Service List <span id="service-count">-</span></h2>
+    </div>
+    <div class="col-xl-7">
+        <div class="inneraction">
+            <div class="searchtextbox">
+                <input id="grid-search" type="text" class="searchbox" placeholder="Search">
+                <a href="javascript: void(0)" class="searchicon"></a>
+            </div>
+            <a class="btn-type1 inneractionbtn" title="Add Service" data-toggle="modal" onclick="ServiceAddEdit(0)">Add Service</a>
+        </div>
+    </div>
+</div>
+
+<div class="listtableOuter">
+    <table id="service-grid" class="display responsive nowrap" style="width:100%">
+        <thead>
+            <tr>
+                <th class="text-left">Service Name</th>
+                <th class="text-left">Category</th>
+                <th class="text-right">Price(AUD)</th>
+                <th class="text-center">Status</th>
+                <th class="nosort text-right">&nbsp;</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</div>
+
+@{
+    Func<string, IHtmlContent> actionContent =
+    @<div class="userdropdown listaction">
+        <button class="dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
+        <div class="dropdown-menu dropdown-menu-right">
+            <span class="userdroplink" onclick="viewService(--service-id--)">
+                <a class="userdropdownlink" href="Javascript:;" data-toggle="modal">View</a>
+            </span>
+
+            <span class="userdroplink" onclick='ServiceAddEdit(--service-id--)'>
+                <a class="userdropdownlink">Edit</a>
+            </span>
+            <span class="userdroplink" onclick="confirmDeleteService(--service-id--)">
+                <a class="userdropdownlink logout">Delete</a>
+            </span>
+        </div>
+    </div>;
+}
+
+@section Styles {
+    <link rel="stylesheet" href="@Url.Content("https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.css")" asp-append-version="true" />
+    <style>
+        .crop-outer {
+            margin-bottom: 1rem;
+            overflow: hidden;
+            padding: 2px;
+        }
+
+        .img-container {
+            max-height: 450px;
+            min-height: 450px;
+        }
+
+        .img-container, .img-preview {
+            background-color: #f7f7f7;
+            text-align: center;
+            width: 100%;
+        }
+
+        .crop-outer .img-container > img {
+            max-width: 100%;
+            vertical-align: middle;
+            border-style: none;
+        }
+
+        .cropper-hidden {
+            display: none !important;
+        }
+    </style>
+}
+@section Scripts
+    {
+    <script src="@Url.Content("https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.4.0/cropper.js")" asp-append-version="true"></script>
+
+    <script>
+        let datatable;
+
+        $(document).ready(function () {
+
+            activeMenu("service-menu");
+
+            datatable = $('#service-grid').DataTable({
+                "paging": true,
+                "ordering": true,
+                "filter": false,
+                "destroy": true,
+                "orderMulti": false,
+                "serverSide": true,
+                "processing": true,
+                "bLengthChange": false,
+                "order": [],
+                "pageLength": 10,
+                "info": false,
+                "dom": 'rtip',
+                "columns": [
+                    { "width": "20%" },
+                    { "width": "20%" },
+                    { "width": "10%" },
+                    { "width": "20%" },
+                    { "width": "10%" }
+                ],
+                "language": {
+                    "zeroRecords": "No data available!",
+                },
+                "ajax": {
+                    "url": "@Url.Action("GetServiceList", "Service")",
+                    "type": "POST",
+                    "dataType": "JSON",
+                    "data": function (d) {
+                        return $.extend({}, d, {
+                            "search": {
+                                "regex": false,
+                                "value": $.trim($("#grid-search").val())
+                            }
+                        });
+                    }
+                },
+                "aoColumns": [
+                    { "mDataProp": "serviceName" },
+                    { "mDataProp": "categoryName" },
+                    { "mDataProp": "price" },
+                    { "mDataProp": "isActive" },
+                    { "mDataProp": "serviceId" },
+                ],
+                "columnDefs": [
+                    {
+                        "render": function (a, aa, row) {
+                            return row.serviceName;
+                        },
+                        "targets": 0,
+                        "class": "text-left"
+                    },
+                    {
+                        "render": function (_, __, row) {
+                            return row.categoryName;
+                        },
+                        "targets": 1,
+                        "class": "text-left"
+                    },
+                    {
+                        "render": function (_, __, row) {
+                            return row.price.toFixed(2)
+                        },
+                        "targets": 2,
+                        "class": "text-right"
+                    },
+                    {
+                        "render": function (_, __, row) {
+                            if (row.isActive)
+                                return `<span class="badge badge-success">Active</span>`;
+                            else
+                                return `<span class="badge badge-light">Inactive</span>`;
+                        },
+                        "targets": 3,
+                        "class": "text-center"
+                    },
+                    {
+                        "orderable": false,
+                        "render": function (_, __, row) {
+                            var html = `@actionContent(string.Empty)`;
+                            html = html.split("--service-id--").join(row.serviceId);
+                            return html;
+                        },
+                        "targets": 4,
+                        "class": "text-right"
+                    }
+                ],
+                "drawCallback": function (resultData) {
+                    $("#service-count").text(resultData.json.serviceCount);
+                }
+            });
+
+            datatable.on('draw.dt', function () {
+                if ($('#service-grid tbody .dataTables_empty').length && datatable.page.info().pages)
+                    datatable.page('previous').draw('page');
+            });
+
+            $("#grid-search").keyup(function () {
+                drawServiceGrid();
+            });
+
+            $('#deleteService').on('shown.bs.modal', function (e) {
+                $("body").addClass("modal-open");
+            });
+        });
+
+        function drawServiceGrid() {
+            datatable.draw('page');
+        };
+
+        function viewService(serviceId) {
+            showLoader();
+            $.ajax({
+                type: 'GET',
+                url: '@Url.Action("GetServiceById","Service")',
+                data: { id: serviceId },
+                dataType: 'Html',
+                async: false,
+                success: function (html) {
+                    hideLoader();
+                    $("#div-view-service").html("").html(html);
+                    $("#viewservice").modal("show");
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    hideLoader();
+                    showErrorMessage("@MessageConstant.CommonErrorMessage");
+                }
+            });
+        }
+
+        function ServiceAddEdit(serviceId) {
+            showLoader();
+
+            $.ajax({
+                url: "@Url.Action("AddEdit", "Service")",
+                type: 'GET',
+                data: { id: serviceId },
+                dataType: "Html",
+                async: false,
+                success: function (html) {
+                    hideLoader();
+                    $("#div-service-add-edit").html("").html(html);
+                    $("#service-add-edit").modal("show");
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    hideLoader();
+                    showErrorMessage("@MessageConstant.CommonErrorMessage");
+                }
+            })
+        };
+
+        function confirmDeleteService(serviceId) {
+            $("#btn-delete-service").attr("onclick", `deleteService(${serviceId});`);
+            $("#deleteService").modal("show");
+        }
+
+        function deleteService(serviceId) {
+            showLoader();
+            $.ajax({
+                url: '@Url.Action("Delete","Service")',
+                type: 'DELETE',
+                data: { id: serviceId },
+                ajax: false,
+                dataType: "JSON",
+                success: function (response) {
+                    hideLoader();
+                    $("#deleteService").modal("hide");
+                    if (response.isSuccess) {
+                        drawServiceGrid();
+                        showSuccessMessage(response.message);
+                    }
+                    else
+                        showErrorMessage(response.message);
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    hideLoader();
+                    showErrorMessage("@MessageConstant.CommonErrorMessage");
+                }
+            });
+        }
+
+        function AddService() {
+            $.ajax({
+                url: "@Url.Action("Create", "Service")",
+                type: "GET",
+                dataType: "Html",
+                async: false,
+                success: function (html) {
+                    hideLoader();
+                    $("#div-add-service").html("").html(html);
+                    $("#addservice").modal("show");
+
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    hideLoader();
+                    showErrorMessage("@MessageConstant.CommonErrorMessage");
+                }
+            })
+        }
+
+    </script>
+}
+
+
+
+
+

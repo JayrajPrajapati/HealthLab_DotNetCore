@@ -1,0 +1,51 @@
+﻿@model UpdateAdminProfileModel
+
+@section HeaderTitle
+{
+    <h1 class="head-type1">Update Profile</h1>
+}
+
+<form asp-route="updateProfile" method="post" id="updateprofileForm" enctype="multipart/form-data">
+    <div class="row align-items-center innersubHead">
+        <div class="col-xl-5">
+            <h2 class="head-type2">Update Profile</h2>
+        </div>
+    </div>
+    <div class="reportOuter">
+        <div class="row grid-sp15">
+            <div class="col-lg-4 col-sm-6">
+                <div class="form-group input-group">
+                    <span class="has-float-label">
+                        <input asp-for="FirstName" class="form-control" type="text" />
+                        <label asp-for="FirstName">First Name<span class="text-danger">*</span></label>
+                    </span>
+                    <span asp-validation-for="FirstName" class="help-block text-danger small"></span>
+                </div>
+            </div>
+            <div class="col-lg-4 col-sm-6">
+                <div class="form-group input-group">
+                    <span class="has-float-label">
+                        <input asp-for="LastName" class="form-control" type="text" />
+                        <label asp-for="LastName">Last Name<span class="text-danger">*</span></label>
+                    </span>
+                    <span asp-validation-for="LastName" class="help-block text-danger small"></span>
+                </div>
+            </div>
+            <div class="col-lg-4 col-sm-6">
+                <div class="form-group input-group">
+                    <span class="has-float-label">
+                        <input asp-for="EmailAddress" class="form-control" type="text" readonly/>
+                        <label asp-for="EmailAddress" for="email">Email</label>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="text-right">
+            <button type="submit" class="btn-type1">
+                <i class="fa fa-save"></i>
+                Update
+            </button>
+        </div>
+    </div>
+</form>
+

@@ -1,0 +1,112 @@
+﻿@model CustomerModel
+
+@{
+    Layout = null;
+}
+
+<!-- View Customer Modal -->
+<div class="modal fade" id="viewcustomer">
+    <div class="modal-dialog modal-dialog-centered w-640">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="head-type2">Customer Details</h5>
+                <button type="button" class="close" data-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form class="addcustomer">
+                    <div class="row grid-sp15">
+                        <div class="col-lg-6">
+                            <div class="form-group name-wrap">
+                                <div class="view-customer-img">
+                                    <img class="merchantviewimg" src="@DirectoryConstant.CustomerProfilePicDirectory/@Model.ProfilePic" alt="Aaron Willmott" onError="nofindMerchant(this)" />
+                                </div>
+                                <div class="view-customer-detail">
+                                    <span class="viewformval one">@Model.FirstName</span>
+                                    <span class="viewformval">@Model.Email</span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="viewformBg">
+                                    <span class="viewformlabel">Phone:</span>
+                                    <span class="viewformval">@Model.PhoneNumber</span>
+                                </div>
+                                <div class="viewformBg">
+                                    <span class="viewformlabel">Status:</span>
+                                    <span class="viewformval">@(Model.IsActive ? "Active" : "Inavtice")</span>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <div class="editformBg">
+                                    <span class="editformlabel">Registered on:</span>
+                                    <span class="editformval">@Model.RegisteredOn</span>
+                                </div>
+                                <div class="editformBg">
+                                    <span class="editformlabel">Plans:</span>
+                                    <span class="editformval">@Model.Plans</span>
+                                </div>
+                                <div class="editformBg">
+                                    <span class="editformlabel">Wallet Amt:</span>
+                                    <span class="editformval">@Model.WalletAmt</span>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    @if (Model.customerEmergencyContacts != null && @Model.customerEmergencyContacts.Count > 0)
+                    {
+                        <hr class="hrrow">
+                        <div class="row grid-sp15">
+                            <div class="col-12">
+                                <h3 class="head-type3">Emergency Number:</h3>
+                                @foreach (var EmergencyContact in Model.customerEmergencyContacts)
+                                {
+                                    <div class="form-group three-detail">
+                                        <div class="editformBg">
+                                            <span class="editformlabel">@string.Format("{0} {1}",EmergencyContact.FirstName,EmergencyContact.LastName)</span>
+                                            <span class="editformlabel">@EmergencyContact.Number</span>
+                                            <span class="editformlabel">@EmergencyContact.Email</span>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+
+                    <hr class="hrrow">
+                    <h3 class="head-type3">Family Member:</h3>
+                    <div class="row grid-sp15">
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <div class="editformBg">
+                                    <span class="editformlabel">@(string.IsNullOrWhiteSpace(Model.FamilyMemberFirstName) ? "N/A" : Model.FamilyMemberFirstName)</span>
+                                    <span class="editformval">@(string.IsNullOrWhiteSpace(Model.FamilyRelation) ? "N/A" : Model.FamilyRelation)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row grid-sp15">
+                        <div class="col-lg-6">
+                            <a class="btn-type4" title="Delete" data-dismiss="modal" data-toggle="modal" data-target="#delete" href="Javascript:;" onclick="confirmDeleteCustomer(@Model.CustomerId,2)">Delete</a>
+
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="text-right">
+                                <a class="btn-type5" data-dismiss="modal" title="Edit" data-target="#editcustomer" href="Javascript:;" onclick="editCustomer(@Model.CustomerId)">Edit</a>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function nofindMerchant(ex) {
+        ex.src = '@DirectoryConstant.UserImageNotFound';
+        ex.onerror = null;
+    }
+</script>

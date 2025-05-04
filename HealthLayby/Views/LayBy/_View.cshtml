@@ -1,0 +1,119 @@
+﻿@model LayByModel
+
+@{
+    Layout = null;
+    string NextDeductionDate = string.Empty;
+    NextDeductionDate = Model.NextDeductionDate != null ? Model.NextDeductionDate.Value.ToString("MMM dd, yyyy") : "-";
+}
+
+<div class="modal fade" id="viewlayby" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered w-700">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="head-type2">Plan Details</h5>
+                <button type="button" class="close" data-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row grid-sp15">
+                    <div class="col-lg-6">
+                        <h2 class="head-type3">Merchant Details:</h2>
+                        <div class="form-group">
+                            <img src="@DirectoryConstant.MerchantLogoDirectory/@Model.MerchantImage" class="merchantlogo" alt="Merchant Logo" onError="nofindLogo(this)" />
+                        </div>
+                        <div class="form-group">
+                            <div class="viewformBg">
+                                <span class="viewformlabel">Name:</span>
+                                <span class="viewformval">@Model.MerchantName</span>
+                            </div>
+                            <div class="viewformBg">
+                                <span class="viewformlabel">Email:</span>
+                                <span class="viewformval">@Model.MerchantEmail</span>
+                            </div>
+                            <div class="viewformBg">
+                                <span class="viewformlabel">Phone:</span>
+                                <span class="viewformval">@Model.MerchantPhoneNumber</span>
+                            </div>
+                        </div>
+                        <hr class="hrrow">
+                        <h2 class="head-type3">Customer Details:</h2>
+                        <div class="form-group">
+                            <div class="viewformBg">
+                                <span class="viewformlabel">Name:</span>
+                                <span class="viewformval">@Model.CustomerName</span>
+                            </div>
+                            <div class="viewformBg">
+                                <span class="viewformlabel">Email:</span>
+                                <span class="viewformval">@Model.CustomerEmail</span>
+                            </div>
+                            <div class="viewformBg">
+                                <span class="viewformlabel">Phone:</span>
+                                <span class="viewformval">@Model.CustomerPhoneNumber</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="servicebox servicebox-new">
+                            <div class="serviceimg-right-part">
+                                <div class="serviceimg-top-text">
+                                    <h6>@Model.CategoryName</h6>
+                                    <h5 class="head-type2">@Model.ServiceName</h5>
+                                </div>
+                                <div class="serviceimg">
+                                    <img src="@DirectoryConstant.CategoryPicDirectory/@Model.CategoryImage" alt="Category Image" onError="nofindLogo(this)" />
+
+                                </div>
+                            </div>
+                            <div class="serviceinfo plan-info-new">
+                                <div class="form-group">
+                                    <div class="viewformBg">
+                                        <span class="viewformlabel">Paid Amount:</span>
+                                        <span class="viewformval text-right">@Model.PayAmount AUD</span>
+                                    </div>
+                                    <div class="viewformBg">
+                                        <span class="viewformlabel">Duration:</span>
+                                        <span class="viewformval text-right">@Model.Duration</span>
+                                    </div>
+                                    <div class="viewformBg">
+                                        <span class="viewformlabel">Frequency:</span>
+                                        <span class="viewformval text-right">@Model.Frequency</span>
+                                    </div>
+                                    <div class="viewformBg">
+                                        <span class="viewformlabel">Total Amount Received:</span>
+                                        <span class="viewformval text-right">@Model.TotalAmountReceived AUD</span>
+                                    </div>
+                                    <div class="viewformBg">
+                                        <span class="viewformlabel">Next Deduction Date:</span>
+                                        <span class="viewformval text-right">@NextDeductionDate</span>
+                                    </div>
+                                    <div class="viewformBg">
+                                        <span class="viewformlabel">Next Amount Deduction:</span>
+                                        <span class="viewformval text-right">@Model.NextAmountDeduction AUD</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row grid-sp15">
+                    <div class="col-lg-12">
+                        <div class="text-right ml-auto">
+                            <a class="btn-type5" data-dismiss="modal" title="Back" href="Javascript:;">Back</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+
+    function nofindLogo(ex) {
+        ex.src = '@DirectoryConstant.ThumbnailsImageNotfound';
+        ex.onerror = null;
+    }
+
+    function nofindMerchant(ex) {
+        ex.src = '@DirectoryConstant.UserImageNotFound';
+        ex.onerror = null;
+    }
+</script>

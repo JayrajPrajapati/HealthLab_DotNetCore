@@ -1,0 +1,131 @@
+﻿@{
+    ViewData["Title"] = "Config Management";
+    ViewBag.IsInnerContentDivRemove = true;
+}
+
+@section HeaderTitle
+    {
+    <h1 class="head-type1">Config Management</h1>
+}
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="innerContent mb-4">
+            <h2 class="head-type2">Wallet Commission</h2>
+            <div class="row grid-sp15">
+                <div class="col-lg-8">
+                    <div class="form-group input-group">
+                        <span class="has-float-label">
+                            <input class="form-control" id="entercommission" type="text" value="0.00">
+                            <label for="entercommission">Enter Commission</label>
+                        </span>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <a class="btn-type1 d-block" title="Update" href="Javascript:;">Update</a>
+                </div>
+            </div>
+        </div>
+        <div class="innerContent mb-4">
+            <h2 class="head-type2">Merchant Range</h2>
+            <div class="rangeslider">
+                <input type="range" class="merchantSlider" id="myRange" value="500">
+                <span class="rangeminval">1</span>
+                <span class="rangemaxval">6000</span>
+            </div>
+            <div class="row grid-sp15">
+                <div class="col-lg-8">
+                    <div class="form-group input-group">
+                        <span class="has-float-label merchantSliderval">
+                            <span></span>
+                            <input class="form-control merchantrange" id="merchantrange" disabled type="text" value="1500">
+                            <label for="merchantrange">Merchant Range</label>
+                        </span>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <a class="btn-type1 d-block" title="Update" href="Javascript:;">Update</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="innerContent mb-4">
+            <h2 class="head-type2">Transaction Fees</h2>
+            <div class="row grid-sp15">
+                <div class="col-lg-8">
+                    <div class="form-group input-group">
+                        <span class="has-float-label">
+                            <input class="form-control" id="enterfees" type="text" value="0.00">
+                            <label for="enterfees">Enter Fees</label>
+                        </span>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <a class="btn-type1 d-block" title="Update" href="Javascript:;">Update</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@section Scripts
+    {
+    <script>
+        class Slider {
+            constructor(rangeElement, valueElement, options) {
+                this.rangeElement = rangeElement
+                this.valueElement = valueElement
+                this.options = options
+                // Attach a listener to "change" event
+                this.rangeElement.addEventListener('input', this.updateSlider.bind(this))
+            }
+            // Initialize the slider
+            init() {
+                this.rangeElement.setAttribute('min', options.min)
+                this.rangeElement.setAttribute('max', options.max)
+                this.rangeElement.value = options.cur
+                this.updateSlider()
+            }
+            // Format the money
+            asMoney(value) {
+                return parseFloat(value)
+                    .toLocaleString('en-US', { maximumFractionDigits: 2 })
+            }
+            generateBackground(rangeElement) {
+                if (this.rangeElement.value === this.options.min) { return }
+                let percentage = (this.rangeElement.value - this.options.min) / (this.options.max - this.options.min) * 100
+                return 'background: linear-gradient(to right, #9BE7DC, #9BE7DC ' + percentage + '%, #EDEFF9 ' + percentage + '%, #EDEFF9 100%)'
+            }
+            updateSlider(newValue) {
+                this.valueElement.value = this.asMoney(this.rangeElement.value)
+                this.rangeElement.style = this.generateBackground(this.rangeElement.value)
+            }
+        };
+
+        let rangeElement = document.querySelector('.rangeslider [type="range"]');
+        let valueElement = document.querySelector('.merchantSliderval #merchantrange');
+
+        let options = {
+            min: 1,
+            max: 6000,
+            cur: 1500
+        };
+
+        if (rangeElement) {
+            let slider = new Slider(rangeElement, valueElement, options)
+            slider.init()
+        }
+
+        $(document).ready(function () {
+            activeMenu("config-menu");
+            $(".dateOuter .datepicker").daterangepicker({
+                autoApply: false,
+                singleDatePicker: true,
+                showDropdowns: true,
+                //minDate:new Date()
+            });
+        });
+    </script>
+}

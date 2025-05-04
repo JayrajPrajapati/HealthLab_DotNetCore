@@ -1,0 +1,377 @@
+﻿@{
+    ViewData["Title"] = "LayBy Management";
+
+}
+
+@section HeaderTitle
+    {
+    <h1 class="head-type1">LayBy Management</h1>
+}
+
+@section Partials
+    {
+    <div id="div-layby-view">
+    </div>
+
+    <span class="spnCompletedCount" style="display:none"></span>
+    <span class="spnOnGoingCount" style="display:none"></span>
+    <span class="spnPauseCount" style="display:none"></span>
+    <span class="spnCanceldCount" style="display:none"></span>
+}
+
+<div class="row align-items-center innersubHead">
+    <div class="col-xl-5">
+        <h2 class="head-type2">
+            <label id="common-list-title">
+                LayBy Completed Plans
+            </label>&nbsp;
+            <span id="layBy-count"></span>
+        </h2>
+
+    </div>
+    <div class="col-xl-7">
+        <div class="inneraction">
+            <div class="searchtextbox">
+                <input id="grid-search" type="text" class="searchbox" placeholder="Search ">
+                <a href="#" class="searchicon"></a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-xl-12">
+        <div class="customtabOuter">
+            <div class="customtab-head text-center mt-2 mb-0 pb-0" id="listTab">
+                <a href="Javascript:;" dataid="1" class="customtabH-link active" cid="listTab" id="laybyActive">Completed</a>
+                <a href="Javascript:;" dataid="2" class="customtabH-link" cid="listTab" id="laybyOngoing">On-Going</a>
+                <a href="Javascript:;" dataid="3" class="customtabH-link" cid="listTab" id="laybyPause">Pause</a>
+                <a href="Javascript:;" dataid="4" class="customtabH-link" cid="listTab" id="laybyCancel">Cancel</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="customtabOuter" id="listTab">
+    <div class="customtab-list">
+        <div class="customtab-list-inner content_1" dataid="panel_1" style="display: block;">
+            <div class="listtableOuter">
+                <table id="completedList" class="display responsive nowrap" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th class="nosort">Logo</th>
+                            <th>Merchant</th>
+                            <th>Category</th>
+                            <th>Service</th>
+                            <th>Duration</th>
+                            <th>Price</th>
+                            <th>Total Amount</th>
+                            <th>Customer</th>
+                            <th class="nosort text-right">&nbsp;</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="customtab-list-inner content_2" dataid="panel_2" style="display: none;">
+            <div class="listtableOuter">
+                <table id="OngoingList" class="display responsive nowrap" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th class="nosort">Logo</th>
+                            <th>Merchant</th>
+                            <th>Category</th>
+                            <th>Service</th>
+                            <th>Duration</th>
+                            <th>Price</th>
+                            <th>Total Amount</th>
+                            <th>Customer</th>
+                            <th class="nosort text-right">&nbsp;</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="customtab-list-inner content_3" dataid="panel_3" style="display: none;">
+            <div class="listtableOuter">
+                <table id="pauseList" class="display responsive nowrap" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th class="nosort">Logo</th>
+                            <th>Merchant</th>
+                            <th>Category</th>
+                            <th>Service</th>
+                            <th>Duration</th>
+                            <th>Price</th>
+                            <th>Total Amount</th>
+                            <th>Customer</th>
+                            <th class="nosort text-right">&nbsp;</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="customtab-list-inner content_4" dataid="panel_4" style="display: none;">
+            <div class="listtableOuter">
+                <table id="cancelledList" class="display responsive nowrap" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th class="nosort">Logo</th>
+                            <th>Merchant</th>
+                            <th>Category</th>
+                            <th>Service</th>
+                            <th>Duration</th>
+                            <th>Price</th>
+                            <th>Total Amount</th>
+                            <th>Customer</th>
+                            <th class="nosort text-right">&nbsp;</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@{
+    Func<string, IHtmlContent> actionContent =
+    @<div class="userdropdown listaction">
+        <button class="dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
+        <div class="dropdown-menu dropdown-menu-right">
+            <span class="userdroplink" onclick="viewLayBy(--customer-plan-id--)">
+                <a class="userdropdownlink" href="Javascript:;" data-toggle="modal">View</a>
+            </span>
+        </div>
+    </div>;
+}
+
+@section Scripts
+    {
+    <script>
+        let datatable;
+        $(document).ready(function () {
+
+            activeMenu("layby-menu");
+            $('.customtabH-link').click(function (j) {
+                var section_id = $(this).attr("cid");
+                var data_id = $(this).attr("dataid");
+                if (!$(this).hasClass('active')) {
+                    $('#' + section_id + ' .customtabH-link').removeClass('active');
+                    $('#' + section_id + ' .customtab-list-inner').attr("style", "display:none;");
+                    $(this).addClass('active');
+                    $('#' + section_id + ' .content_' + data_id).attr("style", "display:block;");
+                }
+                if (section_id == "listTab") {
+                    if (data_id == "1") {
+                        $("#common-list-title").text("LayBy Completed Plans");
+                        $("#layBy-count").text($(".spnCompletedCount").text());
+                    }
+                    else if (data_id == "2") {
+                        $("#common-list-title").text("LayBy On-Going Plans");
+                        $("#layBy-count").text($(".spnOnGoingCount").text());
+                    }
+                    else if (data_id == "3") {
+                        $("#common-list-title").text("LayBy Pause Plans");
+                        $("#layBy-count").text($(".spnPauseCount").text());;
+                    }
+                    else if (data_id == "4") {
+                        $("#common-list-title").text("LayBy Canceled Plans");
+                        $("#layBy-count").text($(".spnCanceldCount").text());
+                    }
+                }
+            });
+
+
+
+            Bindtable('completedList', '@Convert.ToInt64(PlanStatus.Completed)');
+            Bindtable('OngoingList', '@Convert.ToInt64(PlanStatus.Active)');
+            Bindtable('pauseList', '@Convert.ToInt64(PlanStatus.Pause)');
+            Bindtable('cancelledList', '@Convert.ToInt64(PlanStatus.Cancelled)');
+        });
+
+        function nofindLogo(ex) {
+            ex.src = '@DirectoryConstant.ThumbnailsImageNotfound';
+            ex.onerror = null;
+        }
+
+        function viewLayBy(customerPlanId) {
+            showLoader();
+            $.ajax({
+                url: "@Url.Action("ViewLayBy", "LayBy")",
+                type: 'GET',
+                data: { customerPlanId: customerPlanId },
+                dataType: "Html",
+                async: false,
+                success: function (html) {
+                    hideLoader();
+                    $("#div-layby-view").html("").html(html);
+                    $("#viewlayby").modal("show");
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    hideLoader();
+                    showErrorMessage("@MessageConstant.CommonErrorMessage");
+                }
+            });
+        }
+
+        function Bindtable(id, Status) {
+            datatable = $('#' + id).DataTable({
+                "paging": true,
+                "ordering": true,
+                "filter": false,
+                "destroy": true,
+                "orderMulti": false,
+                "serverSide": true,
+                "processing": true,
+                "bLengthChange": false,
+                "order": [],
+                "pageLength": 10,
+                "info": false,
+                "dom": 'rtip',
+                "columns": [
+                    { "width": "10%" },
+                    { "width": "25%" },
+                    { "width": "22%" },
+                    { "width": "22%" },
+                    { "width": "14%" },
+                    { "width": "5%" },
+                    { "width": "5%" },
+                    { "width": "5%" },
+                    { "width": "5%" }
+                ],
+                "language": {
+                    "zeroRecords": "No data available!",
+                },
+                "ajax": {
+                    "url": "@Url.Action("GetCustomerPlanLayByList", "LayBy")",
+                    "type": "POST",
+                    "dataType": "JSON",
+                    "data": function (d) {
+                        return $.extend({}, d, {
+                            "search": {
+                                "regex": false,
+                                "value": $.trim($("#grid-search").val())
+                            },
+                            "status": {
+                                "regex": false,
+                                "value": Status
+                            }
+                        });
+                    }
+                },
+                "aoColumns": [
+                    { "mDataProp": "logo" },
+                    { "mDataProp": "merchantName" },
+                    { "mDataProp": "categoryName" },
+                    { "mDataProp": "serviceName" },
+                    { "mDataProp": "duration" },
+                    { "mDataProp": "price" },
+                    { "mDataProp": "totalAmount" },
+                    { "mDataProp": "customerName" },
+                    { "mDataProp": "customerPlanId" },
+                ],
+                "columnDefs": [
+                    {
+                        "render": function (a, aa, row) {
+                            return `<img src="@DirectoryConstant.LaybyLogoDirectory/${row.logo}" class="merchantlogo" onError="nofindLogo(this)" />`;
+                        },
+                        "orderable": false,
+                        "targets": 0
+                    },
+                    {
+                        "render": function (_, __, row) {
+                            return row.merchantName;
+                        },
+                        "targets": 1
+                    },
+                    {
+                        "render": function (_, __, row) {
+                            return row.categoryName;
+                        },
+                        "targets": 2
+                    },
+                    {
+                        "render": function (_, __, row) {
+                            return row.serviceName;
+                        },
+                        "targets": 3
+                    },
+                    {
+                        "render": function (_, __, row) {
+                            return row.duration;
+                        },
+                        "targets": 4
+                    },
+                    {
+                        "render": function (_, __, row) {
+                            return row.price;
+                        },
+                        "targets": 5
+                    },
+                    {
+                        "render": function (_, __, row) {
+                            return row.totalAmount;
+                        },
+                        "targets": 6
+                    },
+                    {
+                        "render": function (_, __, row) {
+                            return row.customerName;
+                        },
+                        "targets": 7
+                    },
+                    {
+                        "orderable": false,
+                        "render": function (_, __, row) {
+                            var html = `@actionContent(string.Empty)`;
+                            html = html.split("--customer-plan-id--").join(row.customerPlanId);
+                            return html;
+                        },
+                        "targets": 8,
+                    }
+                ],
+                "drawCallback": function (resultData) {
+                    if (Status == @(Convert.ToInt64(PlanStatus.Completed))) {
+                        $(".spnCompletedCount").text(resultData.json.merchantCount);
+                        $("#layBy-count").text($(".spnCompletedCount").text());
+                    }
+                    else if (Status == @(Convert.ToInt64(PlanStatus.Active))) {
+                        $(".spnOnGoingCount").text(resultData.json.merchantCount);
+                    } else if (Status == @(Convert.ToInt64(PlanStatus.Pause))) {
+                        $(".spnPauseCount").text(resultData.json.merchantCount);
+                    } else if (Status == @(Convert.ToInt64(PlanStatus.Cancelled))) {
+                        $(".spnCanceldCount").text(resultData.json.merchantCount);
+                    }
+                }
+            });
+
+            datatable.on('draw.dt', function () {
+                if ($('#listtable tbody .dataTables_empty').length && datatable.page.info().pages)
+                    datatable.page('previous').draw('page');
+            });
+
+            //$("#grid-search").keyup(function () {
+            //    drawLayByGrid();
+            //});
+
+            //function drawLayByGrid() {
+            //    datatable.draw('page');
+            //};
+
+            var table = $('#' + id).DataTable();
+
+            $('#grid-search').on('keyup', function () {
+                table
+                    .search(this.value)
+                    .draw();
+            });
+        }
+
+    </script>
+}

@@ -1,0 +1,358 @@
+﻿@model List<MerchantServiceModel>
+@{
+    ViewData["Title"] = "Services";
+}
+
+@section HeaderTitle
+    {
+    <h1 class="head-type1">Services</h1>
+
+    <!--- Bootstrap CSS --->
+    <link rel="stylesheet" href="@Url.Content("~/assets/css/bootstrap.min.css")" asp-append-version="true" />
+    <!--- bootstrap-flot label --->
+    <link rel="stylesheet" href="@Url.Content("~/assets/css/bootstrap-float-label.min.css")" asp-append-version="true" />
+    <link rel="stylesheet" href="@Url.Content("~/assets/css/jquery.dataTables.min.css")" asp-append-version="true" />
+    <!--- bootstrap-select --->
+    <link rel="stylesheet" href="@Url.Content("~/assets/css/bootstrap-select.min.css")" asp-append-version="true" />
+    <link rel="stylesheet" href="@Url.Content("~/assets/css/style.css")" asp-append-version="true" />
+    <link rel="stylesheet" href="@Url.Content("~/assets/css/developer.css")" asp-append-version="true" />
+    <!--- toastr css --->
+    <link rel="stylesheet" href="@Url.Content("~/plugins/toastr/toastr.min.css")" asp-append-version="true" />
+}
+
+<div class="service-inner-sec">
+    @foreach (var i in Model)
+    {
+        <div class="servicebox servicebox-new">
+            <div class="serviceimg-right-part">
+                <div class="serviceimg-top-text">
+                    <h6>@i.CategoryName</h6>
+                    <h5 class="head-type2">@i.ServiceName</h5>
+                </div>
+                <div class="serviceimg">
+                    <img src="assets/images/service-detail-img.png" alt="Service Image">
+                </div>
+            </div>
+            <div class="serviceinfo plan-info-new">
+                <div class="form-group">
+                    <div class="viewformBg">
+                        <p>@i.ServiceDescription</p>
+                    </div>
+                    <div class="viewformBg">
+                        <span class="viewformlabel">Created on: <b>@i.ServiceCreatedOn</b></span>
+                        <span class="viewformval text-right">AUD @i.ServicePrice</span>
+                    </div>
+                </div>
+                <div class="row grid-sp15">
+                    <div class="col-lg-7">
+                        @if (i.IsActive)
+                        {
+                            <a class="btn-type6" title="Delete" data-dismiss="modal" data-toggle="modal" data-target="#inactive" href="Javascript:;">Active</a>
+                        }
+                        else
+                        {
+                            <a class="btn-type6" title="Delete" data-dismiss="modal" data-toggle="modal" data-target="#inactive" href="Javascript:;">InActive</a>
+                        }
+                    </div>
+                    <div class="col-lg-5">
+                        <div class="text-right">
+                            <a class="btn-type5" data-dismiss="modal" title="Back" data-toggle="modal" data-target="#editservice" onclick="GetDetailsById(@i.ServiceId)" href="Javascript:;">Edit</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="inactive">
+            <div class="modal-dialog modal-dialog-centered w-347">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="head-type2">Inactive Service</h5>
+                        <p>Are you sure you want to activate this Service?</p>
+                        <button type="button" class="close" data-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-footer">
+                        <a class="btn-type5 cancel-btn" title="Cancel" data-dismiss="modal" href="Javascript:;">Cancel</a>
+                        <a class="btn-type5" title="Confirm" data-dismiss="modal" href="Javascript:;" onclick="UpdateServiceStatus(@i.ServiceId)">Inactive</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <ul class="pagination custom-pagination">
+            <li class="page-item active"><a class="page-link" href="#">1</a></li>
+        </ul>
+    </div>
+</div>
+
+<!-- Edit Service Modal -->
+<div class="modal fade" id="editservice">
+    <div class="modal-dialog modal-dialog-centered w-640">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="head-type2">Edit Service</h5>
+                <button type="button" class="close" data-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row grid-sp15">
+                    <div class="col-lg-6">
+                        <div class="form-group">
+                            <div class="servicefileupload">
+                                <input type="file" class="serfileupload">
+                                <div class="serfileup">
+                                    <img class="img-shar-pro" src="assets/images/fileupload-plus.svg" alt="File Upload" />
+                                    <div class="sertextupload">Service Thumbnail</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group input-group" hidden>
+                            <span class="has-float-label">
+                                <textarea class="form-control" id="serviceId"></textarea>
+                                <label for="description">Description</label>
+                            </span>
+                        </div>
+                        <div class="form-group input-group">
+                            <span class="has-float-label">
+                                <textarea class="form-control" id="description"></textarea>
+                                <label for="description">Description</label>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="form-group input-group">
+                            <span class="has-float-label readonlys">
+                                <input class="form-control readonlys" id="categoryName" type="text" placeholder="Category Name" readonly />
+                                <label for="categoryName">Category Name</label>
+                            </span>
+                        </div>
+                        <div class="form-group input-group">
+                            <span class="has-float-label">
+                                <input class="form-control" id="servicename" type="text" placeholder="Service Name" />
+                                <label for="servicename">Service Name</label>
+                            </span>
+                        </div>
+                        <div class="form-group input-group">
+                            <span class="has-float-label">
+                                <input class="form-control" id="price" type="text" />
+                                <label for="price">Price(AUD)</label>
+                            </span>
+                        </div>
+                        <div class="form-group input-group">
+                            <select class="filterdropdown selectpicker w100" id="status">
+                                <option>Active</option>
+                                <option>InActive</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row grid-sp15">
+                    <div class="col-lg-12">
+                        <div class="text-right">
+                            <a class="btn-type1" data-dismiss="modal" title="Update" href="Javascript:;" onclick="serviceUpdate()">Update</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- View Service Modal -->
+<div class="modal fade" id="viewservice">
+    <div class="modal-dialog modal-dialog-centered w-640">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="head-type2">Service Details</h5>
+                <button type="button" class="close" data-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row grid-sp15">
+                    <div class="col-lg-6">
+                        <div class="form-group">
+                            <div class="viewformBg">
+                                <span class="viewformlabel">Status:</span>
+                                <span class="viewformval">Active</span>
+                            </div>
+                            <div class="viewformBg">
+                                <span class="viewformlabel">Service Price:</span>
+                                <span class="viewformval">110.00 AUD</span>
+                            </div>
+                        </div>
+                        <hr class="hrrow">
+                        <h2 class="head-type3">Merchant Details:</h2>
+                        <div class="form-group">
+                            <div class="viewformBg">
+                                <span class="viewformlabel">Name:</span>
+                                <span class="viewformval">John Doe</span>
+                            </div>
+                            <div class="viewformBg">
+                                <span class="viewformlabel">Email:</span>
+                                <span class="viewformval">johndoe@gmail.com</span>
+                            </div>
+                            <div class="viewformBg">
+                                <span class="viewformlabel">Phone:</span>
+                                <span class="viewformval">+44 987 654 3210</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="servicebox servicebox-new">
+                            <div class="serviceimg-right-part">
+                                <div class="serviceimg-top-text">
+                                    <h6>Dental</h6>
+                                    <h5 class="head-type2">Crown</h5>
+                                </div>
+                                <div class="serviceimg">
+                                    <img src="assets/images/service-detail-img.png" alt="Service Image" />
+                                </div>
+                            </div>
+                            <div class="serviceinfo">
+                                <div class="serviceinfoDesc">Lorem ipsum eget dolor etsit amet tur consectetur. Tincidunt eget faucibus ultrices turpis. <a href="Javascript:;" class="readmore">Read More</a></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row grid-sp15">
+                    <div class="col-lg-7">
+                        <a class="btn-type4" title="Delete" data-dismiss="modal" data-toggle="modal" data-target="#delete" href="Javascript:;">Delete</a>
+                        <a class="btn-type5" data-dismiss="modal" title="Edit" href="Javascript:;">Edit Merchant</a>
+                    </div>
+                    <div class="col-lg-5">
+                        <div class="text-right">
+                            <a href="Javascript:;" data-dismiss="modal" class="btn-type1 loginSubmit">Edit Service</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts
+    {
+    <!-- toastr js -->
+    <script src="@Url.Content("~/plugins/toastr/toastr.min.js")" asp-append-version="true"></script>
+    <!-- Custom JS -->
+    <script type="text/javascript">
+        $(document).ready(function () {
+            activeMenu("merchant-services");
+            removeActiveMenu("merchant-dashboard");
+
+            let success = '@ViewData[MessageConstant.SuccessMessageKey]';
+            let error = '@ViewData[MessageConstant.ErrorMessageKey]';
+
+            if (success != undefined && success != null && success.trim() != "") {
+                showSuccessMessage(success);
+            }
+
+            if (error != undefined && error != null && error.trim() != "") {
+                showErrorMessage(error);
+            }
+        });
+
+        function GetDetailsById(serviceId) {
+            $.ajax({
+                type: 'GET',
+                url: '@Url.Action("GetServiceDetailsById","MerchantServices")',
+                data: {
+                    Id: serviceId
+                },
+                async: false,
+                success: function (response) {
+                    if (response.success) {
+                        $("#serviceId").val(response.data.serviceId);
+                        $("#serviceId").text(response.data.serviceId);
+                        $("#categoryName").val(response.data.categoryName);
+                        $("#categoryName").text(response.data.categoryName);
+                        $("#servicename").val(response.data.serviceName);
+                        $("#servicename").text(response.data.serviceName);
+                        $("#description").val(response.data.serviceDescription);
+                        $("#description").text(response.data.serviceDescription);
+                        $("#price").val(response.data.servicePrice);
+                        $("#price").text(response.data.servicePrice);
+                        if (response.data.isActive) {
+                            $("#status").val("Active").change();
+                        }
+                        else {
+                            $("#status").val("InActive").change();
+                        }
+
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    hideLoader();
+                    showErrorMessage("@MessageConstant.CommonErrorMessage");
+                },
+            });
+        };
+
+        function serviceUpdate() {
+            var statusId = false;
+            var status = $("#status :selected").text();
+            if (status == "Active") {
+                statusId = true;
+            }
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("UpdateService","MerchantServices")',
+                data: {
+                    ServiceId: $("#serviceId").val(),
+                    categoryName: $("#categoryName").val(),
+                    serviceName: $("#servicename").val(),
+                    ServiceDescription: $("#description").val(),
+                    ServicePrice: $("#price").val(),
+                    IsActive: statusId
+                },
+                async: false,
+                success: function (response) {
+                    if (response.success) {
+                        showSuccessMessage(response.message);
+                        setTimeout(function () {
+                            location.reload();
+                        }, 1000);
+                    }
+                    else {
+                        showErrorMessage(response.message);
+                        return false;
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    hideLoader();
+                    showErrorMessage("@MessageConstant.CommonErrorMessage");
+                },
+            });
+        };
+
+        function UpdateServiceStatus(serviceId) {
+            $.ajax({
+                type: 'GET',
+                url: '@Url.Action("UpdateServiceDetailsById","MerchantServices")',
+                data: {
+                    Id: serviceId
+                },
+                async: false,
+                success: function (response) {
+                    if (response.success) {
+                        showSuccessMessage(response.message);
+                        setTimeout(function () {
+                            location.reload();
+                        }, 1800);
+                    }
+                    else {
+                        showErrorMessage(response.message);
+                        return false;
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    hideLoader();
+                    showErrorMessage("@MessageConstant.CommonErrorMessage");
+                },
+            });
+        };
+    </script>
+}

@@ -1,0 +1,240 @@
+﻿@{
+    ViewData["Title"] = "Customers";
+}
+
+@section HeaderTitle
+    {
+    <h1 class="head-type1">Customers</h1>
+
+    <!--- Bootstrap CSS --->
+    <link rel="stylesheet" href="@Url.Content("~/assets/css/bootstrap.min.css")" asp-append-version="true" />
+    <link rel="stylesheet" href="@Url.Content("~/assets/css/jquery.dataTables.min.css")" asp-append-version="true" />
+    <!--- bootstrap-select --->
+    <link rel="stylesheet" href="@Url.Content("~/assets/css/bootstrap-select.min.css")" asp-append-version="true" />
+    <link rel="stylesheet" href="@Url.Content("~/assets/css/style.css")" asp-append-version="true" />
+}
+<div class="innerContent">
+    <div class="row align-items-center">
+        <div class="col-xl-5">
+            <h2 class="head-type2">Customer List <span>120</span></h2>
+        </div>
+        <div class="col-xl-7">
+            <div class="form-group input-group" style="max-width: 200px;float: right;">
+                <select class="filterdropdown selectpicker w100">
+                    <option>Filter</option>
+                    <option>Inactive</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="listtableOuter">
+        <table id="listtable" class="display responsive nowrap" style="width:100%">
+            <thead>
+                <tr>
+                    <th>Customer</th>
+                    <th>Phone</th>
+                    <th>Emergency Number</th>
+                    <th>Registered on</th>
+                    <th>Layby Plan Amt $</th>
+                    <th>Status</th>
+                    <th class="nosort text-right">&nbsp;</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Joshua Barlee Joshua BarleeJoshua Barlee</td>
+                    <td>+61 2 1234 5678</td>
+                    <td>+61 2 1234 5678</td>
+                    <td>Jan 1, 2023</td>
+                    <td>220.00</td>
+                    <td><span class="badge badge-success">Active</span></td>
+                    <td class="text-right">
+                        <div class="userdropdown listaction">
+                            <button class="dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
+                            <div class="dropdown-menu dropdown-menu-right">
+                                <span class="userdroplink"><a class="userdropdownlink" href="Javascript:;" data-toggle="modal" data-target="#customer-detail">View</a></span>
+                                <span class="userdroplink"><a class="userdropdownlink logout" href="Javascript:;" data-toggle="modal" data-target="#delete">Delete</a></span>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Joshua Barlee Joshua BarleeJoshua Barlee</td>
+                    <td>+61 2 1234 5678</td>
+                    <td>+61 2 1234 5678</td>
+                    <td>Jan 1, 2023</td>
+                    <td>220.00</td>
+                    <td><span class="badge badge-success">Active</span></td>
+                    <td class="text-right">
+                        <div class="userdropdown listaction">
+                            <button class="dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
+                            <div class="dropdown-menu dropdown-menu-right">
+                                <span class="userdroplink"><a class="userdropdownlink" href="Javascript:;" data-toggle="modal" data-target="#customer-detail">View</a></span>
+                                <span class="userdroplink"><a class="userdropdownlink logout" href="Javascript:;" data-toggle="modal" data-target="#delete">Delete</a></span>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Joshua Barlee Joshua BarleeJoshua Barlee</td>
+                    <td>+61 2 1234 5678</td>
+                    <td>+61 2 1234 5678</td>
+                    <td>Jan 1, 2023</td>
+                    <td>220.00</td>
+                    <td><span class="badge badge-success">Active</span></td>
+                    <td class="text-right">
+                        <div class="userdropdown listaction">
+                            <button class="dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
+                            <div class="dropdown-menu dropdown-menu-right">
+                                <span class="userdroplink"><a class="userdropdownlink" href="Javascript:;" data-toggle="modal" data-target="#customer-detail">View</a></span>
+                                <span class="userdroplink"><a class="userdropdownlink logout" href="Javascript:;" data-toggle="modal" data-target="#delete">Delete</a></span>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Joshua Barlee Joshua BarleeJoshua Barlee</td>
+                    <td>+61 2 1234 5678</td>
+                    <td>+61 2 1234 5678</td>
+                    <td>Jan 1, 2023</td>
+                    <td>220.00</td>
+                    <td><span class="badge badge-success">Active</span></td>
+                    <td class="text-right">
+                        <div class="userdropdown listaction">
+                            <button class="dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
+                            <div class="dropdown-menu dropdown-menu-right">
+                                <span class="userdroplink"><a class="userdropdownlink" href="Javascript:;" data-toggle="modal" data-target="#customer-detail">View</a></span>
+                                <span class="userdroplink"><a class="userdropdownlink logout" href="Javascript:;" data-toggle="modal" data-target="#delete">Delete</a></span>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>  
+</div>
+<!-- Delete Service Modal -->
+<div class="modal fade" id="delete">
+    <div class="modal-dialog modal-dialog-centered w-410">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="head-type2">Are you sure you want to delete?</h5>
+                <button type="button" class="close" data-dismiss="modal"></button>
+            </div>
+            <div class="modal-footer">
+                <a class="btn-type5 cancel-btn" title="Cancel" data-dismiss="modal" href="Javascript:;">Cancel</a>
+                <a class="btn-type5" title="Confirm" data-dismiss="modal" href="Javascript:;">Confirm</a>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- View Merchant Modal -->
+<div class="modal fade" id="customer-detail">
+    <div class="modal-dialog modal-dialog-centered w-640">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="head-type2">Customer Details</h5>
+                <button type="button" class="close" data-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form class="addcustomer">
+                    <div class="row grid-sp15">
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <div class="viewformBg">
+                                    <span class="viewformlabel">Name:</span>
+                                    <span class="viewformval">John Doe</span>
+                                </div>
+                                <div class="viewformBg">
+                                    <span class="viewformlabel">Email:</span>
+                                    <span class="viewformval">johndoe@gmail.com</span>
+                                </div>
+                                <div class="viewformBg">
+                                    <span class="viewformlabel">Phone:</span>
+                                    <span class="viewformval">+61 2 1234 5678</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <div class="viewformBg">
+                                    <span class="viewformlabel">Frequency:</span>
+                                    <span class="viewformval">Weekly</span>
+                                </div>
+                                <div class="viewformBg">
+                                    <span class="viewformlabel">Status:</span>
+                                    <span class="viewformval">Active</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row grid-sp15">
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <div class="viewformBg">
+                                    <span class="viewformlabel">Category:</span>
+                                    <span class="viewformval">Active</span>
+                                </div>
+                                <div class="viewformBg">
+                                    <span class="viewformlabel">Service:</span>
+                                    <span class="viewformval">Active</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 right-side-detail">
+                            <div class="form-group">
+                                <div class="editformBg">
+                                    <span class="editformlabel">Duration:</span>
+                                    <span class="editformval">3 Months</span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="editformBg" style="min-height: 51px;">
+                                    <span class="editformlabel">Treatment Amount:</span>
+                                    <span class="editformval">42.00</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row grid-sp15">
+                        <div class="col-lg-6">
+                            <!-- <a class="btn-type5" data-dismiss="modal" title="Edit" href="Javascript:;">Edit</a> -->
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="text-right">
+                                <a href="Javascript:;" data-dismiss="modal" data-toggle="modal" data-target="#paymerchant" class="btn-type1 loginSubmit">View Agreement</a>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script>
+        $(document).ready(function () {
+            activeMenu("merchant-customer");
+            removeActiveMenu("merchant-dashboard");
+
+            $('#listtable').DataTable({
+                "ordering": true,
+                "info": false,
+                "dom": 'rtip',
+                "columns": [
+                    { "width": "20%" },
+                    { "width": "15%" },
+                    { "width": "15%" },
+                    { "width": "14%" },
+                    { "width": "8%" },
+                    { "width": "8%" },
+                    { "width": "5%" }
+                ]
+            });
+        });
+    </script>
+}

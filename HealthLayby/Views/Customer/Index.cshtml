@@ -1,0 +1,315 @@
+﻿@{
+    ViewData["Title"] = "Customer";
+}
+
+@section HeaderTitle
+    {
+    <h1 class="head-type1">Customer Management</h1>
+}
+
+@section Partials
+    {
+    @await Html.PartialAsync("_Create", new CustomerModel())
+
+    <div id="div-edit-customer"></div>
+    <div id="div-view-customer"></div>
+
+    <div class="modal fade" id="customer-delete" data-backdrop="static" data-keyboard="false" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered w-410">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="head-type2">Are you sure you want to delete?</h5>
+                    <button type="button" class="close" data-dismiss="modal"></button>
+                </div>
+                <div class="modal-footer">
+                    @*<button id="btn-delete-customer" type="button" class="btn-type1">Confirm</button>
+                <button id="btn-cancel-customer" class="btn-type3" title="Cancel" data-dismiss="modal">Cancel</button>*@
+
+                    <a id="btn-cancel-customer" class="btn-type5 cancel-btn" title="Cancel" data-dismiss="modal" href="Javascript:;">Cancel</a>
+                    <a id="btn-delete-customer" class="btn-type5" title="Confirm" data-dismiss="modal" href="Javascript:;">Confirm</a>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<div class="row align-items-center innersubHead">
+    <div class="col-xl-5">
+        <h2 class="head-type2">Customer List <span id="customer-count">-</span></h2>
+    </div>
+    <div class="col-xl-7">
+        <div class="inneraction">
+            <div class="searchtextbox">
+                <input id="grid-search" type="text" class="searchbox" placeholder="Search by Customer, Phone, Emergency">
+                <a href="javascript: void(0)" class="searchicon"></a>
+            </div>
+            <a class="btn-type1" title="Add Customer" data-toggle="modal" data-target="#addcustomer" href="Javascript:;">Add Customer</a>
+        </div>
+    </div>
+</div>
+
+
+<div class="listtableOuter">
+    <table id="customer-grid" class="display responsive nowrap" style="width:100%">
+        <thead>
+            <tr>
+                <th>Customer</th>
+                <th class="text-left">Phone</th>
+                <th class="text-left">Emergency Number</th>
+                <th class="text-left">Registered on</th>
+                <th class="text-right">Plans(#)</th>
+                <th class="text-left">Wallet Amt (AUD)</th>
+                <th class="text-left">Status</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</div>
+
+@{
+    Func<string, IHtmlContent> actionContent =
+    @<div class="userdropdown listaction">
+        <button class="dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
+        <div class="dropdown-menu dropdown-menu-right">
+            <span class="userdroplink" onclick='viewCustomer(--customer-id--)'>
+                <a class="userdropdownlink">View</a>
+            </span>
+            <span class="userdroplink" onclick='editCustomer(--customer-id--)'>
+                <a class="userdropdownlink">Edit</a>
+            </span>
+            <span class="userdroplink" onclick="confirmDeleteCustomer(--customer-id--,0)">
+                <a class="userdropdownlink logout">Delete</a>
+            </span>
+        </div>
+    </div>;
+}
+
+@section Scripts
+    {
+    <script src="@Url.Content("~/plugins/numbermask/jquery.inputmask.min.js")" asp-append-version="true"></script>
+    <script>
+        let datatable;
+        $(document).ready(function () {
+            activeMenu("customer-menu");
+
+            datatable = $('#customer-grid').DataTable({
+                "paging": true,
+                "ordering": true,
+                "filter": false,
+                "destroy": true,
+                "orderMulti": false,
+                "serverSide": true,
+                "processing": true,
+                "bLengthChange": false,
+                "order": [[3, "desc"]],
+                "pageLength": 10,
+                "language": {
+                    "zeroRecords": "No data available!",
+                },
+                "info": false,
+                "dom": 'rtip',
+                "columns": [
+                    { "width": "20%" },
+                    { "width": "15%" },
+                    { "width": "15%" },
+                    { "width": "14%" },
+                    { "width": "8%" },
+                    { "width": "8%" },
+                    { "width": "5%" }
+                ],
+                "ajax": {
+                    "url": "@Url.Action("GetCustomerList", "Customer")",
+                    "type": "POST",
+                    "dataType": "JSON",
+                    "data": function (d) {
+                        return $.extend({}, d, {
+                            "search": {
+                                "regex": false,
+                                "value": $.trim($("#grid-search").val())
+                            }
+                        });
+                    }
+                },
+                "aoColumns": [
+                    { "mDataProp": "fullName" },
+                    { "mDataProp": "phoneNumber" },
+                    { "mDataProp": "emergencyContactNumber" },
+                    { "mDataProp": "createdOn" },
+                    { "mDataProp": "totalPlans" },
+                    { "mDataProp": "walletAmount" },
+                    { "mDataProp": "isActive" },
+                    { "mDataProp": "customerId" },
+                ],
+                "columnDefs": [
+                    {
+                        "render": function (a, aa, row) {
+                            return row.fullName;
+                        },
+                        "targets": 0
+                    },
+                    {
+                        "render": function (_, __, row) {
+                            return row.phoneNumber ?? "-";
+                        },
+                        "targets": 1,
+                        "class": "text-left",
+                        "width": 200
+                    },
+                    {
+                        "render": function (_, __, row) {
+                            return row.emergencyContactNumber ?? "-";
+                        },
+                        "targets": 2,
+                        "class": "text-left"
+                    },
+                    {
+                        "render": function (_, __, row) {
+                            return `${moment.utc(row.createdOn).format("MMM D, YYYY")}`;
+                        },
+                        "targets": 3,
+                        "class": "text-left"
+                    },
+                    {
+                        "render": function (_, __, row) {
+                            return row.totalPlans;
+                        },
+                        "targets": 4,
+                        "class": "text-left"
+                    },
+                    {
+                        "render": function (_, __, row) {
+                            return row.walletAmount.toFixed(2);
+                        },
+                        "targets": 5,
+                        "class": "text-left"
+                    },
+                    {
+                        "render": function (_, __, row) {
+                            if (row.isActive)
+                                return `<span class="badge badge-success">Active</span>`;
+                            else
+                                return `<span class="badge badge-light">Inactive</span>`;
+                        },
+                        "targets": 6,
+                        "class": "text-center"
+                    },
+                    {
+                        "orderable": false,
+                        "render": function (_, __, row) {
+                            var html = `@actionContent(string.Empty)`;
+                            html = html.split("--customer-id--").join(row.customerId);
+                            return html;
+                        },
+                        "targets": 7
+                    }
+                ],
+                "drawCallback": function (resultData) {
+                    $("#customer-count").text(resultData.json.customerCount);
+                }
+            });
+
+            datatable.on('draw.dt', function () {
+                if ($('#customer-grid tbody .dataTables_empty').length && datatable.page.info().pages)
+                    datatable.page('previous').draw('page');
+            });
+
+            $("#grid-search").keyup(function () {
+                drawCustomerGrid();
+            });
+        });
+
+        function drawCustomerGrid() {
+            datatable.draw('page');
+        };
+
+        function editCustomer(customerId) {
+            showLoader();
+
+            $.ajax({
+                url: "@Url.Action("Edit", "Customer")",
+                type: 'GET',
+                data: { id: customerId },
+                dataType: "Html",
+                async: false,
+                success: function (html) {
+                    hideLoader();
+                    $("#div-edit-customer").html("").html(html);
+                    $("#editcustomer").modal("show");
+
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    hideLoader();
+                    showErrorMessage("@MessageConstant.CommonErrorMessage");
+                }
+            })
+        };
+
+        function confirmDeleteCustomer(customerId, isEditPage) {
+            $("#btn-delete-customer").attr("onclick", `deleteCustomer(${customerId});`);
+            $("#btn-cancel-customer").attr("onclick", `CancelPopup(${customerId},${isEditPage});`);
+            $("#customer-delete").modal("show");
+        }
+
+        function deleteCustomer(customerId) {
+            showLoader();
+            $.ajax({
+                url: "@Url.Action("Delete", "Customer")",
+                type: 'DELETE',
+                data: { id: customerId },
+                dataType: "JSON",
+                async: false,
+                success: function (data) {
+                    hideLoader();
+                    $("#customer-delete").modal("hide");
+                    if (data.success) {
+                        drawCustomerGrid();
+                        showSuccessMessage(data.message);
+                    }
+                    else {
+                        showErrorMessage(data.message);
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    hideLoader();
+                    showErrorMessage("@MessageConstant.CommonErrorMessage");
+                }
+            })
+        };
+
+        function CancelPopup(customerId, isEditPage) {
+            if (isEditPage == 1) {
+                editCustomer(customerId);
+            }
+            if (isEditPage == 2) {
+                viewCustomer(customerId);
+            }
+        }
+
+
+        function viewCustomer(customerId) {
+            showLoader();
+
+            $.ajax({
+                url: "@Url.Action("ViewCustomer", "Customer")",
+                type: 'GET',
+                data: { id: customerId },
+                dataType: "Html",
+                async: false,
+                success: function (html) {
+                    hideLoader();
+                    $("#div-view-customer").html("").html(html);
+                    $("#viewcustomer").modal("show");
+
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    hideLoader();
+                    showErrorMessage("@MessageConstant.CommonErrorMessage");
+                }
+            })
+        };
+
+       
+    </script>
+}

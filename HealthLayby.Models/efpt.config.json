@@ -1,0 +1,199 @@
+﻿{
+   "CodeGenerationMode": 2,
+   "ContextClassName": "AppDbContext",
+   "ContextNamespace": null,
+   "DefaultDacpacSchema": null,
+   "FilterSchemas": false,
+   "IncludeConnectionString": false,
+   "ModelNamespace": null,
+   "OutputContextPath": "Context",
+   "OutputPath": "Models",
+   "PreserveCasingWithRegex": true,
+   "ProjectRootNamespace": "HealthLayby.Models",
+   "Schemas": null,
+   "SelectedHandlebarsLanguage": 0,
+   "SelectedToBeGenerated": 0,
+   "T4TemplatePath": null,
+   "Tables": [
+      {
+         "Name": "[dbo].[Admin]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Bank]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[BankBSBDirectory]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Category]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Clinic]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[ContentManagement]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Customer]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[CustomerBank]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[CustomerCreditCard]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[CustomerEmergencyContact]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[CustomerFamilyMember]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[CustomerForgotPasswordToken]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[CustomerPlans]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[FAQ]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[ForgotPasswordToken]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[GenerateOTP]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Merchant]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[MerchantBank]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[PlanScheduleDeduction]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Rewards]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Service]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[ServiceDetails]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[TempDirectPay]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[TempLayByPlan]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[TempLayByTransaction]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[TempWalletTran]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[CategoryGridList]",
+         "ObjectType": 1
+      },
+      {
+         "Name": "[dbo].[CustomerGridList]",
+         "ObjectType": 1
+      },
+      {
+         "Name": "[dbo].[DirectPayTransactionGridList]",
+         "ObjectType": 1
+      },
+      {
+         "Name": "[dbo].[LayByPlanList]",
+         "ObjectType": 1
+      },
+      {
+         "Name": "[dbo].[MerchantGridList]",
+         "ObjectType": 1
+      },
+      {
+         "Name": "[dbo].[MerchantRequestGridList]",
+         "ObjectType": 1
+      },
+      {
+         "Name": "[dbo].[RewardsGridList]",
+         "ObjectType": 1
+      },
+      {
+         "Name": "[dbo].[ServiceGridList]",
+         "ObjectType": 1
+      },
+      {
+         "Name": "[dbo].[TempLayByTransactionGridList]",
+         "ObjectType": 1
+      },
+      {
+         "Name": "[dbo].[TopCustomerGridList]",
+         "ObjectType": 1
+      },
+      {
+         "Name": "[dbo].[TopMerchantGridList]",
+         "ObjectType": 1
+      },
+      {
+         "Name": "[dbo].[TopPlanHistoryGridList]",
+         "ObjectType": 1
+      },
+      {
+         "Name": "[dbo].[TopTransactionGridList]",
+         "ObjectType": 1
+      },
+      {
+         "Name": "[dbo].[WalletTransactionGridList]",
+         "ObjectType": 1
+      }
+   ],
+   "UiHint": "chintan.HealthLayby.dbo",
+   "UncountableWords": null,
+   "UseBoolPropertiesWithoutDefaultSql": false,
+   "UseDatabaseNames": true,
+   "UseDateOnlyTimeOnly": true,
+   "UseDbContextSplitting": true,
+   "UseFluentApiOnly": false,
+   "UseHandleBars": false,
+   "UseHierarchyId": false,
+   "UseInflector": false,
+   "UseLegacyPluralizer": false,
+   "UseManyToManyEntity": false,
+   "UseNoDefaultConstructor": true,
+   "UseNoObjectFilter": false,
+   "UseNodaTime": false,
+   "UseNullableReferences": false,
+   "UseSchemaFolders": false,
+   "UseSchemaNamespaces": false,
+   "UseSpatial": false,
+   "UseT4": false
+}

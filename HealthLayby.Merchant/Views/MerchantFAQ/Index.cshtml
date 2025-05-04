@@ -1,0 +1,168 @@
+﻿@model List<FAQMerchantModel>
+@{
+    ViewData["Title"] = "FAQs";
+}
+
+@section HeaderTitle
+    {
+    <h1 class="head-type1">FAQs</h1>
+
+    <!--- Bootstrap CSS --->
+    <link rel="stylesheet" href="@Url.Content("~/assets/css/bootstrap-float-label.min.css")" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="@Url.Content("~/assets/css/bootstrap.min.css")" asp-append-version="true" />
+    <!--- bootstrap-select --->
+    <link rel="stylesheet" href="@Url.Content("~/assets/css/bootstrap-select.min.css")" asp-append-version="true" />
+    <link rel="stylesheet" href="@Url.Content("~/assets/css/style.css")" asp-append-version="true" />
+}
+
+@section Partials
+    {
+    <div class="modal fade" id="confirmdeletemodal" data-backdrop="static" data-keyboard="false" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered w-640">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="head-type2">Are you sure you want to delete?</h5>
+                    <button type="button" class="close" data-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group input-group">
+                        <textarea class="form-control" id="rejection" placeholder="Reason for Rejection" required></textarea>
+                    </div>
+                    <div class="text-center">
+                        <a href="Javascript:;" data-dismiss="modal" class="btn-type5 loginSubmit">Cancel</a>
+                        <a id="btn-delete-yes" href="Javascript:;" data-dismiss="modal" class="btn-type1 loginSubmit">Update</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="div-add-edit-faq">
+    </div>
+}
+
+<div class="innerContent">
+    <div class="customtabOuter" id="cmccontent">
+        <div class="customtab-list">
+            <div class="customtab-list-inner content_2">
+                <h3 class="head-type2 mb-4">FAQs</h3>
+                <div class="faqsOuter">
+                    @foreach (var faq in Model)
+                    {
+                        <div class="faqslist">
+                            <div class="faqHeader">@faq.Question <span><a class="btn-type5 smallbtn" title="Edit" data-toggle="modal" data-target="#editfaqs" onclick="addEditFAQ(@faq.FAQId)"><i class="fa fa-pencil-square-o"></i></a><a class="btn-type4 smallbtn" title="Remove" onclick="confirmDeleteFAQ(@faq.FAQId)"><i class="fa fa-remove"></i></a></span></div>
+                            <div class="faqContent" style="display: none;">@faq.Answer</div>
+
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles
+    {
+    <style>
+        .ck-editor__editable {
+            height: 290px !important;
+        }
+    </style>
+}
+
+@section Scripts
+    {
+    <script src="@Url.Content("~/plugins/ckeditor/js/ckeditor.js")" asp-append-version="true"></script>
+    <!-- Custom JS -->
+    <script type="text/javascript">
+        jQuery(document).ready(function ($) {
+            activeSubMenu("merchant-setting-faq");
+            removeActiveMenu("merchant-dashboard");
+
+            jQuery('.customtabH-link').click(function (j) {
+                var section_id = jQuery(this).attr("cid");
+                var data_id = jQuery(this).attr("dataid");
+                if (!jQuery(this).hasClass('active')) {
+                    jQuery('#' + section_id + ' .customtabH-link').removeClass('active');
+                    jQuery('#' + section_id + ' .customtab-list-inner').attr("style", "display:none;");
+                    jQuery(this).addClass('active');
+                    jQuery('#' + section_id + ' .content_' + data_id).attr("style", "display:block;");
+                }
+            });
+
+            jQuery(".faqsOuter .faqHeader").click(function () {
+                if (jQuery(this).parent().hasClass('active')) {
+                    jQuery(this).parent().removeClass('active');
+                    jQuery(this).next().slideUp();
+                } else {
+                    jQuery(".faqsOuter .faqHeader").parent().removeClass('active');
+                    jQuery(".faqsOuter .faqHeader").next().slideUp();
+                    jQuery(this).parent().addClass('active');
+                    jQuery(this).next().slideDown();
+                }
+            });
+        });
+
+        function addEditFAQ(faqId) {
+            showLoader();
+            event.stopImmediatePropagation();
+            $.ajax({
+                url: "@Url.Action("AddEditMerchantFAQ", "MerchantFAQ")",
+                type: 'GET',
+                data: { id: faqId },
+                dataType: "HTML",
+                async: false,
+                success: function (html) {
+                    hideLoader();
+                    $("#div-add-edit-faq").html(html);
+                    $.validator.unobtrusive.parse("#add-edit-faq");
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    hideLoader();
+                    showErrorMessage("@MessageConstant.CommonErrorMessage");
+                }
+            })
+        };
+
+        function confirmDeleteFAQ(faqid) {
+            event.stopImmediatePropagation();
+            $("#btn-delete-yes").attr("onclick", `deleteFAQ("${faqid}")`);
+            $("#confirmdeletemodal").modal("show");
+        };
+
+        function deleteFAQ(faqId) {
+            var rejection = $("#rejection").val()
+            if (rejection == '') {
+                showErrorMessage('@MessageConstant.DescriptionInValid');
+                return false;
+            }
+            showLoader();
+            $.ajax({
+                url: "@Url.Action("Delete", "MerchantFAQ")",
+                type: 'DELETE',
+                data: { id: faqId, rejectreason: $("#rejection").val() },
+                dataType: "JSON",
+                async: false,
+                success: function (data) {
+                    hideLoader();
+                    $("#confirmdeletemodal").modal("hide");
+                    if (data.success) {
+                        $("#FAQform").selectpicker('refresh');
+                        showSuccessMessage(data.message);
+                        setTimeout(function () {
+                            location.reload();
+                        }, 2500);
+                    }
+                    else {
+                        showErrorMessage(data.message);
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    hideLoader();
+                    showErrorMessage("@MessageConstant.CommonErrorMessage");
+                }
+            })
+        };
+    </script>
+}
